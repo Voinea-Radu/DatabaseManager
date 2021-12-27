@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>dev.lightdream</groupId>
+    <artifactId>DatabaseManager</artifactId>
+    <version>1.0</version>
+
+    <distributionManagement>
+        <repository>
+            <id>lightdream-api</id>
+            <url>https://repo.lightdream.dev/repository/LightDream-API/</url>
+        </repository>
+    </distributionManagement>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>lightdream-repo</id>
+            <url>https://repo.lightdream.dev/repository/LightDream-API/</url>
+        </repository>
+        <repository>
+            <id>hikari</id>
+            <url>https://mvnrepository.com/artifact/com.zaxxer/HikariCP</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>dev.lightdream</groupId>
+            <artifactId>Logger</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.22</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <!--suppress MavenPackageUpdate -->
+            <!-- Breaks compatibility wit Java 1.8 -->
+            <version>4.0.3</version>
+        </dependency>
+    </dependencies>
+    
+</project>
