@@ -3,6 +3,7 @@ package dev.lightdream.databasehandler.database;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import dev.lightdream.databasehandler.DatabaseMain;
+import dev.lightdream.databasehandler.OrderByType;
 import dev.lightdream.databasehandler.annotations.database.DatabaseField;
 import dev.lightdream.databasehandler.annotations.database.DatabaseTable;
 import dev.lightdream.databasehandler.dto.DatabaseEntry;
@@ -88,19 +89,19 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
     }
 
     public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries) {
-        return get(clazz, queries, null, -1);
+        return get(clazz, queries, null, -1, null);
     }
 
-    public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries, String orderBy) {
-        return get(clazz, queries, orderBy, -1);
+    public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries, String orderBy, OrderByType orderByType) {
+        return get(clazz, queries, orderBy, -1, orderByType);
     }
 
     public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries, int limitCount) {
-        return get(clazz, queries, null, limitCount);
+        return get(clazz, queries, null, limitCount, null);
     }
 
     @SneakyThrows
-    public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries, String orderBy, int limitCount) {
+    public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries, String orderBy, int limitCount, OrderByType orderByType) {
         if (queries.size() == 0) {
             return getAll(clazz);
         }
@@ -118,7 +119,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         placeholder.append(" ");
         placeholder = new StringBuilder(placeholder.toString().replace(" AND  ", ""));
 
-        String order = Objects.equals(orderBy, "") || orderBy == null ? "" : sqlConfig.driver.orderDesc.replace("%order%", orderBy);
+        String order = Objects.equals(orderBy, "") || orderBy == null ? "" : orderByType == OrderByType.ASCENDANT ? sqlConfig.driver.orderAsc.replace("%order%", orderBy) : sqlConfig.driver.orderDesc.replace("%order%", orderBy);
         String limit = limitCount == -1 ? "" : sqlConfig.driver.limit.replace("%limit%", String.valueOf(limitCount));
 
         List<T> output = new ArrayList<>();
