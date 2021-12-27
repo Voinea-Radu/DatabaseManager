@@ -14,10 +14,7 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public abstract class HikariDatabaseManager extends DatabaseManager {
@@ -90,8 +87,20 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         return output;
     }
 
-    @SneakyThrows
     public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries) {
+        return get(clazz, queries, null, -1);
+    }
+
+    public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries, String orderBy) {
+        return get(clazz, queries, orderBy, -1);
+    }
+
+    public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries, int limitCount) {
+        return get(clazz, queries, null, limitCount);
+    }
+
+    @SneakyThrows
+    public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries, String orderBy, int limitCount) {
         if (queries.size() == 0) {
             return getAll(clazz);
         }
@@ -109,8 +118,11 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         placeholder.append(" ");
         placeholder = new StringBuilder(placeholder.toString().replace(" AND  ", ""));
 
+        String order = Objects.equals(orderBy, "") || orderBy == null ? "" : sqlConfig.driver.orderDesc.replace("%order%", orderBy);
+        String limit = limitCount == -1 ? "" : sqlConfig.driver.limit.replace("%limit%", String.valueOf(limitCount));
+
         List<T> output = new ArrayList<>();
-        ResultSet rs = executeQuery(sqlConfig.driver.select.replace("%placeholder%", placeholder.toString()).replace("%table%", clazz.getAnnotation(DatabaseTable.class).table()), new ArrayList<>());
+        ResultSet rs = executeQuery(sqlConfig.driver.select.replace("%placeholder%", placeholder.toString()).replace("%order%", order).replace("%limit%", limit).replace("%table%", clazz.getAnnotation(DatabaseTable.class).table()), new ArrayList<>());
         while (rs.next()) {
             T obj = clazz.newInstance();
             Field[] fields = obj.getClass().getFields();
@@ -127,6 +139,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         }
         return output;
     }
+
 
     @SuppressWarnings("StringConcatenationInLoop")
     @SneakyThrows

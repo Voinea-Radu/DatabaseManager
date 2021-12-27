@@ -39,12 +39,15 @@ public class SQLConfig {
                     put(Long.class, "BIGINT");
                     put(long.class, "BIGINT");
                 }},
-                "AUTO_INCREMENT"),
+                "AUTO_INCREMENT",
+                "ORDER BY %order% DESC",
+                "ORDER BY %order% ASC",
+                "LIMIT %limit%"),
         MARIADB(MYSQL),
         SQLSERVER(MYSQL),
         POSTGRESQL(MYSQL),
         H2(MYSQL),
-        SQLITE("SELECT * FROM %table% WHERE %placeholder%",
+        SQLITE("SELECT * FROM %table% WHERE %placeholder% %order% %limit%",
                 "SELECT * FROM %table% WHERE 1",
                 "UPDATE %table% SET %placeholder% WHERE id=?",
                 "INSERT INTO %table% (%placeholder-1%) VALUES(%placeholder-2%)",
@@ -63,7 +66,10 @@ public class SQLConfig {
                     put(Long.class, "BIGINT");
                     put(long.class, "BIGINT");
                 }},
-                "PRIMARY KEY AUTOINCREMENT");
+                "PRIMARY KEY AUTOINCREMENT",
+                "ORDER BY %order% DESC",
+                "ORDER BY %order% ASC",
+                "LIMIT %limit%");
 
         public final String select;
         public final String selectAll;
@@ -73,8 +79,11 @@ public class SQLConfig {
         public final String delete;
         public final HashMap<Class<?>, String> dataTypes;
         public final String autoIncrement;
+        public final String orderDesc;
+        public final String orderAsc;
+        public final String limit;
 
-        Driver(String select, String selectAll, String update, String insert, String createTable, String delete, HashMap<Class<?>, String> dataTypes, String autoIncrement) {
+        Driver(String select, String selectAll, String update, String insert, String createTable, String delete, HashMap<Class<?>, String> dataTypes, String autoIncrement, String orderDesc,String orderAsc, String limit) {
             this.select = select;
             this.selectAll = selectAll;
             this.update = update;
@@ -83,6 +92,9 @@ public class SQLConfig {
             this.delete = delete;
             this.dataTypes = dataTypes;
             this.autoIncrement = autoIncrement;
+            this.orderDesc = orderDesc;
+            this.orderAsc = orderAsc;
+            this.limit = limit;
         }
 
         Driver(Driver driver) {
@@ -94,6 +106,9 @@ public class SQLConfig {
             this.delete = driver.delete;
             this.dataTypes = driver.dataTypes;
             this.autoIncrement = driver.autoIncrement;
+            this.orderDesc=driver.orderDesc;
+            this.orderAsc=driver.orderAsc;
+            this.limit= driver.limit;
         }
 
     }
