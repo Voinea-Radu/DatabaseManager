@@ -114,7 +114,17 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         StringBuilder placeholder = new StringBuilder();
         for (String key : queries.keySet()) {
             Object value = queries.get(key);
-            placeholder.append(key).append("=").append(formatQueryArgument(value)).append(" AND ");
+            if (key.startsWith("<")) {
+                placeholder.append(key.replaceFirst("<", "")).append("<").append(formatQueryArgument(value)).append(" AND ");
+            } else if (key.startsWith(">")) {
+                placeholder.append(key.replaceFirst(">", "")).append(">").append(formatQueryArgument(value)).append(" AND ");
+            } else if (key.startsWith("!=")) {
+                placeholder.append(key.replaceFirst("!=", "")).append("!=").append(formatQueryArgument(value)).append(" AND ");
+            } else if (key.startsWith("=")) {
+                placeholder.append(key.replaceFirst("=", "")).append("=").append(formatQueryArgument(value)).append(" AND ");
+            } else {
+                placeholder.append(key).append("=").append(formatQueryArgument(value)).append(" AND ");
+            }
         }
         placeholder.append(" ");
         placeholder = new StringBuilder(placeholder.toString().replace(" AND  ", ""));
