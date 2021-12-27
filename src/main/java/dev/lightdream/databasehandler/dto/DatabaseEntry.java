@@ -20,7 +20,6 @@ public abstract class DatabaseEntry {
     }
 
     public void save(boolean cache) {
-        Debugger.info(this.main);
         this.main.getDatabaseManager().save(this, cache);
     }
 
@@ -30,7 +29,6 @@ public abstract class DatabaseEntry {
     }
 
     public void setMain(DatabaseMain main) {
-        Debugger.info("Setting main to " + main);
         this.main = main;
     }
 

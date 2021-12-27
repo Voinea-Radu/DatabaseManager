@@ -21,10 +21,11 @@ import java.util.*;
 public abstract class HikariDatabaseManager extends DatabaseManager {
 
     private Connection connection;
-    private DatabaseMain main;
+    private final DatabaseMain main;
 
     public HikariDatabaseManager(DatabaseMain main) {
         super(main);
+        this.main = main;
         Logger.good("Connecting to the database");
         connect();
         Logger.good("Connected to the database");
