@@ -2,6 +2,7 @@ package dev.lightdream.databasehandler.dto;
 
 import dev.lightdream.databasehandler.DatabaseMain;
 import dev.lightdream.databasehandler.annotations.database.DatabaseField;
+import dev.lightdream.logger.Debugger;
 
 public abstract class DatabaseEntry {
 
@@ -19,7 +20,8 @@ public abstract class DatabaseEntry {
     }
 
     public void save(boolean cache) {
-        main.getDatabaseManager().save(this, cache);
+        Debugger.info(this.main);
+        this.main.getDatabaseManager().save(this, cache);
     }
 
     @SuppressWarnings("unused")
@@ -28,6 +30,7 @@ public abstract class DatabaseEntry {
     }
 
     public void setMain(DatabaseMain main) {
+        Debugger.info("Setting main to " + main);
         this.main = main;
     }
 
