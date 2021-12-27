@@ -27,7 +27,9 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
 
     public HikariDatabaseManager(DatabaseMain main) {
         super(main);
+        Logger.good("Connecting to the database");
         connect();
+        Logger.good("Connected to the database");
     }
 
     @SneakyThrows
