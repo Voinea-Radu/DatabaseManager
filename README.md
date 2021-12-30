@@ -33,11 +33,6 @@ public class DatabaseManagerImp extends HikariDatabaseManager{
     }
 
     @Override
-    public HashMap<Class<?>, String> getDataTypes() {
-        return null;
-    }
-
-    @Override
     public HashMap<Class<?>, LambdaExecutor> getSerializeMap() {
         return null;
     }

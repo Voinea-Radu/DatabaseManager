@@ -16,6 +16,7 @@ public abstract class DatabaseManager implements IDatabaseManager {
     public File dataFolder;
     public HashMap<Class<?>, LambdaExecutor> serializeMap = new HashMap<Class<?>, LambdaExecutor>() {{
         put(String.class, object -> "\"" + object.toString() + "\"");
+        put(UUID.class, object -> "\"" + object.toString() + "\"");
     }};
     public HashMap<Class<?>, LambdaExecutor> deserializeMap = new HashMap<Class<?>, LambdaExecutor>() {{
         put(UUID.class, object -> UUID.fromString(object.toString()));
@@ -46,6 +47,7 @@ public abstract class DatabaseManager implements IDatabaseManager {
     public String getDataType(Class<?> clazz) {
         String dbDataType = sqlConfig.driver.dataTypes.get(clazz);
 
+        /*
         if (dbDataType == null) {
             HashMap<Class<?>, String> additionalDataTypes = getDataTypes();
 
@@ -56,6 +58,7 @@ public abstract class DatabaseManager implements IDatabaseManager {
 
             dbDataType = additionalDataTypes.get(clazz);
         }
+        */
 
         if (dbDataType != null) {
             return dbDataType;
@@ -64,8 +67,6 @@ public abstract class DatabaseManager implements IDatabaseManager {
         Logger.error("DataType " + clazz.getSimpleName() + " is not a supported data type");
         return "";
     }
-
-    public abstract HashMap<Class<?>, String> getDataTypes();
 
     public abstract HashMap<Class<?>, LambdaExecutor> getSerializeMap();
 
