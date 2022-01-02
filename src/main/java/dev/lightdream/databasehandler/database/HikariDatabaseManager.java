@@ -161,6 +161,11 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
             return;
         }
 
+        if(!(clazz.newInstance() instanceof DatabaseEntry)){
+            Logger.error("Class " + clazz.getSimpleName() + " does not extend DatabaseEntry.class");
+            return;
+        }
+
         Object obj = clazz.newInstance();
         String placeholder = "";
         String keys = "";
