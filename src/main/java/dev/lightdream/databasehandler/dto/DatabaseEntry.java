@@ -2,7 +2,6 @@ package dev.lightdream.databasehandler.dto;
 
 import dev.lightdream.databasehandler.DatabaseMain;
 import dev.lightdream.databasehandler.annotations.database.DatabaseField;
-import dev.lightdream.logger.Debugger;
 
 public abstract class DatabaseEntry {
 

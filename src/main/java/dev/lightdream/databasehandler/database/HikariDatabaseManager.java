@@ -73,7 +73,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
 
         ResultSet rs = executeQuery(sqlConfig.driver.selectAll.replace("%table%", clazz.getAnnotation(DatabaseTable.class).table()), new ArrayList<>());
         while (rs.next()) {
-            T obj = clazz.newInstance();
+            T obj = clazz.getDeclaredConstructor().newInstance();
             Field[] fields = obj.getClass().getFields();
             for (Field field : fields) {
                 if (!field.isAnnotationPresent(DatabaseField.class)) {
@@ -136,7 +136,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         List<T> output = new ArrayList<>();
         ResultSet rs = executeQuery(sqlConfig.driver.select.replace("%placeholder%", placeholder.toString()).replace("%order%", order).replace("%limit%", limit).replace("%table%", clazz.getAnnotation(DatabaseTable.class).table()), new ArrayList<>());
         while (rs.next()) {
-            T obj = clazz.newInstance();
+            T obj = clazz.getDeclaredConstructor().newInstance();
             Field[] fields = obj.getClass().getFields();
             for (Field field : fields) {
                 if (!field.isAnnotationPresent(DatabaseField.class)) {
@@ -161,12 +161,12 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
             return;
         }
 
-        if(!(clazz.newInstance() instanceof DatabaseEntry)){
+        if(!(clazz.getDeclaredConstructor().newInstance() instanceof DatabaseEntry)){
             Logger.error("Class " + clazz.getSimpleName() + " does not extend DatabaseEntry.class");
             return;
         }
 
-        Object obj = clazz.newInstance();
+        Object obj = clazz.getDeclaredConstructor().newInstance();
         String placeholder = "";
         String keys = "";
 
