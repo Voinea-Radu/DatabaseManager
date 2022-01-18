@@ -1,7 +1,5 @@
 # LightDream Database Manager
 
-![Build](https://github.com/L1ghtDream/DatabaseManager/actions/workflows/build.yml/badge.svg)
-
 ```xml
 <repositories>
     <repository>
