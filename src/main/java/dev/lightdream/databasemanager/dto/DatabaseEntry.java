@@ -1,7 +1,7 @@
-package dev.lightdream.databasehandler.dto;
+package dev.lightdream.databasemanager.dto;
 
-import dev.lightdream.databasehandler.DatabaseMain;
-import dev.lightdream.databasehandler.annotations.database.DatabaseField;
+import dev.lightdream.databasemanager.DatabaseMain;
+import dev.lightdream.databasemanager.annotations.database.DatabaseField;
 
 public abstract class DatabaseEntry {
 
