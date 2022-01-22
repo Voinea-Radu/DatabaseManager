@@ -1,4 +1,4 @@
-package dev.lightdream.databasehandler;
+package dev.lightdream.databasemanager;
 
 public enum OrderByType {
 

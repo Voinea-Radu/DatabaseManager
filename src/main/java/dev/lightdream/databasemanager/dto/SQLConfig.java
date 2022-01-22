@@ -1,4 +1,4 @@
-package dev.lightdream.databasehandler.dto;
+package dev.lightdream.databasemanager.dto;
 
 import lombok.NoArgsConstructor;
 

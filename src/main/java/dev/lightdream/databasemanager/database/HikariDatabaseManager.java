@@ -1,12 +1,12 @@
-package dev.lightdream.databasehandler.database;
+package dev.lightdream.databasemanager.database;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import dev.lightdream.databasehandler.DatabaseMain;
-import dev.lightdream.databasehandler.OrderByType;
-import dev.lightdream.databasehandler.annotations.database.DatabaseField;
-import dev.lightdream.databasehandler.annotations.database.DatabaseTable;
-import dev.lightdream.databasehandler.dto.DatabaseEntry;
+import dev.lightdream.databasemanager.DatabaseMain;
+import dev.lightdream.databasemanager.OrderByType;
+import dev.lightdream.databasemanager.annotations.database.DatabaseField;
+import dev.lightdream.databasemanager.annotations.database.DatabaseTable;
+import dev.lightdream.databasemanager.dto.DatabaseEntry;
 import dev.lightdream.logger.Debugger;
 import dev.lightdream.logger.Logger;
 import lombok.SneakyThrows;

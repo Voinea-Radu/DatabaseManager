@@ -1,9 +1,9 @@
-package dev.lightdream.databasehandler.database;
+package dev.lightdream.databasemanager.database;
 
-import dev.lightdream.databasehandler.DatabaseMain;
-import dev.lightdream.databasehandler.dto.DatabaseEntry;
-import dev.lightdream.databasehandler.dto.LambdaExecutor;
-import dev.lightdream.databasehandler.dto.SQLConfig;
+import dev.lightdream.databasemanager.DatabaseMain;
+import dev.lightdream.databasemanager.dto.DatabaseEntry;
+import dev.lightdream.databasemanager.dto.LambdaExecutor;
+import dev.lightdream.databasemanager.dto.SQLConfig;
 import dev.lightdream.logger.Logger;
 
 import java.io.File;

@@ -1,4 +1,4 @@
-package dev.lightdream.databasehandler.annotations.database;
+package dev.lightdream.databasemanager.annotations.database;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

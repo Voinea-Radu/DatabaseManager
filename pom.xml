@@ -6,7 +6,7 @@
 
     <groupId>dev.lightdream</groupId>
     <artifactId>DatabaseManager</artifactId>
-    <version>1.13</version>
+    <version>1.14</version>
 
     <distributionManagement>
         <repository>
@@ -35,7 +35,7 @@
         <dependency>
             <groupId>dev.lightdream</groupId>
             <artifactId>Logger</artifactId>
-            <version>1.0</version>
+            <version>LATEST</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

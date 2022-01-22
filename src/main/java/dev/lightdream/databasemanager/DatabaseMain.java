@@ -1,7 +1,7 @@
-package dev.lightdream.databasehandler;
+package dev.lightdream.databasemanager;
 
-import dev.lightdream.databasehandler.database.IDatabaseManager;
-import dev.lightdream.databasehandler.dto.SQLConfig;
+import dev.lightdream.databasemanager.database.IDatabaseManager;
+import dev.lightdream.databasemanager.dto.SQLConfig;
 
 import java.io.File;
 

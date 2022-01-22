@@ -1,6 +1,6 @@
-package dev.lightdream.databasehandler.database;
+package dev.lightdream.databasemanager.database;
 
-import dev.lightdream.databasehandler.dto.DatabaseEntry;
+import dev.lightdream.databasemanager.dto.DatabaseEntry;
 
 import java.util.List;
 
