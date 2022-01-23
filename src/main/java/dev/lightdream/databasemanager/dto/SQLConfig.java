@@ -55,14 +55,14 @@ public class SQLConfig {
                 "DELETE FROM %table% WHERE id=?", new HashMap<Class<?>, String>() {{
                     put(int.class, "INTEGER");
                     put(Integer.class, "INTEGER");
-                    put(String.class, "TEXT");
+                    put(String.class, "TEXT(10000)");
                     put(boolean.class, "BOOLEAN");
                     put(Boolean.class, "BOOLEAN");
                     put(float.class, "REAL");
                     put(Float.class, "REAL");
                     put(double.class, "REAL");
                     put(Double.class, "REAL");
-                    put(UUID.class, "TEXT");
+                    put(UUID.class, "TEXT(10000)");
                     put(Long.class, "BIGINT");
                     put(long.class, "BIGINT");
                 }},
