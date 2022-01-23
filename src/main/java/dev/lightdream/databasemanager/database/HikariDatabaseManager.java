@@ -20,8 +20,8 @@ import java.util.*;
 @SuppressWarnings("unused")
 public abstract class HikariDatabaseManager extends DatabaseManager {
 
-    private Connection connection;
     private final DatabaseMain main;
+    private Connection connection;
 
     public HikariDatabaseManager(DatabaseMain main) {
         super(main);
@@ -45,7 +45,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         config.setIdleTimeout(600000000);
         config.setMaxLifetime(1800000000);
         switch (sqlConfig.driver) {
-            case SQLITE:
+            case "SQLITE":
                 config.setDriverClassName("org.sqlite.JDBC");
                 config.addDataSourceProperty("dataSourceClassName", "org.sqlite.SQLiteDataSource");
                 break;
@@ -71,7 +71,8 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
 
         List<T> output = new ArrayList<>();
 
-        ResultSet rs = executeQuery(sqlConfig.driver.selectAll.replace("%table%", clazz.getAnnotation(DatabaseTable.class).table()), new ArrayList<>());
+        ResultSet rs = executeQuery(sqlConfig.getDriver().selectAll.replace("%table%", clazz.getAnnotation(DatabaseTable.class).table()),
+                new ArrayList<>());
         while (rs.next()) {
             T obj = clazz.getDeclaredConstructor().newInstance();
             Field[] fields = obj.getClass().getFields();
@@ -130,11 +131,16 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         placeholder.append(" ");
         placeholder = new StringBuilder(placeholder.toString().replace(" AND  ", ""));
 
-        String order = Objects.equals(orderBy, "") || orderBy == null ? "" : orderByType == OrderByType.ASCENDANT ? sqlConfig.driver.orderAsc.replace("%order%", orderBy) : sqlConfig.driver.orderDesc.replace("%order%", orderBy);
-        String limit = limitCount == -1 ? "" : sqlConfig.driver.limit.replace("%limit%", String.valueOf(limitCount));
+        String order = Objects.equals(orderBy,
+                "") || orderBy == null ? "" : orderByType == OrderByType.ASCENDANT ? sqlConfig.getDriver().orderAsc.replace("%order%",
+                orderBy) : sqlConfig.getDriver().orderDesc.replace("%order%", orderBy);
+        String limit = limitCount == -1 ? "" : sqlConfig.getDriver().limit.replace("%limit%", String.valueOf(limitCount));
 
         List<T> output = new ArrayList<>();
-        ResultSet rs = executeQuery(sqlConfig.driver.select.replace("%placeholder%", placeholder.toString()).replace("%order%", order).replace("%limit%", limit).replace("%table%", clazz.getAnnotation(DatabaseTable.class).table()), new ArrayList<>());
+        ResultSet rs = executeQuery(sqlConfig.getDriver().select.replace("%placeholder%", placeholder.toString())
+                .replace("%order%", order)
+                .replace("%limit%", limit)
+                .replace("%table%", clazz.getAnnotation(DatabaseTable.class).table()), new ArrayList<>());
         while (rs.next()) {
             T obj = clazz.getDeclaredConstructor().newInstance();
             Field[] fields = obj.getClass().getFields();
@@ -161,7 +167,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
             return;
         }
 
-        if(!(clazz.getDeclaredConstructor().newInstance() instanceof DatabaseEntry)){
+        if (!(clazz.getDeclaredConstructor().newInstance() instanceof DatabaseEntry)) {
             Logger.error("Class " + clazz.getSimpleName() + " does not extend DatabaseEntry.class");
             return;
         }
@@ -176,7 +182,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
                 continue;
             }
             DatabaseField dbField = field.getAnnotation(DatabaseField.class);
-            placeholder += dbField.columnName() + " " + getDataType(field.getType()) + " " + (dbField.unique() ? "UNIQUE " : "") + (dbField.autoGenerate() ? sqlConfig.driver.autoIncrement : "") + ",";
+            placeholder += dbField.columnName() + " " + getDataType(field.getType()) + " " + (dbField.unique() ? "UNIQUE " : "") + (dbField.autoGenerate() ? sqlConfig.getDriver().autoIncrement : "") + ",";
 
             if (dbField.primaryKey()) {
                 keys += dbField.columnName() + ",";
@@ -188,7 +194,9 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         placeholder += ",";
         placeholder = placeholder.replace(",,", "");
 
-        executeUpdate(sqlConfig.driver.createTable.replace("%placeholder%", placeholder).replace("%keys%", keys).replace("%table%", clazz.getAnnotation(DatabaseTable.class).table()), new ArrayList<>());
+        executeUpdate(sqlConfig.getDriver().createTable.replace("%placeholder%", placeholder)
+                .replace("%keys%", keys)
+                .replace("%table%", clazz.getAnnotation(DatabaseTable.class).table()), new ArrayList<>());
     }
 
     @Override
@@ -234,7 +242,8 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
             placeholder.append(",");
             placeholder = new StringBuilder(placeholder.toString().replace(",,", ""));
 
-            executeUpdate(sqlConfig.driver.update.replace("%placeholder%", placeholder.toString()).replace("%table%", entry.getClass().getAnnotation(DatabaseTable.class).table()), Arrays.asList(entry.id));
+            executeUpdate(sqlConfig.getDriver().update.replace("%placeholder%", placeholder.toString())
+                    .replace("%table%", entry.getClass().getAnnotation(DatabaseTable.class).table()), Arrays.asList(entry.id));
             return;
         }
 
@@ -263,7 +272,9 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
 
         placeholder1 = new StringBuilder(placeholder1.toString().replace(",,", ""));
         placeholder2 = new StringBuilder(placeholder2.toString().replace(",,", ""));
-        executeUpdate(sqlConfig.driver.insert.replace("%placeholder-1%", placeholder1.toString()).replace("%placeholder-2%", placeholder2.toString()).replace("%table%", entry.getClass().getAnnotation(DatabaseTable.class).table()), new ArrayList<>(
+        executeUpdate(sqlConfig.getDriver().insert.replace("%placeholder-1%", placeholder1.toString())
+                .replace("%placeholder-2%", placeholder2.toString())
+                .replace("%table%", entry.getClass().getAnnotation(DatabaseTable.class).table()), new ArrayList<>(
 
         ));
     }
@@ -272,7 +283,8 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
     @SneakyThrows
     @Override
     public void delete(DatabaseEntry entry) {
-        executeUpdate(sqlConfig.driver.delete.replace("%table%", entry.getClass().getAnnotation(DatabaseTable.class).table()), Arrays.asList(entry.id));
+        executeUpdate(sqlConfig.getDriver().delete.replace("%table%", entry.getClass().getAnnotation(DatabaseTable.class).table()),
+                Arrays.asList(entry.id));
     }
 
     @SneakyThrows

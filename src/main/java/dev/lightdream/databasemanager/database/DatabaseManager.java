@@ -29,36 +29,24 @@ public abstract class DatabaseManager implements IDatabaseManager {
 
     public String getDatabaseURL() {
         switch (sqlConfig.driver) {
-            case MYSQL:
-            case MARIADB:
-            case POSTGRESQL:
-                return "jdbc:" + sqlConfig.driver.toString().toLowerCase() + "://" + sqlConfig.host + ":" + sqlConfig.port + "/" + sqlConfig.database + "?useSSL=" + sqlConfig.useSSL + "&autoReconnect=true";
-            case SQLSERVER:
+            case "MYSQL":
+            case "MARIADB":
+            case "POSTGRESQL":
+                return "jdbc:" + sqlConfig.driver
+                        .toLowerCase() + "://" + sqlConfig.host + ":" + sqlConfig.port + "/" + sqlConfig.database + "?useSSL=" + sqlConfig.useSSL + "&autoReconnect=true";
+            case "SQLSERVER":
                 return "jdbc:sqlserver://" + sqlConfig.host + ":" + sqlConfig.port + ";databaseName=" + sqlConfig.database;
-            case H2:
+            case "H2":
                 return "jdbc:h2:file:" + sqlConfig.database;
-            case SQLITE:
+            case "SQLITE":
                 return "jdbc:sqlite:" + new File(dataFolder, sqlConfig.database + ".db");
             default:
-                throw new UnsupportedOperationException("Unsupported driver (how did we get here?): " + sqlConfig.driver.name());
+                throw new UnsupportedOperationException("Unsupported driver (how did we get here?): " + sqlConfig.driver);
         }
     }
 
     public String getDataType(Class<?> clazz) {
-        String dbDataType = sqlConfig.driver.dataTypes.get(clazz);
-
-        /*
-        if (dbDataType == null) {
-            HashMap<Class<?>, String> additionalDataTypes = getDataTypes();
-
-            if (additionalDataTypes == null) {
-                Logger.error("DataType " + clazz.getSimpleName() + " is not a supported data type");
-                return "";
-            }
-
-            dbDataType = additionalDataTypes.get(clazz);
-        }
-        */
+        String dbDataType = sqlConfig.getDriver().dataTypes.get(clazz);
 
         if (dbDataType != null) {
             return dbDataType;
