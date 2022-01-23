@@ -6,7 +6,7 @@ import lombok.SneakyThrows;
 
 @SuppressWarnings("CanBeFinal")
 @NoArgsConstructor
-public class SQLConfig {
+public class SQLConfig extends DriverConfig {
     public String driver = "MYSQL";
     public String host = "162.55.135.18";
     public String database = "new_panel";
@@ -19,8 +19,21 @@ public class SQLConfig {
     @SneakyThrows
     @JsonIgnore
     public DriverConfig.Driver getDriver() {
-        DriverConfig.Driver driver = new DriverConfig.Driver();
-        return (DriverConfig.Driver) DriverConfig.Driver.class.getField(this.driver).get(driver);
+        switch (driver) {
+            case "MYSQL":
+                return MYSQL;
+            case "MARIADB":
+                return MARIADB;
+            case "POSTGRESQL":
+                return POSTGRESQL;
+            case "SQLSERVER":
+                return SQLSERVER;
+            case "H2":
+                return H2;
+            case "SQLITE":
+                return SQLITE;
+        }
+        return null;
     }
 
 
