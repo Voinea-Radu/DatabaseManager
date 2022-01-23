@@ -45,14 +45,14 @@ public class DriverConfig {
             new HashMap<Class<?>, String>() {{
                 put(int.class, "INTEGER");
                 put(Integer.class, "INTEGER");
-                put(String.class, "TEXT(10000)");
+                put(String.class, "TEXT");
                 put(boolean.class, "BOOLEAN");
                 put(Boolean.class, "BOOLEAN");
                 put(float.class, "REAL");
                 put(Float.class, "REAL");
                 put(double.class, "REAL");
                 put(Double.class, "REAL");
-                put(UUID.class, "TEXT(10000)");
+                put(UUID.class, "TEXT");
                 put(Long.class, "BIGINT");
                 put(long.class, "BIGINT");
             }},

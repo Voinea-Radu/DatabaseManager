@@ -7,12 +7,11 @@ import lombok.SneakyThrows;
 @SuppressWarnings("CanBeFinal")
 @NoArgsConstructor
 public class SQLConfig extends DriverConfig {
-    public String driver = "MYSQL";
-    public String host = "162.55.135.18";
-    public String database = "new_panel";
-    public String username = "root";
-    @SuppressWarnings("SpellCheckingInspection")
-    public String password = "5xbqT7JUaxam7heFeWH577M4QPTTYCTx";
+    public String driver = "SQLITE";
+    public String host = "";
+    public String database = "";
+    public String username = "";
+    public String password = "";
     public int port = 3306;
     public boolean useSSL = false;
 
