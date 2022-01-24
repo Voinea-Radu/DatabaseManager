@@ -17,7 +17,7 @@ public class SQLConfig extends DriverConfig {
 
     @SneakyThrows
     @JsonIgnore
-    public DriverConfig.Driver getDriverName() {
+    public DriverConfig.Driver getDriver() {
         switch (driverName) {
             case "MYSQL":
                 return MYSQL;

@@ -46,7 +46,7 @@ public abstract class DatabaseManager implements IDatabaseManager {
     }
 
     public String getDataType(Class<?> clazz) {
-        String dbDataType = sqlConfig.getDriverName().dataTypes.get(clazz);
+        String dbDataType = sqlConfig.getDriver().dataTypes.get(clazz);
 
         if (dbDataType != null) {
             return dbDataType;
