@@ -7,7 +7,7 @@ import lombok.SneakyThrows;
 @SuppressWarnings("CanBeFinal")
 @NoArgsConstructor
 public class SQLConfig extends DriverConfig {
-    public String driver = "SQLITE";
+    public String driverName = "SQLITE";
     public String host = "";
     public String database = "";
     public String username = "";
@@ -17,8 +17,8 @@ public class SQLConfig extends DriverConfig {
 
     @SneakyThrows
     @JsonIgnore
-    public DriverConfig.Driver getDriver() {
-        switch (driver) {
+    public DriverConfig.Driver getDriverName() {
+        switch (driverName) {
             case "MYSQL":
                 return MYSQL;
             case "MARIADB":

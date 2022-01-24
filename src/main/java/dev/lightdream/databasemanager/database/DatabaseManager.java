@@ -28,11 +28,11 @@ public abstract class DatabaseManager implements IDatabaseManager {
     }
 
     public String getDatabaseURL() {
-        switch (sqlConfig.driver) {
+        switch (sqlConfig.driverName) {
             case "MYSQL":
             case "MARIADB":
             case "POSTGRESQL":
-                return "jdbc:" + sqlConfig.driver
+                return "jdbc:" + sqlConfig.driverName
                         .toLowerCase() + "://" + sqlConfig.host + ":" + sqlConfig.port + "/" + sqlConfig.database + "?useSSL=" + sqlConfig.useSSL + "&autoReconnect=true";
             case "SQLSERVER":
                 return "jdbc:sqlserver://" + sqlConfig.host + ":" + sqlConfig.port + ";databaseName=" + sqlConfig.database;
@@ -41,12 +41,12 @@ public abstract class DatabaseManager implements IDatabaseManager {
             case "SQLITE":
                 return "jdbc:sqlite:" + new File(dataFolder, sqlConfig.database + ".db");
             default:
-                throw new UnsupportedOperationException("Unsupported driver (how did we get here?): " + sqlConfig.driver);
+                throw new UnsupportedOperationException("Unsupported driver (how did we get here?): " + sqlConfig.driverName);
         }
     }
 
     public String getDataType(Class<?> clazz) {
-        String dbDataType = sqlConfig.getDriver().dataTypes.get(clazz);
+        String dbDataType = sqlConfig.getDriverName().dataTypes.get(clazz);
 
         if (dbDataType != null) {
             return dbDataType;
