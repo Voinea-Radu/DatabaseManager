@@ -8,7 +8,20 @@ import java.util.UUID;
 @SuppressWarnings("unused")
 public class DriverConfig {
 
-    public Driver MYSQL = new Driver("SELECT * FROM %table% WHERE %placeholder%",
+    public DriverConfig(HashMap<Class<?>, String> dataTypes){
+        MYSQL.dataTypes.putAll(dataTypes);
+        MARIADB.dataTypes.putAll(dataTypes);
+        SQLSERVER.dataTypes.putAll(dataTypes);
+        POSTGRESQL.dataTypes.putAll(dataTypes);
+        H2.dataTypes.putAll(dataTypes);
+        SQLITE.dataTypes.putAll(dataTypes);
+    }
+
+    public DriverConfig(){
+
+    }
+
+    public Driver MYSQL = new Driver("SELECT * FROM %table% WHERE %placeholder% %order% %limit%",
             "SELECT * FROM %table% WHERE 1",
             "UPDATE %table% SET %placeholder% WHERE id=?",
             "INSERT INTO %table% (%placeholder-1%) VALUES(%placeholder-2%)",

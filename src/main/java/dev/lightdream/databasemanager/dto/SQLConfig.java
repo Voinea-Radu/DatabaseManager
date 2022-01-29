@@ -4,8 +4,9 @@ import dev.lightdream.libs.fasterxml.annotation.JsonIgnore;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
+import java.util.HashMap;
+
 @SuppressWarnings("CanBeFinal")
-@NoArgsConstructor
 public class SQLConfig extends DriverConfig {
     public String driverName = "SQLITE";
     public String host = "";
@@ -14,6 +15,14 @@ public class SQLConfig extends DriverConfig {
     public String password = "";
     public int port = 3306;
     public boolean useSSL = false;
+
+    public SQLConfig(HashMap<Class<?>, String> dataTypes) {
+        super(dataTypes);
+    }
+
+    public SQLConfig(){
+
+    }
 
     @SneakyThrows
     @JsonIgnore
