@@ -6,7 +6,7 @@
 
     <groupId>dev.lightdream</groupId>
     <artifactId>DatabaseManager</artifactId>
-    <version>1.24</version>
+    <version>1.25</version>
 
     <distributionManagement>
         <repository>
@@ -28,6 +28,10 @@
         <repository>
             <id>hikari</id>
             <url>https://mvnrepository.com/artifact/com.zaxxer/HikariCP</url>
+        </repository>
+        <repository>
+            <id>mysql</id>
+            <url>https://mvnrepository.com/artifact/mysql/mysql-connector-java</url>
         </repository>
     </repositories>
 
@@ -71,6 +75,11 @@
             <groupId>com.enigmabridge</groupId>
             <artifactId>hibernate4-sqlite-dialect </artifactId>
             <version>0.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.27</version>
         </dependency>
     </dependencies>
     
