@@ -60,8 +60,6 @@ public abstract class DatabaseManager implements IDatabaseManager {
         return "";
     }
 
-    public abstract HashMap<Class<?>, LambdaExecutor> getSerializeMap();
-
     public String formatQueryArgument(Object object) {
         if (object == null) {
             return "NULL";
@@ -72,17 +70,6 @@ public abstract class DatabaseManager implements IDatabaseManager {
             output = serializeMap.get(clazz).execute(object);
         }
 
-        if (output == null) {
-            HashMap<Class<?>, LambdaExecutor> additionalSerializeMap = getSerializeMap();
-
-            if (additionalSerializeMap == null) {
-                return object.toString();
-            }
-            if (additionalSerializeMap.get(clazz) != null) {
-                output = additionalSerializeMap.get(clazz).execute(object);
-            }
-        }
-
         if (output != null) {
             return output.toString();
         }
@@ -90,22 +77,10 @@ public abstract class DatabaseManager implements IDatabaseManager {
         return object.toString();
     }
 
-    public abstract HashMap<Class<?>, LambdaExecutor> getDeserializeMap();
-
     public Object getObject(Class<?> clazz, Object object) {
         Object output = null;
         if (deserializeMap.get(clazz) != null) {
             output = deserializeMap.get(clazz).execute(object);
-        }
-        if (output == null) {
-            HashMap<Class<?>, LambdaExecutor> additionalDeserializeMap = getDeserializeMap();
-
-            if (additionalDeserializeMap == null) {
-                return object;
-            }
-            if (additionalDeserializeMap.get(clazz) != null) {
-                output = additionalDeserializeMap.get(clazz).execute(object);
-            }
         }
 
         if (output != null) {
