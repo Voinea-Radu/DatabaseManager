@@ -1,13 +1,11 @@
 package dev.lightdream.databasemanager.dto;
 
+import dev.lightdream.databasemanager.DatabaseMain;
 import dev.lightdream.libs.fasterxml.annotation.JsonIgnore;
-import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
-import java.util.HashMap;
-
 @SuppressWarnings("CanBeFinal")
-public class SQLConfig extends DriverConfig {
+public class SQLConfig {
     public String driverName = "SQLITE";
     public String host = "";
     public String database = "";
@@ -16,30 +14,26 @@ public class SQLConfig extends DriverConfig {
     public int port = 3306;
     public boolean useSSL = false;
 
-    public SQLConfig(HashMap<Class<?>, String> dataTypes) {
-        super(dataTypes);
-    }
-
     public SQLConfig(){
 
     }
 
     @SneakyThrows
     @JsonIgnore
-    public DriverConfig.Driver driver() {
+    public DriverConfig.Driver driver(DatabaseMain main) {
         switch (driverName) {
             case "MYSQL":
-                return MYSQL;
+                return main.getDriverConfig().MYSQL;
             case "MARIADB":
-                return MARIADB;
+                return main.getDriverConfig().MARIADB;
             case "POSTGRESQL":
-                return POSTGRESQL;
+                return main.getDriverConfig().POSTGRESQL;
             case "SQLSERVER":
-                return SQLSERVER;
+                return main.getDriverConfig().SQLSERVER;
             case "H2":
-                return H2;
+                return main.getDriverConfig().H2;
             case "SQLITE":
-                return SQLITE;
+                return main.getDriverConfig().SQLITE;
         }
         return null;
     }

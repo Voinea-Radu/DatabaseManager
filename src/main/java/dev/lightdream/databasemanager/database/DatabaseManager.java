@@ -12,17 +12,21 @@ import java.util.UUID;
 
 public abstract class DatabaseManager implements IDatabaseManager {
 
+    public final DatabaseMain main;
     public SQLConfig sqlConfig;
     public File dataFolder;
-    public HashMap<Class<?>, LambdaExecutor> serializeMap = new HashMap<Class<?>, LambdaExecutor>() {{
+    @SuppressWarnings("FieldMayBeFinal")
+    private HashMap<Class<?>, LambdaExecutor> serializeMap = new HashMap<Class<?>, LambdaExecutor>() {{
         put(String.class, object -> "\"" + object.toString() + "\"");
         put(UUID.class, object -> "\"" + object.toString() + "\"");
     }};
-    public HashMap<Class<?>, LambdaExecutor> deserializeMap = new HashMap<Class<?>, LambdaExecutor>() {{
+    @SuppressWarnings("FieldMayBeFinal")
+    private HashMap<Class<?>, LambdaExecutor> deserializeMap = new HashMap<Class<?>, LambdaExecutor>() {{
         put(UUID.class, object -> UUID.fromString(object.toString()));
     }};
 
     public DatabaseManager(DatabaseMain main) {
+        this.main = main;
         this.sqlConfig = main.getSqlConfig();
         this.dataFolder = main.getDataFolder();
     }
@@ -46,7 +50,7 @@ public abstract class DatabaseManager implements IDatabaseManager {
     }
 
     public String getDataType(Class<?> clazz) {
-        String dbDataType = sqlConfig.driver().dataTypes.get(clazz);
+        String dbDataType = sqlConfig.driver(main).dataTypes.get(clazz);
 
         if (dbDataType != null) {
             return dbDataType;
@@ -115,5 +119,16 @@ public abstract class DatabaseManager implements IDatabaseManager {
     @Override
     public void save(DatabaseEntry object) {
 
+    }
+
+    @SuppressWarnings("unused")
+    public void registerSDPair(SDPair serialize, SDPair deserialize) {
+        serializeMap.put(serialize.clazz, serialize.executor);
+        deserializeMap.put(deserialize.clazz, deserialize.executor);
+    }
+
+    public static class SDPair {
+        public Class<?> clazz;
+        public LambdaExecutor executor;
     }
 }
