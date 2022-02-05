@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface DatabaseField {
 
-    String columnName() default "";
+    String columnName();
 
     boolean autoGenerate() default false;
 
