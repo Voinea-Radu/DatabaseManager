@@ -5,6 +5,8 @@ import dev.lightdream.databasemanager.dto.DatabaseEntry;
 import dev.lightdream.databasemanager.dto.LambdaExecutor;
 import dev.lightdream.databasemanager.dto.SQLConfig;
 import dev.lightdream.logger.Logger;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.io.File;
 import java.util.HashMap;
@@ -102,6 +104,8 @@ public abstract class DatabaseManager implements IDatabaseManager {
         deserializeMap.put(deserialize.clazz, deserialize.executor);
     }
 
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class SDPair {
         public Class<?> clazz;
         public LambdaExecutor executor;
