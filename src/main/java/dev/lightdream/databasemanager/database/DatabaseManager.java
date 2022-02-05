@@ -9,22 +9,52 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
 public abstract class DatabaseManager implements IDatabaseManager {
+
+    private final static String lineSeparator = ";line_separator;";
 
     public final DatabaseMain main;
     public SQLConfig sqlConfig;
     public File dataFolder;
-    @SuppressWarnings("FieldMayBeFinal")
+
+    @SuppressWarnings({"FieldMayBeFinal", "unchecked"})
     private HashMap<Class<?>, LambdaExecutor> serializeMap = new HashMap<Class<?>, LambdaExecutor>() {{
         put(String.class, object -> "\"" + object.toString() + "\"");
         put(UUID.class, object -> "\"" + object.toString() + "\"");
+        put(List.class, object -> {
+            List<Object> lst = (List<Object>) object;
+            StringBuilder output = new StringBuilder();
+            lst.forEach(entry -> output.append(formatQueryArgument(entry))
+                    .append(lineSeparator));
+            output.append(lineSeparator);
+            return output.toString()
+                    .replace(lineSeparator + lineSeparator, "");
+        });
     }};
+
     @SuppressWarnings("FieldMayBeFinal")
     private HashMap<Class<?>, LambdaExecutor> deserializeMap = new HashMap<Class<?>, LambdaExecutor>() {{
         put(UUID.class, object -> UUID.fromString(object.toString()));
+        put(List.class, object -> {
+            try {
+                String[] datas = object.toString()
+                        .split(lineSeparator);
+                Class<?> clazz = Class.forName(datas[0]);
+                List<Object> lst = new ArrayList<>();
+                for (String data : Arrays.asList(datas)
+                        .subList(1, datas.length - 1)) {
+                    lst.add(getObject(clazz, data));
+                }
+                return lst;
+            } catch (ClassNotFoundException e) {
+                Logger.error("Malformed data for " + object);
+                e.printStackTrace();
+            }
+            return null;
+
+        });
     }};
 
     public DatabaseManager(DatabaseMain main) {
@@ -38,8 +68,7 @@ public abstract class DatabaseManager implements IDatabaseManager {
             case "MYSQL":
             case "MARIADB":
             case "POSTGRESQL":
-                return "jdbc:" + sqlConfig.driverName
-                        .toLowerCase() + "://" + sqlConfig.host + ":" + sqlConfig.port + "/" + sqlConfig.database + "?useSSL=" + sqlConfig.useSSL + "&autoReconnect=true";
+                return "jdbc:" + sqlConfig.driverName.toLowerCase() + "://" + sqlConfig.host + ":" + sqlConfig.port + "/" + sqlConfig.database + "?useSSL=" + sqlConfig.useSSL + "&autoReconnect=true";
             case "SQLSERVER":
                 return "jdbc:sqlserver://" + sqlConfig.host + ":" + sqlConfig.port + ";databaseName=" + sqlConfig.database;
             case "H2":
@@ -69,7 +98,8 @@ public abstract class DatabaseManager implements IDatabaseManager {
         Class<?> clazz = object.getClass();
         Object output = null;
         if (serializeMap.get(clazz) != null) {
-            output = serializeMap.get(clazz).execute(object);
+            output = serializeMap.get(clazz)
+                    .execute(object);
         }
 
         if (output != null) {
@@ -82,7 +112,8 @@ public abstract class DatabaseManager implements IDatabaseManager {
     public Object getObject(Class<?> clazz, Object object) {
         Object output = null;
         if (deserializeMap.get(clazz) != null) {
-            output = deserializeMap.get(clazz).execute(object);
+            output = deserializeMap.get(clazz)
+                    .execute(object);
         }
 
         if (output != null) {
@@ -91,7 +122,6 @@ public abstract class DatabaseManager implements IDatabaseManager {
 
         return object;
     }
-
 
     @Override
     public void save(DatabaseEntry object) {
@@ -110,4 +140,8 @@ public abstract class DatabaseManager implements IDatabaseManager {
         public Class<?> clazz;
         public LambdaExecutor executor;
     }
+
+
+
+
 }
