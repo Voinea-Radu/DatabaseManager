@@ -99,14 +99,14 @@ public abstract class DatabaseManager implements IDatabaseManager {
     }
 
     @SuppressWarnings("unused")
-    public void registerSDPair(SDPair serialize, SDPair deserialize) {
+    public void registerSDPair(ClassLambda serialize, ClassLambda deserialize) {
         serializeMap.put(serialize.clazz, serialize.executor);
         deserializeMap.put(deserialize.clazz, deserialize.executor);
     }
 
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class SDPair {
+    public static class ClassLambda {
         public Class<?> clazz;
         public LambdaExecutor executor;
     }
