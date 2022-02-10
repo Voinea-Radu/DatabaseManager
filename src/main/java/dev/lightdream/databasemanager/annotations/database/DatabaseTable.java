@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface DatabaseTable {
 
-    String table() default "";
+    String table();
 
 }
