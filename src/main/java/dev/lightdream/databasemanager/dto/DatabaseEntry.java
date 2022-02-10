@@ -3,6 +3,8 @@ package dev.lightdream.databasemanager.dto;
 import dev.lightdream.databasemanager.DatabaseMain;
 import dev.lightdream.databasemanager.annotations.database.DatabaseField;
 
+import java.util.Objects;
+
 public abstract class DatabaseEntry {
 
     @DatabaseField(columnName = "id", autoGenerate = true, unique = true, primaryKey = true)
@@ -31,4 +33,16 @@ public abstract class DatabaseEntry {
         this.main = main;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DatabaseEntry that = (DatabaseEntry) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
