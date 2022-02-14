@@ -18,6 +18,44 @@ public abstract class DatabaseManager implements IDatabaseManager {
     public final DatabaseMain main;
     public SQLConfig sqlConfig;
     public File dataFolder;
+    @SuppressWarnings({"FieldMayBeFinal", "unchecked"})
+    private HashMap<Class<?>, LambdaExecutor> serializeMap = new HashMap<Class<?>, LambdaExecutor>() {{
+        put(String.class, object -> "\"" + object.toString()
+                .replace("\"", "")
+                .replace("'", "") + "\"");
+        put(UUID.class, object -> "\"" + object.toString() + "\"");
+        put(List.class, object -> {
+            List<Object> lst = (List<Object>) object;
+            StringBuilder output = new StringBuilder();
+            lst.forEach(entry -> output.append(formatQueryArgument(entry))
+                    .append(lineSeparator));
+            output.append(lineSeparator);
+            return output.toString()
+                    .replace(lineSeparator + lineSeparator, "");
+        });
+    }};
+    @SuppressWarnings("FieldMayBeFinal")
+    private HashMap<Class<?>, LambdaExecutor> deserializeMap = new HashMap<Class<?>, LambdaExecutor>() {{
+        put(UUID.class, object -> UUID.fromString(object.toString()));
+        put(List.class, object -> {
+            try {
+                String[] datas = object.toString()
+                        .split(lineSeparator);
+                Class<?> clazz = Class.forName(datas[0]);
+                List<Object> lst = new ArrayList<>();
+                for (String data : Arrays.asList(datas)
+                        .subList(1, datas.length - 1)) {
+                    lst.add(getObject(clazz, data));
+                }
+                return lst;
+            } catch (ClassNotFoundException e) {
+                Logger.error("Malformed data for " + object);
+                e.printStackTrace();
+            }
+            return null;
+
+        });
+    }};
 
     public DatabaseManager(DatabaseMain main) {
         this.main = main;
@@ -51,20 +89,7 @@ public abstract class DatabaseManager implements IDatabaseManager {
 
         Logger.error("DataType " + clazz.getSimpleName() + " is not a supported data type");
         return "";
-    }    @SuppressWarnings({"FieldMayBeFinal", "unchecked"})
-    private HashMap<Class<?>, LambdaExecutor> serializeMap = new HashMap<Class<?>, LambdaExecutor>() {{
-        put(String.class, object -> "\"" + object.toString() + "\"");
-        put(UUID.class, object -> "\"" + object.toString() + "\"");
-        put(List.class, object -> {
-            List<Object> lst = (List<Object>) object;
-            StringBuilder output = new StringBuilder();
-            lst.forEach(entry -> output.append(formatQueryArgument(entry))
-                    .append(lineSeparator));
-            output.append(lineSeparator);
-            return output.toString()
-                    .replace(lineSeparator + lineSeparator, "");
-        });
-    }};
+    }
 
     public String formatQueryArgument(Object object) {
         if (object == null) {
@@ -101,28 +126,7 @@ public abstract class DatabaseManager implements IDatabaseManager {
     @Override
     public void save(DatabaseEntry object) {
 
-    }    @SuppressWarnings("FieldMayBeFinal")
-    private HashMap<Class<?>, LambdaExecutor> deserializeMap = new HashMap<Class<?>, LambdaExecutor>() {{
-        put(UUID.class, object -> UUID.fromString(object.toString()));
-        put(List.class, object -> {
-            try {
-                String[] datas = object.toString()
-                        .split(lineSeparator);
-                Class<?> clazz = Class.forName(datas[0]);
-                List<Object> lst = new ArrayList<>();
-                for (String data : Arrays.asList(datas)
-                        .subList(1, datas.length - 1)) {
-                    lst.add(getObject(clazz, data));
-                }
-                return lst;
-            } catch (ClassNotFoundException e) {
-                Logger.error("Malformed data for " + object);
-                e.printStackTrace();
-            }
-            return null;
-
-        });
-    }};
+    }
 
     @SuppressWarnings("unused")
     public void registerSDPair(Class<?> clazz, LambdaExecutor serialize, LambdaExecutor deserialize) {
@@ -136,10 +140,6 @@ public abstract class DatabaseManager implements IDatabaseManager {
         public Class<?> clazz;
         public LambdaExecutor executor;
     }
-
-
-
-
 
 
 }
