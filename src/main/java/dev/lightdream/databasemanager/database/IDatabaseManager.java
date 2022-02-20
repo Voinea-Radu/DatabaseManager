@@ -2,13 +2,9 @@ package dev.lightdream.databasemanager.database;
 
 import dev.lightdream.databasemanager.dto.DatabaseEntry;
 
-import java.util.List;
-
 public interface IDatabaseManager {
 
     void connect();
-
-    <T> List<T> getAll(Class<T> clazz);
 
     void createTable(Class<?> clazz);
 

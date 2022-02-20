@@ -3,7 +3,7 @@ package dev.lightdream.databasemanager.database;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import dev.lightdream.databasemanager.DatabaseMain;
-import dev.lightdream.databasemanager.OrderByType;
+import dev.lightdream.databasemanager.OrderBy;
 import dev.lightdream.databasemanager.annotations.database.DatabaseField;
 import dev.lightdream.databasemanager.annotations.database.DatabaseTable;
 import dev.lightdream.databasemanager.dto.DatabaseEntry;
@@ -17,7 +17,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.*;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "DeprecatedIsStillUsed"})
+@Deprecated
 public abstract class HikariDatabaseManager extends DatabaseManager {
 
     private Connection connection;
@@ -60,7 +61,6 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
 
     @SuppressWarnings("SqlNoDataSourceInspection")
     @SneakyThrows
-    @Override
     public <T> List<T> getAll(Class<T> clazz) {
         if (!clazz.isAnnotationPresent(DatabaseTable.class)) {
             Logger.error("Class " + clazz.getSimpleName() + " is not annotated as a database table");
@@ -69,11 +69,14 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
 
         List<T> output = new ArrayList<>();
 
-        ResultSet rs = executeQuery(sqlConfig.driver(main).selectAll.replace("%table%", clazz.getAnnotation(DatabaseTable.class).table()),
-                new ArrayList<>());
+        ResultSet rs = executeQuery(sqlConfig.driver(main).selectAll.replace("%table%",
+                clazz.getAnnotation(DatabaseTable.class)
+                        .table()), new ArrayList<>());
         while (rs.next()) {
-            T obj = clazz.getDeclaredConstructor().newInstance();
-            Field[] fields = obj.getClass().getFields();
+            T obj = clazz.getDeclaredConstructor()
+                    .newInstance();
+            Field[] fields = obj.getClass()
+                    .getFields();
             for (Field field : fields) {
                 if (!field.isAnnotationPresent(DatabaseField.class)) {
                     continue;
@@ -92,7 +95,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         return get(clazz, queries, null, -1, null);
     }
 
-    public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries, String orderBy, OrderByType orderByType) {
+    public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries, String orderBy, OrderBy.OrderByType orderByType) {
         return get(clazz, queries, orderBy, -1, orderByType);
     }
 
@@ -101,7 +104,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
     }
 
     @SneakyThrows
-    public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries, String orderBy, int limitCount, OrderByType orderByType) {
+    public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries, String orderBy, int limitCount, OrderBy.OrderByType orderByType) {
         if (queries.size() == 0) {
             return getAll(clazz);
         }
@@ -115,22 +118,39 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         for (String key : queries.keySet()) {
             Object value = queries.get(key);
             if (key.startsWith("<")) {
-                placeholder.append(key.replaceFirst("<", "")).append("<").append(formatQueryArgument(value)).append(" AND ");
+                placeholder.append(key.replaceFirst("<", ""))
+                        .append("<")
+                        .append(formatQueryArgument(value))
+                        .append(" AND ");
             } else if (key.startsWith(">")) {
-                placeholder.append(key.replaceFirst(">", "")).append(">").append(formatQueryArgument(value)).append(" AND ");
+                placeholder.append(key.replaceFirst(">", ""))
+                        .append(">")
+                        .append(formatQueryArgument(value))
+                        .append(" AND ");
             } else if (key.startsWith("!=")) {
-                placeholder.append(key.replaceFirst("!=", "")).append("!=").append(formatQueryArgument(value)).append(" AND ");
+                placeholder.append(key.replaceFirst("!=", ""))
+                        .append("!=")
+                        .append(formatQueryArgument(value))
+                        .append(" AND ");
             } else if (key.startsWith("=")) {
-                placeholder.append(key.replaceFirst("=", "")).append("=").append(formatQueryArgument(value)).append(" AND ");
+                placeholder.append(key.replaceFirst("=", ""))
+                        .append("=")
+                        .append(formatQueryArgument(value))
+                        .append(" AND ");
             } else {
-                placeholder.append(key).append("=").append(formatQueryArgument(value)).append(" AND ");
+                placeholder.append(key)
+                        .append("=")
+                        .append(formatQueryArgument(value))
+                        .append(" AND ");
             }
         }
         placeholder.append(" ");
-        placeholder = new StringBuilder(placeholder.toString().replace(" AND  ", ""));
+        placeholder = new StringBuilder(placeholder.toString()
+                .replace(" AND  ", ""));
 
         String order = Objects.equals(orderBy,
-                "") || orderBy == null ? "" : orderByType == OrderByType.ASCENDANT ? sqlConfig.driver(main).orderAsc.replace("%order%",
+                "") || orderBy == null ? "" : orderByType == OrderBy.OrderByType.ASCENDANT ? sqlConfig.driver(main).orderAsc.replace(
+                "%order%",
                 orderBy) : sqlConfig.driver(main).orderDesc.replace("%order%", orderBy);
         String limit = limitCount == -1 ? "" : sqlConfig.driver(main).limit.replace("%limit%", String.valueOf(limitCount));
 
@@ -138,10 +158,14 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         ResultSet rs = executeQuery(sqlConfig.driver(main).select.replace("%placeholder%", placeholder.toString())
                 .replace("%order%", order)
                 .replace("%limit%", limit)
-                .replace("%table%", clazz.getAnnotation(DatabaseTable.class).table()), new ArrayList<>());
+                .replace("%table%",
+                        clazz.getAnnotation(DatabaseTable.class)
+                                .table()), new ArrayList<>());
         while (rs.next()) {
-            T obj = clazz.getDeclaredConstructor().newInstance();
-            Field[] fields = obj.getClass().getFields();
+            T obj = clazz.getDeclaredConstructor()
+                    .newInstance();
+            Field[] fields = obj.getClass()
+                    .getFields();
             for (Field field : fields) {
                 if (!field.isAnnotationPresent(DatabaseField.class)) {
                     continue;
@@ -165,22 +189,26 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
             return;
         }
 
-        if (!(clazz.getDeclaredConstructor().newInstance() instanceof DatabaseEntry)) {
+        if (!(clazz.getDeclaredConstructor()
+                .newInstance() instanceof DatabaseEntry)) {
             Logger.error("Class " + clazz.getSimpleName() + " does not extend DatabaseEntry.class");
             return;
         }
 
-        Object obj = clazz.getDeclaredConstructor().newInstance();
+        Object obj = clazz.getDeclaredConstructor()
+                .newInstance();
         String placeholder = "";
         String keys = "";
 
-        Field[] fields = obj.getClass().getFields();
+        Field[] fields = obj.getClass()
+                .getFields();
         for (Field field : fields) {
             if (!field.isAnnotationPresent(DatabaseField.class)) {
                 continue;
             }
             DatabaseField dbField = field.getAnnotation(DatabaseField.class);
-            placeholder += dbField.columnName() + " " + getDataType(field.getType()) + " " + (dbField.unique() ? "UNIQUE " : "") + (dbField.autoGenerate() ? sqlConfig.driver(main).autoIncrement : "") + ",";
+            placeholder += dbField.columnName() + " " + getDataType(field.getType()) + " " + (dbField.unique() ? "UNIQUE " : "") + (dbField.autoGenerate() ? sqlConfig.driver(
+                    main).autoIncrement : "") + ",";
 
             if (dbField.primaryKey()) {
                 keys += dbField.columnName() + ",";
@@ -194,7 +222,9 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
 
         executeUpdate(sqlConfig.driver(main).createTable.replace("%placeholder%", placeholder)
                 .replace("%keys%", keys)
-                .replace("%table%", clazz.getAnnotation(DatabaseTable.class).table()), new ArrayList<>());
+                .replace("%table%",
+                        clazz.getAnnotation(DatabaseTable.class)
+                                .table()), new ArrayList<>());
     }
 
     @Override
@@ -216,8 +246,10 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
     @SneakyThrows
     @Override
     public void save(DatabaseEntry entry, boolean cache) {
-        if (!entry.getClass().isAnnotationPresent(DatabaseTable.class)) {
-            Logger.error("The class " + entry.getClass().getSimpleName() + " is not annotated as " + DatabaseTable.class.getSimpleName());
+        if (!entry.getClass()
+                .isAnnotationPresent(DatabaseTable.class)) {
+            Logger.error("The class " + entry.getClass()
+                    .getSimpleName() + " is not annotated as " + DatabaseTable.class.getSimpleName());
             return;
         }
 
@@ -225,7 +257,8 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         if (entry.id != 0) {
             StringBuilder placeholder = new StringBuilder();
 
-            Field[] fields = entry.getClass().getFields();
+            Field[] fields = entry.getClass()
+                    .getFields();
             for (Field field : fields) {
                 if (!field.isAnnotationPresent(DatabaseField.class)) {
                     continue;
@@ -234,14 +267,21 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
                 if (dbField.autoGenerate()) {
                     continue;
                 }
-                placeholder.append(dbField.columnName()).append("=").append(formatQueryArgument(field.get(entry))).append(",");
+                placeholder.append(dbField.columnName())
+                        .append("=")
+                        .append(formatQueryArgument(field.get(entry)))
+                        .append(",");
             }
 
             placeholder.append(",");
-            placeholder = new StringBuilder(placeholder.toString().replace(",,", ""));
+            placeholder = new StringBuilder(placeholder.toString()
+                    .replace(",,", ""));
 
             executeUpdate(sqlConfig.driver(main).update.replace("%placeholder%", placeholder.toString())
-                    .replace("%table%", entry.getClass().getAnnotation(DatabaseTable.class).table()), Arrays.asList(entry.id));
+                    .replace("%table%",
+                            entry.getClass()
+                                    .getAnnotation(DatabaseTable.class)
+                                    .table()), Arrays.asList(entry.id));
             return;
         }
 
@@ -249,7 +289,8 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         StringBuilder placeholder1 = new StringBuilder();
         StringBuilder placeholder2 = new StringBuilder();
 
-        Field[] fields = entry.getClass().getFields();
+        Field[] fields = entry.getClass()
+                .getFields();
         for (Field field : fields) {
             if (!field.isAnnotationPresent(DatabaseField.class)) {
                 continue;
@@ -261,18 +302,25 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
             }
 
             String columnName = databaseField.columnName();
-            placeholder1.append(columnName).append(",");
-            placeholder2.append(formatQueryArgument(field.get(entry))).append(",");
+            placeholder1.append(columnName)
+                    .append(",");
+            placeholder2.append(formatQueryArgument(field.get(entry)))
+                    .append(",");
         }
 
         placeholder1.append(",");
         placeholder2.append(",");
 
-        placeholder1 = new StringBuilder(placeholder1.toString().replace(",,", ""));
-        placeholder2 = new StringBuilder(placeholder2.toString().replace(",,", ""));
+        placeholder1 = new StringBuilder(placeholder1.toString()
+                .replace(",,", ""));
+        placeholder2 = new StringBuilder(placeholder2.toString()
+                .replace(",,", ""));
         executeUpdate(sqlConfig.driver(main).insert.replace("%placeholder-1%", placeholder1.toString())
                 .replace("%placeholder-2%", placeholder2.toString())
-                .replace("%table%", entry.getClass().getAnnotation(DatabaseTable.class).table()), new ArrayList<>(
+                .replace("%table%",
+                        entry.getClass()
+                                .getAnnotation(DatabaseTable.class)
+                                .table()), new ArrayList<>(
 
         ));
     }
@@ -281,8 +329,10 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
     @SneakyThrows
     @Override
     public void delete(DatabaseEntry entry) {
-        executeUpdate(sqlConfig.driver(main).delete.replace("%table%", entry.getClass().getAnnotation(DatabaseTable.class).table()),
-                Arrays.asList(entry.id));
+        executeUpdate(sqlConfig.driver(main).delete.replace("%table%",
+                entry.getClass()
+                        .getAnnotation(DatabaseTable.class)
+                        .table()), Arrays.asList(entry.id));
     }
 
     @SneakyThrows

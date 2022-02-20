@@ -24,45 +24,38 @@
 ## Creating a DatabaseManager Implementation
 
 ```java
-public class DatabaseManagerImp extends HikariDatabaseManager{
+public class DatabaseManagerImpl extends ProgrammaticHikariDatabaseManager {
 
-    public DatabaseManagerImp(DatabaseMain main) {
+    public DatabaseManagerImpl(DatabaseMain main) {
         super(main);
     }
 
-    @Override
-    public HashMap<Class<?>, LambdaExecutor> getSerializeMap() {
-        return null;
-    }
-
-    @Override
-    public HashMap<Class<?>, LambdaExecutor> getDeserializeMap() {
-        return null;
-    }
-
+    @SuppressWarnings("InfiniteRecursion")
     @Override
     public void setup() {
-
+        setup(User.class);
     }
 }
 ```
 
 ## Example Main
 ```java
-public class Example implements DatabaseMain {
+public class Main implements DatabaseMain, LoggableMain {
 
-    private SQLConfig sqlConfig;
-    private DatabaseManagerImp databaseManager;
+    public static Main instance;
 
-    public Example() {
-        enable();
+    private final SQLConfig sqlConfig = new SQLConfig();
+    private final DriverConfig driverConfig = new DriverConfig();
+
+    public DatabaseManagerImpl databaseManager;
+
+    public Main() {
+        instance = this;
+
+        Debugger.init(this);
+        Logger.init(this);
+        databaseManager = new DatabaseManagerImpl(this);
     }
-
-    public void enable() {
-        this.sqlConfig = new SQLConfig();
-        this.databaseManager = new DatabaseManagerImp(this);
-    }
-
 
     @Override
     public File getDataFolder() {
@@ -75,10 +68,50 @@ public class Example implements DatabaseMain {
     }
 
     @Override
+    public DriverConfig getDriverConfig() {
+        return driverConfig;
+    }
+
+    @Override
     public IDatabaseManager getDatabaseManager() {
         return databaseManager;
+    }
+
+    @Override
+    public boolean debug() {
+        return true;
+    }
+
+    @Override
+    public void log(String s) {
+        System.out.println(s);
     }
 }
 ```
 
+## Example database entry
+```java
+@DatabaseTable(table = "users")
+public class User extends DatabaseEntry {
+
+    @DatabaseField(columnName = "name")
+    public String name;
+    @DatabaseField(columnName = "money")
+    public double money;
+
+    public User(String name, double money) {
+        super(Main.instance);
+        this.name = name;
+        this.money = money;
+    }
+
+    public User() {
+        super(Main.instance);
+    }
+}
+```
+
+## Versioning
+- 1.x - Statically based HikariDatabaseManager
+- 2.x - Dynamically based ProgrammaticHikariDatabaseManager 
 
