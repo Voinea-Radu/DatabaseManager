@@ -7,7 +7,10 @@ import java.util.Objects;
 
 public abstract class DatabaseEntry {
 
-    @DatabaseField(columnName = "id", autoGenerate = true, unique = true, primaryKey = true)
+    @DatabaseField(columnName = "id",
+            autoGenerate = true,
+            unique = true,
+            primaryKey = true)
     public int id;
     private DatabaseMain main;
 
@@ -21,12 +24,14 @@ public abstract class DatabaseEntry {
     }
 
     public void save(boolean cache) {
-        this.main.getDatabaseManager().save(this, cache);
+        this.main.getDatabaseManager()
+                .save(this, cache);
     }
 
     @SuppressWarnings("unused")
     public void delete() {
-        main.getDatabaseManager().delete(this);
+        main.getDatabaseManager()
+                .delete(this);
     }
 
     public void setMain(DatabaseMain main) {

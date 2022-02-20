@@ -14,7 +14,7 @@ public class SQLConfig {
     public int port = 3306;
     public boolean useSSL = false;
 
-    public SQLConfig(){
+    public SQLConfig() {
 
     }
 

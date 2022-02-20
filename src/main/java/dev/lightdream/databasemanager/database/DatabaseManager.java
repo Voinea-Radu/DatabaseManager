@@ -18,14 +18,18 @@ public abstract class DatabaseManager implements IDatabaseManager {
     public final DatabaseMain main;
     public SQLConfig sqlConfig;
     public File dataFolder;
-    @SuppressWarnings({"FieldMayBeFinal", "unchecked"})
-    private HashMap<Class<?>, LambdaExecutor> serializeMap = new HashMap<Class<?>, LambdaExecutor>() {{
-        put(String.class, object -> "\"" + object.toString()
-                .replace("\"", "")
-                .replace("'", "") + "\"");
+    public DatabaseManager(DatabaseMain main) {
+        this.main = main;
+        this.sqlConfig = main.getSqlConfig();
+        this.dataFolder = main.getDataFolder();
+    }    private static final HashMap<Class<?>, LambdaExecutor> serializeMap = new HashMap<Class<?>, LambdaExecutor>() {{
+        put(String.class,
+                object -> "\"" + object.toString()
+                        .replace("\"", "")
+                        .replace("'", "") + "\"");
         put(UUID.class, object -> "\"" + object.toString() + "\"");
         put(List.class, object -> {
-            List<Object> lst = (List<Object>) object;
+            @SuppressWarnings("unchecked") List<Object> lst = (List<Object>) object;
             StringBuilder output = new StringBuilder();
             lst.forEach(entry -> output.append(formatQueryArgument(entry))
                     .append(lineSeparator));
@@ -34,8 +38,24 @@ public abstract class DatabaseManager implements IDatabaseManager {
                     .replace(lineSeparator + lineSeparator, "");
         });
     }};
-    @SuppressWarnings("FieldMayBeFinal")
-    private HashMap<Class<?>, LambdaExecutor> deserializeMap = new HashMap<Class<?>, LambdaExecutor>() {{
+
+    public static String formatQueryArgument(Object object) {
+        if (object == null) {
+            return "NULL";
+        }
+        Class<?> clazz = object.getClass();
+        Object output = null;
+        if (serializeMap.get(clazz) != null) {
+            output = serializeMap.get(clazz)
+                    .execute(object);
+        }
+
+        if (output != null) {
+            return output.toString();
+        }
+
+        return object.toString();
+    }    private static final HashMap<Class<?>, LambdaExecutor> deserializeMap = new HashMap<Class<?>, LambdaExecutor>() {{
         put(UUID.class, object -> UUID.fromString(object.toString()));
         put(List.class, object -> {
             try {
@@ -57,10 +77,18 @@ public abstract class DatabaseManager implements IDatabaseManager {
         });
     }};
 
-    public DatabaseManager(DatabaseMain main) {
-        this.main = main;
-        this.sqlConfig = main.getSqlConfig();
-        this.dataFolder = main.getDataFolder();
+    public static Object getObject(Class<?> clazz, Object object) {
+        Object output = null;
+        if (deserializeMap.get(clazz) != null) {
+            output = deserializeMap.get(clazz)
+                    .execute(object);
+        }
+
+        if (output != null) {
+            return output;
+        }
+
+        return object;
     }
 
     public String getDatabaseURL() {
@@ -91,38 +119,6 @@ public abstract class DatabaseManager implements IDatabaseManager {
         return "";
     }
 
-    public String formatQueryArgument(Object object) {
-        if (object == null) {
-            return "NULL";
-        }
-        Class<?> clazz = object.getClass();
-        Object output = null;
-        if (serializeMap.get(clazz) != null) {
-            output = serializeMap.get(clazz)
-                    .execute(object);
-        }
-
-        if (output != null) {
-            return output.toString();
-        }
-
-        return object.toString();
-    }
-
-    public Object getObject(Class<?> clazz, Object object) {
-        Object output = null;
-        if (deserializeMap.get(clazz) != null) {
-            output = deserializeMap.get(clazz)
-                    .execute(object);
-        }
-
-        if (output != null) {
-            return output;
-        }
-
-        return object;
-    }
-
     @Override
     public void save(DatabaseEntry object) {
 
@@ -140,6 +136,10 @@ public abstract class DatabaseManager implements IDatabaseManager {
         public Class<?> clazz;
         public LambdaExecutor executor;
     }
+
+
+
+
 
 
 }

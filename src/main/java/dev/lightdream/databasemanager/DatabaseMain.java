@@ -16,5 +16,4 @@ public interface DatabaseMain {
 
     IDatabaseManager getDatabaseManager();
 
-
 }
