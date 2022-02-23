@@ -14,30 +14,57 @@ import java.util.*;
 public abstract class DatabaseManager implements IDatabaseManager {
 
     private final static String lineSeparator = ";line_separator;";
-
+    private final static HashMap<Class<?>, LambdaExecutor> serializeMap = new HashMap<>();
+    private final static HashMap<Class<?>, LambdaExecutor> deserializeMap = new HashMap<>();
     public final DatabaseMain main;
     public SQLConfig sqlConfig;
     public File dataFolder;
+
     public DatabaseManager(DatabaseMain main) {
         this.main = main;
         this.sqlConfig = main.getSqlConfig();
         this.dataFolder = main.getDataFolder();
-    }    private static final HashMap<Class<?>, LambdaExecutor> serializeMap = new HashMap<Class<?>, LambdaExecutor>() {{
-        put(String.class,
+
+        registerSDPair(String.class,
                 object -> "\"" + object.toString()
                         .replace("\"", "")
-                        .replace("'", "") + "\"");
-        put(UUID.class, object -> "\"" + object.toString() + "\"");
-        put(List.class, object -> {
-            @SuppressWarnings("unchecked") List<Object> lst = (List<Object>) object;
-            StringBuilder output = new StringBuilder();
-            lst.forEach(entry -> output.append(formatQueryArgument(entry))
-                    .append(lineSeparator));
-            output.append(lineSeparator);
-            return output.toString()
-                    .replace(lineSeparator + lineSeparator, "");
-        });
-    }};
+                        .replace("'", "") + "\"",
+                object -> object);
+
+        registerSDPair(UUID.class, object -> "\"" + object.toString() + "\"",
+                object -> UUID.fromString(object.toString()));
+
+        registerSDPair(List.class, DatabaseManager::serializeList,
+                DatabaseManager::deserializeList);
+    }
+
+    private static List<?> deserializeList(Object object) {
+        try {
+            String[] datas = object.toString()
+                    .split(lineSeparator);
+            Class<?> clazz = Class.forName(datas[0]);
+            List<Object> lst = new ArrayList<>();
+            for (String data : Arrays.asList(datas)
+                    .subList(1, datas.length - 1)) {
+                lst.add(getObject(clazz, data));
+            }
+            return lst;
+        } catch (ClassNotFoundException e) {
+            Logger.error("Malformed data for " + object);
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private static String serializeList(Object object) {
+        @SuppressWarnings("unchecked") List<Object> lst = (List<Object>) object;
+        StringBuilder output = new StringBuilder();
+        lst.forEach(entry -> output.append(formatQueryArgument(entry))
+                .append(lineSeparator));
+        output.append(lineSeparator);
+        return output.toString()
+                .replace(lineSeparator + lineSeparator, "");
+    }
 
     public static String formatQueryArgument(Object object) {
         if (object == null) {
@@ -55,27 +82,7 @@ public abstract class DatabaseManager implements IDatabaseManager {
         }
 
         return object.toString();
-    }    private static final HashMap<Class<?>, LambdaExecutor> deserializeMap = new HashMap<Class<?>, LambdaExecutor>() {{
-        put(UUID.class, object -> UUID.fromString(object.toString()));
-        put(List.class, object -> {
-            try {
-                String[] datas = object.toString()
-                        .split(lineSeparator);
-                Class<?> clazz = Class.forName(datas[0]);
-                List<Object> lst = new ArrayList<>();
-                for (String data : Arrays.asList(datas)
-                        .subList(1, datas.length - 1)) {
-                    lst.add(getObject(clazz, data));
-                }
-                return lst;
-            } catch (ClassNotFoundException e) {
-                Logger.error("Malformed data for " + object);
-                e.printStackTrace();
-            }
-            return null;
-
-        });
-    }};
+    }
 
     public static Object getObject(Class<?> clazz, Object object) {
         Object output = null;
@@ -136,10 +143,6 @@ public abstract class DatabaseManager implements IDatabaseManager {
         public Class<?> clazz;
         public LambdaExecutor executor;
     }
-
-
-
-
 
 
 }
