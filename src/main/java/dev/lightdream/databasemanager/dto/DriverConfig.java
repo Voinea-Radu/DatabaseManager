@@ -62,6 +62,15 @@ public class DriverConfig {
             "ORDER BY %order% ASC",
             "LIMIT %limit%");
 
+    public void registerDataType(Class<?> clazz, String dataType) {
+        MYSQL.dataTypes.put(clazz, dataType);
+        MARIADB.dataTypes.put(clazz, dataType);
+        SQLSERVER.dataTypes.put(clazz, dataType);
+        POSTGRESQL.dataTypes.put(clazz, dataType);
+        H2.dataTypes.put(clazz, dataType);
+        SQLITE.dataTypes.put(clazz, dataType);
+    }
+
     @NoArgsConstructor
     public static class Driver {
         public String select;

@@ -4,6 +4,7 @@ import dev.lightdream.databasemanager.DatabaseMain;
 import dev.lightdream.databasemanager.dto.DatabaseEntry;
 import dev.lightdream.databasemanager.dto.LambdaExecutor;
 import dev.lightdream.databasemanager.dto.SQLConfig;
+import dev.lightdream.logger.Debugger;
 import dev.lightdream.logger.Logger;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -34,12 +35,26 @@ public abstract class DatabaseManager implements IDatabaseManager {
         registerSDPair(UUID.class, object -> "\"" + object.toString() + "\"",
                 object -> UUID.fromString(object.toString()));
 
+        registerSDPair(ArrayList.class, DatabaseManager::serializeList,
+                DatabaseManager::deserializeList);
+
         registerSDPair(List.class, DatabaseManager::serializeList,
                 DatabaseManager::deserializeList);
+
+        registerDataType(ArrayList.class, "TEXT");
+        registerDataType(List.class, "TEXT");
     }
 
     private static List<?> deserializeList(Object object) {
+        Debugger.info("Deserializing list " + object);
+        if(object==null){
+            return null;
+        }
         try {
+            if (object.toString().equals("[]")) {
+                return new ArrayList<>();
+            }
+            object = object.toString().substring(1, object.toString().length() - 2);
             String[] datas = object.toString()
                     .split(lineSeparator);
             Class<?> clazz = Class.forName(datas[0]);
@@ -57,12 +72,16 @@ public abstract class DatabaseManager implements IDatabaseManager {
     }
 
     private static String serializeList(Object object) {
+        Debugger.info("Serializing list " + object);
         @SuppressWarnings("unchecked") List<Object> lst = (List<Object>) object;
         StringBuilder output = new StringBuilder();
         lst.forEach(entry -> output.append(formatQueryArgument(entry))
                 .append(lineSeparator));
         output.append(lineSeparator);
-        return output.toString()
+        if (output.toString().equals(lineSeparator)) {
+            return "\"[]\"";
+        }
+        return ("\"" + output.append("\""))
                 .replace(lineSeparator + lineSeparator, "");
     }
 
@@ -133,8 +152,16 @@ public abstract class DatabaseManager implements IDatabaseManager {
 
     @SuppressWarnings("unused")
     public void registerSDPair(Class<?> clazz, LambdaExecutor serialize, LambdaExecutor deserialize) {
+        Debugger.info("Registering deserializer for " + clazz.getSimpleName());
         serializeMap.put(clazz, serialize);
         deserializeMap.put(clazz, deserialize);
+        Debugger.info("The new deserializers are " + Arrays.toString(serializeMap.keySet().toArray()));
+    }
+
+    public void registerDataType(Class<?> clazz, String dataType) {
+        Debugger.info("Registering data type " + clazz.getSimpleName());
+        main.getDriverConfig().registerDataType(clazz, dataType);
+        Debugger.info("New data types " + main.getDriverConfig().SQLITE.dataTypes.keySet());
     }
 
     @AllArgsConstructor
