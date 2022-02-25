@@ -4,7 +4,7 @@ import dev.lightdream.databasemanager.database.DatabaseManager;
 
 public class QueryConstrains {
 
-    private String query;
+    private String query = "";
 
     @SuppressWarnings({"unused", "StringConcatenationInLoop"})
     public QueryConstrains or(QueryConstrains... queries) {
@@ -16,7 +16,7 @@ public class QueryConstrains {
             for (int i = 0; i < queries.length - 1; i++) {
                 query += queries[i].getFinalQuery() + " OR ";
             }
-            query += queries[queries.length - 1];
+            query += queries[queries.length - 1].getFinalQuery();
         }
 
 
@@ -33,7 +33,7 @@ public class QueryConstrains {
             for (int i = 0; i < queries.length - 1; i++) {
                 query += queries[i].getFinalQuery() + " AND ";
             }
-            query += queries[queries.length - 1];
+            query += queries[queries.length - 1].getFinalQuery();
         }
 
         return this;
