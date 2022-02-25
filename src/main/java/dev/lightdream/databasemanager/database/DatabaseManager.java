@@ -32,14 +32,23 @@ public abstract class DatabaseManager implements IDatabaseManager {
                         .replace("'", "") + "\"",
                 object -> object);
 
-        registerSDPair(UUID.class, object -> "\"" + object.toString() + "\"",
-                object -> UUID.fromString(object.toString()));
+        registerSDPair(UUID.class, object -> "\"" + object.toString() + "\"", object -> UUID.fromString(object.toString()));
 
-        registerSDPair(ArrayList.class, DatabaseManager::serializeList,
-                DatabaseManager::deserializeList);
+        registerSDPair(ArrayList.class, DatabaseManager::serializeList, DatabaseManager::deserializeList);
 
-        registerSDPair(List.class, DatabaseManager::serializeList,
-                DatabaseManager::deserializeList);
+        registerSDPair(List.class, DatabaseManager::serializeList, DatabaseManager::deserializeList);
+
+        registerSDPair(Long.class, object -> object, object -> Long.parseLong(object.toString()));
+        registerSDPair(long.class, object -> object, object -> Long.parseLong(object.toString()));
+
+        registerSDPair(Integer.class, object -> object, object -> Integer.parseInt(object.toString()));
+        registerSDPair(int.class, object -> object, object -> Integer.parseInt(object.toString()));
+
+        registerSDPair(Double.class, object -> object, object -> Double.parseDouble(object.toString()));
+        registerSDPair(double.class, object -> object, object -> Double.parseDouble(object.toString()));
+
+        registerSDPair(Float.class, object -> object, object -> Float.parseFloat(object.toString()));
+        registerSDPair(float.class, object -> object, object -> Float.parseFloat(object.toString()));
 
         registerDataType(ArrayList.class, "TEXT");
         registerDataType(List.class, "TEXT");
@@ -47,20 +56,20 @@ public abstract class DatabaseManager implements IDatabaseManager {
 
     private static List<?> deserializeList(Object object) {
         Debugger.info("Deserializing list " + object);
-        if(object==null){
+        if (object == null) {
             return null;
         }
         try {
-            if (object.toString().equals("[]")) {
+            if (object.toString()
+                    .equals("[]")) {
                 return new ArrayList<>();
             }
-            object = object.toString().substring(1, object.toString().length() - 2);
             String[] datas = object.toString()
                     .split(lineSeparator);
             Class<?> clazz = Class.forName(datas[0]);
             List<Object> lst = new ArrayList<>();
             for (String data : Arrays.asList(datas)
-                    .subList(1, datas.length - 1)) {
+                    .subList(1, datas.length)) {
                 lst.add(getObject(clazz, data));
             }
             return lst;
@@ -74,15 +83,20 @@ public abstract class DatabaseManager implements IDatabaseManager {
     private static String serializeList(Object object) {
         Debugger.info("Serializing list " + object);
         @SuppressWarnings("unchecked") List<Object> lst = (List<Object>) object;
-        StringBuilder output = new StringBuilder();
-        lst.forEach(entry -> output.append(formatQueryArgument(entry))
+        StringBuilder o1 = new StringBuilder();
+        lst.forEach(entry -> o1.append(formatQueryArgument(entry))
                 .append(lineSeparator));
-        output.append(lineSeparator);
-        if (output.toString().equals(lineSeparator)) {
+        o1.append(lineSeparator);
+        if (o1.toString()
+                .equals(lineSeparator)) {
             return "\"[]\"";
         }
-        return ("\"" + output.append("\""))
-                .replace(lineSeparator + lineSeparator, "");
+        StringBuilder output = new StringBuilder(lst.get(0)
+                .getClass()
+                .toString()
+                .replace("class ", "")).append(lineSeparator)
+                .append(o1);
+        return ("\"" + output.append("\"")).replace(lineSeparator + lineSeparator, "");
     }
 
     public static String formatQueryArgument(Object object) {
@@ -104,6 +118,7 @@ public abstract class DatabaseManager implements IDatabaseManager {
     }
 
     public static Object getObject(Class<?> clazz, Object object) {
+        Debugger.info("Getting object of type " + clazz.getSimpleName());
         Object output = null;
         if (deserializeMap.get(clazz) != null) {
             output = deserializeMap.get(clazz)
@@ -155,12 +170,14 @@ public abstract class DatabaseManager implements IDatabaseManager {
         Debugger.info("Registering deserializer for " + clazz.getSimpleName());
         serializeMap.put(clazz, serialize);
         deserializeMap.put(clazz, deserialize);
-        Debugger.info("The new deserializers are " + Arrays.toString(serializeMap.keySet().toArray()));
+        Debugger.info("The new deserializers are " + Arrays.toString(serializeMap.keySet()
+                .toArray()));
     }
 
     public void registerDataType(Class<?> clazz, String dataType) {
         Debugger.info("Registering data type " + clazz.getSimpleName());
-        main.getDriverConfig().registerDataType(clazz, dataType);
+        main.getDriverConfig()
+                .registerDataType(clazz, dataType);
         Debugger.info("New data types " + main.getDriverConfig().SQLITE.dataTypes.keySet());
     }
 
