@@ -30,6 +30,7 @@ public abstract class ProgrammaticHikariDatabaseManager extends HikariDatabaseMa
     @SneakyThrows
     @SuppressWarnings("SwitchStatementWithTooFewBranches")
     public void connect() {
+        Class.forName("com.mysql.jdbc.Driver");
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(getDatabaseURL());
         config.setUsername(sqlConfig.username);
