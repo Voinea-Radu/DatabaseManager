@@ -45,6 +45,8 @@ public abstract class ProgrammaticHikariDatabaseManager extends HikariDatabaseMa
                 config.setDriverClassName("org.sqlite.JDBC");
                 config.addDataSourceProperty("dataSourceClassName", "org.sqlite.SQLiteDataSource");
                 break;
+            default:
+                config.setDriverClassName("com.mysql.jdbc.Driver");
         }
         HikariDataSource ds = new HikariDataSource(config);
         connection = ds.getConnection();
