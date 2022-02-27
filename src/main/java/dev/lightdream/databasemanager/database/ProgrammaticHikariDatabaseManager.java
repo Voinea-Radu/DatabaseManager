@@ -176,6 +176,10 @@ public abstract class ProgrammaticHikariDatabaseManager extends HikariDatabaseMa
                     }
                     DatabaseField databaseField = field.getAnnotation(DatabaseField.class);
                     Object result = getObject(field.getType(), rs.getObject(databaseField.columnName()));
+                    if (result == null) {
+                        field.set(obj, result);
+                        continue;
+                    }
                     Debugger.info("Field type " + field.getType());
                     Debugger.info("Result type " + result.getClass());
                     if ((field.getType().equals(Boolean.class) || field.getType().equals(boolean.class)) &&
@@ -183,11 +187,10 @@ public abstract class ProgrammaticHikariDatabaseManager extends HikariDatabaseMa
                         Integer object = (Integer) result;
                         boolean bObject = object == 1;
                         field.set(obj, bObject);
-
-                    } else {
-                        field.set(obj, result);
+                        continue;
                     }
 
+                    field.set(obj, result);
                 }
                 ((DatabaseEntry) obj).setMain(main);
                 output.add(obj);
