@@ -67,11 +67,13 @@ public abstract class DatabaseManager implements IDatabaseManager {
             if (object == null) {
                 return null;
             }
-            if (object == "true") {
-                return 1;
-            }
-            if (object == "false") {
-                return 0;
+            if(object.getClass().equals(String.class)){
+                if (object.toString().equals("true")) {
+                    return 1;
+                }
+                if (object.toString().equals("false")) {
+                    return 0;
+                }
             }
             return Integer.parseInt(object.toString());
         });
