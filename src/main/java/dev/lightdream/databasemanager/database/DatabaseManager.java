@@ -38,17 +38,57 @@ public abstract class DatabaseManager implements IDatabaseManager {
 
         registerSDPair(List.class, DatabaseManager::serializeList, DatabaseManager::deserializeList);
 
-        registerSDPair(Long.class, object -> object, object -> Long.parseLong(object.toString()));
-        registerSDPair(long.class, object -> object, object -> Long.parseLong(object.toString()));
+        registerSDPair(Long.class, object -> object, object -> {
+            if (object == null) {
+                return null;
+            }
+            return Long.parseLong(object.toString());
+        });
+        registerSDPair(long.class, object -> object, object -> {
+            if (object == null) {
+                return null;
+            }
+            return Long.parseLong(object.toString());
+        });
 
-        registerSDPair(Integer.class, object -> object, object -> Integer.parseInt(object.toString()));
-        registerSDPair(int.class, object -> object, object -> Integer.parseInt(object.toString()));
+        registerSDPair(Integer.class, object -> object, object -> {
+            if (object == null) {
+                return null;
+            }
+            return Integer.parseInt(object.toString());
+        });
+        registerSDPair(int.class, object -> object, object -> {
+            if (object == null) {
+                return null;
+            }
+            return Integer.parseInt(object.toString());
+        });
 
-        registerSDPair(Double.class, object -> object, object -> Double.parseDouble(object.toString()));
-        registerSDPair(double.class, object -> object, object -> Double.parseDouble(object.toString()));
+        registerSDPair(Double.class, object -> object, object -> {
+            if (object == null) {
+                return null;
+            }
+            return Double.parseDouble(object.toString());
+        });
+        registerSDPair(double.class, object -> object, object -> {
+            if (object == null) {
+                return null;
+            }
+            return Double.parseDouble(object.toString());
+        });
 
-        registerSDPair(Float.class, object -> object, object -> Float.parseFloat(object.toString()));
-        registerSDPair(float.class, object -> object, object -> Float.parseFloat(object.toString()));
+        registerSDPair(Float.class, object -> object, object -> {
+            if (object == null) {
+                return null;
+            }
+            return Float.parseFloat(object.toString());
+        });
+        registerSDPair(float.class, object -> object, object -> {
+            if (object == null) {
+                return null;
+            }
+            return Float.parseFloat(object.toString());
+        });
 
         registerDataType(ArrayList.class, "TEXT");
         registerDataType(List.class, "TEXT");
@@ -84,7 +124,7 @@ public abstract class DatabaseManager implements IDatabaseManager {
         Debugger.info("Serializing list " + object);
         @SuppressWarnings("unchecked") List<Object> lst = (List<Object>) object;
         StringBuilder o1 = new StringBuilder();
-        lst.forEach(entry -> o1.append(formatQueryArgument(entry))
+        lst.forEach(entry -> o1.append(formatQueryArgument(entry).replace("\"", ""))
                 .append(lineSeparator));
         o1.append(lineSeparator);
         if (o1.toString()

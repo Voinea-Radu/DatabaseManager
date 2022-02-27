@@ -175,7 +175,19 @@ public abstract class ProgrammaticHikariDatabaseManager extends HikariDatabaseMa
                         continue;
                     }
                     DatabaseField databaseField = field.getAnnotation(DatabaseField.class);
-                    field.set(obj, getObject(field.getType(), rs.getObject(databaseField.columnName())));
+                    Object result = getObject(field.getType(), rs.getObject(databaseField.columnName()));
+                    Debugger.info("Field type " + field.getType());
+                    Debugger.info("Result type " + result.getClass());
+                    if ((field.getType().equals(Boolean.class) || field.getType().equals(boolean.class)) &&
+                            result.getClass().equals(Integer.class)) {
+                        Integer object = (Integer) result;
+                        boolean bObject = object == 1;
+                        field.set(obj, bObject);
+
+                    } else {
+                        field.set(obj, result);
+                    }
+
                 }
                 ((DatabaseEntry) obj).setMain(main);
                 output.add(obj);
