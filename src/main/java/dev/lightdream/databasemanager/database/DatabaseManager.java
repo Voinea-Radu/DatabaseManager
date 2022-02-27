@@ -55,11 +55,23 @@ public abstract class DatabaseManager implements IDatabaseManager {
             if (object == null) {
                 return null;
             }
+            if (object == "true") {
+                return 1;
+            }
+            if (object == "false") {
+                return 0;
+            }
             return Integer.parseInt(object.toString());
         });
         registerSDPair(int.class, object -> object, object -> {
             if (object == null) {
                 return null;
+            }
+            if (object == "true") {
+                return 1;
+            }
+            if (object == "false") {
+                return 0;
             }
             return Integer.parseInt(object.toString());
         });
