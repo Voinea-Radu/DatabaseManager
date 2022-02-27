@@ -67,14 +67,6 @@ public abstract class DatabaseManager implements IDatabaseManager {
             if (object == null) {
                 return null;
             }
-            if(object.getClass().equals(String.class)){
-                if (object.toString().equals("true")) {
-                    return 1;
-                }
-                if (object.toString().equals("false")) {
-                    return 0;
-                }
-            }
             return Integer.parseInt(object.toString());
         });
 
@@ -103,6 +95,20 @@ public abstract class DatabaseManager implements IDatabaseManager {
             }
             return Float.parseFloat(object.toString());
         });
+
+        registerSDPair(Boolean.class, object -> object, object -> {
+            if (object == null) {
+                return null;
+            }
+            return Boolean.parseBoolean(object.toString());
+        });
+        registerSDPair(boolean.class, object -> object, object -> {
+            if (object == null) {
+                return null;
+            }
+            return Boolean.parseBoolean(object.toString());
+        });
+
 
         registerDataType(ArrayList.class, "TEXT");
         registerDataType(List.class, "TEXT");
