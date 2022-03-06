@@ -337,7 +337,8 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
 
     @SneakyThrows
     public void executeUpdate(String sql, List<Object> values) {
-        Debugger.info(sql);
+        debug(sql, values);
+
         PreparedStatement statement = getConnection().prepareStatement(sql);
 
         for (int i = 0; i < values.size(); i++) {
@@ -349,7 +350,8 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
 
     @SneakyThrows
     public ResultSet executeQuery(String sql, List<Object> values) {
-        Debugger.info(sql);
+        debug(sql, values);
+
         PreparedStatement statement;
         try {
             statement = getConnection().prepareStatement(sql);
@@ -364,6 +366,14 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         }
 
         return statement.executeQuery();
+    }
+
+    private void debug(String sql, List<Object> values) {
+        String debugSQL = sql;
+        for (Object value : values) {
+            debugSQL = debugSQL.replaceFirst("\\?", value == null ? "null" : value.toString());
+        }
+        Debugger.info(debugSQL);
     }
 
     @Override
