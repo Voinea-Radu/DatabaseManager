@@ -1,12 +1,16 @@
 package dev.lightdream.databasemanager.dto;
 
-import lombok.NoArgsConstructor;
-
 import java.util.HashMap;
 import java.util.UUID;
 
-@SuppressWarnings("unused")
-@NoArgsConstructor
+@SuppressWarnings({"unused", "DanglingJavadoc"})
+/**
+ * Can use the next dependencies if having problems
+ * org.xerial:sqlite-jdbc:3.36.0.3
+ * com.zsoltfabok:sqlite-dialect:1.0
+ * com.enigmabridge:hibernate4-sqlite-dialect:0.1.2
+ * mysql:mysql-connector-java:8.0.28
+ **/
 public class DriverConfig {
 
     public Driver MYSQL = new Driver("SELECT * FROM %table% WHERE %placeholder% %order% %limit%",
@@ -62,6 +66,9 @@ public class DriverConfig {
             "ORDER BY %order% ASC",
             "LIMIT %limit%");
 
+    public DriverConfig() {
+    }
+
     public void registerDataType(Class<?> clazz, String dataType) {
         MYSQL.dataTypes.put(clazz, dataType);
         MARIADB.dataTypes.put(clazz, dataType);
@@ -71,7 +78,6 @@ public class DriverConfig {
         SQLITE.dataTypes.put(clazz, dataType);
     }
 
-    @NoArgsConstructor
     public static class Driver {
         public String select;
         public String selectAll;
@@ -84,6 +90,9 @@ public class DriverConfig {
         public String orderDesc;
         public String orderAsc;
         public String limit;
+
+        public Driver() {
+        }
 
         public Driver(String select, String selectAll, String update, String insert, String createTable, String delete, HashMap<Class<?>, String> dataTypes, String autoIncrement, String orderDesc, String orderAsc, String limit) {
             this.select = select;

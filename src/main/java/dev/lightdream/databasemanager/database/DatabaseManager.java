@@ -2,12 +2,10 @@ package dev.lightdream.databasemanager.database;
 
 import dev.lightdream.databasemanager.DatabaseMain;
 import dev.lightdream.databasemanager.dto.DatabaseEntry;
-import dev.lightdream.databasemanager.dto.LambdaExecutor;
 import dev.lightdream.databasemanager.dto.SQLConfig;
+import dev.lightdream.lambda.LambdaExecutor;
 import dev.lightdream.logger.Debugger;
 import dev.lightdream.logger.Logger;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 import java.io.File;
 import java.util.*;
@@ -15,8 +13,8 @@ import java.util.*;
 public abstract class DatabaseManager implements IDatabaseManager {
 
     private final static String lineSeparator = ";line_separator;";
-    private final static HashMap<Class<?>, LambdaExecutor> serializeMap = new HashMap<>();
-    private final static HashMap<Class<?>, LambdaExecutor> deserializeMap = new HashMap<>();
+    private final static HashMap<Class<?>, LambdaExecutor.ReturnLambdaExecutor<?, Object>> serializeMap = new HashMap<>();
+    private final static HashMap<Class<?>, LambdaExecutor.ReturnLambdaExecutor<?, Object>> deserializeMap = new HashMap<>();
     public final DatabaseMain main;
     public SQLConfig sqlConfig;
     public File dataFolder;
@@ -30,7 +28,7 @@ public abstract class DatabaseManager implements IDatabaseManager {
                 object -> "\"" + object.toString()
                         .replace("\"", "")
                         .replace("'", "") + "\"",
-                object -> object);
+                Object::toString);
 
         registerSDPair(UUID.class, object -> "\"" + object.toString() + "\"", object -> UUID.fromString(object.toString()));
 
@@ -114,12 +112,13 @@ public abstract class DatabaseManager implements IDatabaseManager {
         registerDataType(List.class, "TEXT");
     }
 
-    private static List<?> deserializeList(Object object) {
+    private static ArrayList<?> deserializeList(Object object) {
         Debugger.info("Deserializing list " + object);
         if (object == null) {
             return null;
         }
-        try {
+
+        return LambdaExecutor.LambdaCatch.ReturnLambdaCatch.executeCatch(() -> {
             if (object.toString()
                     .equals("[]")) {
                 return new ArrayList<>();
@@ -127,17 +126,17 @@ public abstract class DatabaseManager implements IDatabaseManager {
             String[] datas = object.toString()
                     .split(lineSeparator);
             Class<?> clazz = Class.forName(datas[0]);
-            List<Object> lst = new ArrayList<>();
+            ArrayList<Object> lst = new ArrayList<>();
             for (String data : Arrays.asList(datas)
                     .subList(1, datas.length)) {
                 lst.add(getObject(clazz, data));
             }
             return lst;
-        } catch (ClassNotFoundException e) {
+        }, e -> {
             Logger.error("Malformed data for " + object);
             e.printStackTrace();
-        }
-        return null;
+            return null;
+        });
     }
 
     private static String serializeList(Object object) {
@@ -226,7 +225,7 @@ public abstract class DatabaseManager implements IDatabaseManager {
     }
 
     @SuppressWarnings("unused")
-    public void registerSDPair(Class<?> clazz, LambdaExecutor serialize, LambdaExecutor deserialize) {
+    public <R> void registerSDPair(Class<R> clazz, LambdaExecutor.ReturnLambdaExecutor<?, Object> serialize, LambdaExecutor.ReturnLambdaExecutor<R, Object> deserialize) {
         Debugger.info("Registering deserializer for " + clazz.getSimpleName());
         serializeMap.put(clazz, serialize);
         deserializeMap.put(clazz, deserialize);
@@ -240,13 +239,4 @@ public abstract class DatabaseManager implements IDatabaseManager {
                 .registerDataType(clazz, dataType);
         Debugger.info("New data types " + main.getDriverConfig().SQLITE.dataTypes.keySet());
     }
-
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class ClassLambda {
-        public Class<?> clazz;
-        public LambdaExecutor executor;
-    }
-
-
 }

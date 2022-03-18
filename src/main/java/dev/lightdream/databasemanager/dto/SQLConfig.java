@@ -1,11 +1,10 @@
 package dev.lightdream.databasemanager.dto;
 
 import dev.lightdream.databasemanager.DatabaseMain;
-import dev.lightdream.libs.fasterxml.annotation.JsonIgnore;
-import lombok.SneakyThrows;
 
 @SuppressWarnings("CanBeFinal")
 public class SQLConfig {
+
     public String driverName = "SQLITE";
     public String host = "";
     public String database = "";
@@ -18,8 +17,6 @@ public class SQLConfig {
 
     }
 
-    @SneakyThrows
-    @JsonIgnore
     public DriverConfig.Driver driver(DatabaseMain main) {
         switch (driverName) {
             case "MYSQL":

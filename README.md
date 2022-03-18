@@ -115,3 +115,76 @@ public class User extends DatabaseEntry {
 - 1.x - Statically based HikariDatabaseManager
 - 2.x - Dynamically based ProgrammaticHikariDatabaseManager 
 
+## Building with Drivers
+
+```xml
+<plugins>
+    <!-- Other plugins -->
+    <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.2.4</version>
+        <executions>
+            <execution>
+                <id>no-drivers</id>
+                <phase>package</phase>
+                <goals>
+                    <goal>shade</goal>
+                </goals>
+                <configuration>
+                    <finalName>${project.artifactId}-no-drivers-${project.version}</finalName>
+                    <artifactSet>
+                        <excludes>
+                            <!-- SQLite -->
+                            <exclude>org.xerial:sqlite-jdbc</exclude>
+    
+                            <!-- MYSQL -->
+                            <exclude>mysql:mysql-connector-java</exclude>
+                        </excludes>
+                    </artifactSet>
+                </configuration>
+            </execution>
+            <execution>
+                <id>sqlite-drivers</id>
+                <phase>package</phase>
+                <goals>
+                    <goal>shade</goal>
+                </goals>
+                <configuration>
+                    <finalName>${project.artifactId}-sqlite-drivers-${project.version}</finalName>
+                    <artifactSet>
+                        <excludes>
+                            <exclude>mysql:mysql-connector-java</exclude>
+                        </excludes>
+                    </artifactSet>
+                </configuration>
+            </execution>
+            <execution>
+                <id>mysql-drivers</id>
+                <phase>package</phase>
+                <goals>
+                    <goal>shade</goal>
+                </goals>
+                <configuration>
+                    <finalName>${project.artifactId}-mysql-drivers-${project.version}</finalName>
+                    <artifactSet>
+                        <excludes>
+                            <exclude>org.xerial:sqlite-jdbc</exclude>
+                        </excludes>
+                    </artifactSet>
+                </configuration>
+            </execution>
+            <execution>
+                <id>all-drivers</id>
+                <phase>package</phase>
+                <goals>
+                    <goal>shade</goal>
+                </goals>
+                <configuration>
+                    <finalName>${project.artifactId}-all-drivers-${project.version}</finalName>
+                </configuration>
+            </execution>
+        </executions>
+    </plugin>
+</plugins>
+```
