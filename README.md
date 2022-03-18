@@ -154,6 +154,7 @@ public class User extends DatabaseEntry {
                     <finalName>${project.artifactId}-sqlite-drivers-${project.version}</finalName>
                     <artifactSet>
                         <excludes>
+                            <!-- MYSQL -->
                             <exclude>mysql:mysql-connector-java</exclude>
                         </excludes>
                     </artifactSet>
@@ -169,6 +170,7 @@ public class User extends DatabaseEntry {
                     <finalName>${project.artifactId}-mysql-drivers-${project.version}</finalName>
                     <artifactSet>
                         <excludes>
+                            <!-- SQLite -->
                             <exclude>org.xerial:sqlite-jdbc</exclude>
                         </excludes>
                     </artifactSet>
