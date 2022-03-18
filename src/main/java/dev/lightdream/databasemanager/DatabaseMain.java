@@ -12,7 +12,7 @@ public interface DatabaseMain {
 
     @SuppressWarnings({"unused", "StringConcatenationInLoop"})
     static String getVersion(int tabs) {
-        String output = "DatabaseManager 2.6.39\n";
+        String output = "DatabaseManager 2.6.41\n";
 
         String prepend = "";
 
@@ -20,8 +20,8 @@ public interface DatabaseMain {
             prepend += "    ";
         }
 
-        output = output + prepend + "    -> " + LoggableMain.getVersion() + "\n";
-        output = output + prepend + "    -> " + LambdaExecutor.getVersion() + "\n";
+        output += prepend + "    -> " + LoggableMain.getVersion();
+        output += prepend + "    -> " + LambdaExecutor.getVersion();
         return output;
     }
 
