@@ -35,3 +35,4 @@ build/
 /src/main/java/dev/lightdream/databasemanager/testing/
 
 .db
+dependency-reduced-pom.xml
