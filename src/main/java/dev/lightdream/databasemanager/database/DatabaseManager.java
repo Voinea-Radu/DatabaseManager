@@ -25,7 +25,7 @@ public abstract class DatabaseManager implements IDatabaseManager {
         this.dataFolder = main.getDataFolder();
 
         registerSDPair(String.class,
-                object -> "\"" + object.toString()
+                object -> "\"" + object
                         .replace("\"", "")
                         .replace("'", "") + "\"",
                 Object::toString);
@@ -224,10 +224,10 @@ public abstract class DatabaseManager implements IDatabaseManager {
 
     }
 
-    @SuppressWarnings("unused")
-    public <R> void registerSDPair(Class<R> clazz, LambdaExecutor.ReturnLambdaExecutor<?, Object> serialize, LambdaExecutor.ReturnLambdaExecutor<R, Object> deserialize) {
+    @SuppressWarnings({"unused", "unchecked"})
+    public <R> void registerSDPair(Class<R> clazz, LambdaExecutor.ReturnLambdaExecutor<?, R> serialize, LambdaExecutor.ReturnLambdaExecutor<R, Object> deserialize) {
         Debugger.info("Registering deserializer for " + clazz.getSimpleName());
-        serializeMap.put(clazz, serialize);
+        serializeMap.put(clazz, (LambdaExecutor.ReturnLambdaExecutor<?, Object>) serialize);
         deserializeMap.put(clazz, deserialize);
         Debugger.info("The new deserializers are " + Arrays.toString(serializeMap.keySet()
                 .toArray()));
