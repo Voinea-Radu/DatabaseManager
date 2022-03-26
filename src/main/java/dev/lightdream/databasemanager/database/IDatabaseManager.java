@@ -6,12 +6,12 @@ public interface IDatabaseManager {
 
     void connect();
 
-    void createTable(Class<?> clazz);
+    void createTable(Class<? extends DatabaseEntry> clazz);
 
     void setup();
 
     @SuppressWarnings("unused")
-    void setup(Class<?> clazz);
+    void setup(Class<? extends DatabaseEntry> clazz);
 
     @SuppressWarnings("unused")
     void save();

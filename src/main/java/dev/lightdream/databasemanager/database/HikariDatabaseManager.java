@@ -195,21 +195,16 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
 
     @SuppressWarnings("StringConcatenationInLoop")
     @Override
-    public void createTable(Class<?> clazz) {
+    public void createTable(Class<? extends DatabaseEntry> clazz) {
         LambdaExecutor.LambdaCatch.NoReturnLambdaCatch.executeCatch(() -> {
             if (!clazz.isAnnotationPresent(DatabaseTable.class)) {
                 Logger.error("Class " + clazz.getSimpleName() + " is not annotated as a database table");
                 return;
             }
 
-            if (!(clazz.getDeclaredConstructor()
-                    .newInstance() instanceof DatabaseEntry)) {
-                Logger.error("Class " + clazz.getSimpleName() + " does not extend DatabaseEntry.class");
-                return;
-            }
+            clazz.getDeclaredConstructor().newInstance();
 
-            Object obj = clazz.getDeclaredConstructor()
-                    .newInstance();
+            Object obj = clazz.getDeclaredConstructor().newInstance();
             String placeholder = "";
             String keys = "";
 
@@ -245,7 +240,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
     public abstract void setup();
 
     @Override
-    public void setup(Class<?> clazz) {
+    public void setup(Class<? extends DatabaseEntry> clazz) {
         createTable(clazz);
         //todo implement cache
     }
