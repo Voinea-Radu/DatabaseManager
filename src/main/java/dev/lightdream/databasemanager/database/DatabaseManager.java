@@ -179,9 +179,13 @@ public abstract class DatabaseManager implements IDatabaseManager {
     public static Object getObject(Class<?> clazz, Object object) {
         Debugger.info("Getting object of type " + clazz.getSimpleName());
         Object output = null;
+
+        if (object == null) {
+            return null;
+        }
+
         if (deserializeMap.get(clazz) != null) {
-            output = deserializeMap.get(clazz)
-                    .execute(object);
+            output = deserializeMap.get(clazz).execute(object);
         }
 
         if (output != null) {
