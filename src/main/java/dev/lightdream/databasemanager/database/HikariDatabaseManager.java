@@ -33,7 +33,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
     @SuppressWarnings("SwitchStatementWithTooFewBranches")
     public void connect() {
         LambdaExecutor.LambdaCatch.NoReturnLambdaCatch.executeCatch(() -> {
-            Logger.good("Connecting to the database");
+            Logger.good("Connecting to the database with url " + getDatabaseURL());
 
             HikariConfig config = new HikariConfig();
             config.setJdbcUrl(getDatabaseURL());
