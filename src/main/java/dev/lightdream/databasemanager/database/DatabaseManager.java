@@ -113,7 +113,6 @@ public abstract class DatabaseManager implements IDatabaseManager {
     }
 
     private static ArrayList<?> deserializeList(Object object) {
-        Debugger.info("Deserializing list " + object);
         if (object == null) {
             return null;
         }
@@ -140,7 +139,6 @@ public abstract class DatabaseManager implements IDatabaseManager {
     }
 
     private static String serializeList(Object object) {
-        Debugger.info("Serializing list " + object);
         @SuppressWarnings("unchecked") List<Object> lst = (List<Object>) object;
         StringBuilder o1 = new StringBuilder();
         lst.forEach(entry -> o1.append(formatQueryArgument(entry).replace("\"", ""))
@@ -177,7 +175,6 @@ public abstract class DatabaseManager implements IDatabaseManager {
     }
 
     public static Object getObject(Class<?> clazz, Object object) {
-        Debugger.info("Getting object of type " + clazz.getSimpleName());
         Object output = null;
 
         if (object == null) {
@@ -230,17 +227,11 @@ public abstract class DatabaseManager implements IDatabaseManager {
 
     @SuppressWarnings({"unused", "unchecked"})
     public <R> void registerSDPair(Class<R> clazz, LambdaExecutor.ReturnLambdaExecutor<?, R> serialize, LambdaExecutor.ReturnLambdaExecutor<R, Object> deserialize) {
-        Debugger.info("Registering deserializer for " + clazz.getSimpleName());
         serializeMap.put(clazz, (LambdaExecutor.ReturnLambdaExecutor<?, Object>) serialize);
         deserializeMap.put(clazz, deserialize);
-        Debugger.info("The new deserializers are " + Arrays.toString(serializeMap.keySet()
-                .toArray()));
     }
 
     public void registerDataType(Class<?> clazz, String dataType) {
-        Debugger.info("Registering data type " + clazz.getSimpleName());
-        main.getDriverConfig()
-                .registerDataType(clazz, dataType);
-        Debugger.info("New data types " + main.getDriverConfig().SQLITE.dataTypes.keySet());
+        main.getDriverConfig().registerDataType(clazz, dataType);
     }
 }

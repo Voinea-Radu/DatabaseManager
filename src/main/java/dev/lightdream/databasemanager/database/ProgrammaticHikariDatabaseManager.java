@@ -115,8 +115,6 @@ public abstract class ProgrammaticHikariDatabaseManager extends HikariDatabaseMa
                             field.set(obj, result);
                             continue;
                         }
-                        Debugger.info("Field type " + field.getType());
-                        Debugger.info("Result type " + result.getClass());
                         if ((field.getType().equals(Boolean.class) || field.getType().equals(boolean.class)) &&
                                 result.getClass().equals(Integer.class)) {
                             Integer object = (Integer) result;
