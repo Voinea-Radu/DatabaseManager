@@ -19,6 +19,14 @@ public abstract class DatabaseManager implements IDatabaseManager {
     public SQLConfig sqlConfig;
     public File dataFolder;
 
+    /**
+     * @param string The string to format
+     * @return String appended with " at the beginning and end
+     */
+    public static String formatString(String string) {
+        return "\"" + string + "\"";
+    }
+
     public DatabaseManager(DatabaseMain main) {
         this.main = main;
         this.sqlConfig = main.getSqlConfig();
