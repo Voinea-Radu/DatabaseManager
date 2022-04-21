@@ -7,7 +7,6 @@ import dev.lightdream.databasemanager.annotations.database.DatabaseTable;
 import dev.lightdream.databasemanager.dto.DatabaseEntry;
 import dev.lightdream.databasemanager.dto.QueryConstrains;
 import dev.lightdream.lambda.LambdaExecutor;
-import dev.lightdream.logger.Debugger;
 import dev.lightdream.logger.Logger;
 
 import java.lang.reflect.Field;

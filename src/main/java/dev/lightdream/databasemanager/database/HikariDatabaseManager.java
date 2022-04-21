@@ -30,7 +30,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         connect();
     }
 
-    @SuppressWarnings("SwitchStatementWithTooFewBranches")
+    @SuppressWarnings({"SwitchStatementWithTooFewBranches", "resource"})
     public void connect() {
         LambdaExecutor.LambdaCatch.NoReturnLambdaCatch.executeCatch(() -> {
             Logger.good("Connecting to the database with url " + getDatabaseURL());
@@ -69,7 +69,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         return connection;
     }
 
-    @SuppressWarnings("SqlNoDataSourceInspection")
+    @SuppressWarnings({"SqlNoDataSourceInspection", "resource"})
     public <T> List<T> getAll(Class<T> clazz) {
         return LambdaExecutor.LambdaCatch.ReturnLambdaCatch.executeCatch(() -> {
             if (!clazz.isAnnotationPresent(DatabaseTable.class)) {
@@ -114,6 +114,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         return get(clazz, queries, null, limitCount, null);
     }
 
+    @SuppressWarnings("resource")
     public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries, String orderBy, int limitCount, OrderBy.OrderByType orderByType) {
         return LambdaExecutor.LambdaCatch.ReturnLambdaCatch.executeCatch(() -> {
 
@@ -344,6 +345,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
                         .table()), Arrays.asList(entry.id));
     }
 
+    @SuppressWarnings("resource")
     public void executeUpdate(String sql, List<Object> values) {
         LambdaExecutor.LambdaCatch.NoReturnLambdaCatch.executeCatch(() -> {
             debug(sql, values);
@@ -358,6 +360,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         });
     }
 
+    @SuppressWarnings("resource")
     public ResultSet executeQuery(String sql, List<Object> values) {
         return LambdaExecutor.LambdaCatch.ReturnLambdaCatch.executeCatch(() -> {
             debug(sql, values);
@@ -384,7 +387,9 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         for (Object value : values) {
             debugSQL = debugSQL.replaceFirst("\\?", value == null ? "null" : value.toString());
         }
-        Debugger.info(debugSQL);
+        if (main.getSqlConfig().spammyDebug) {
+            Debugger.info(debugSQL);
+        }
     }
 
     @Override

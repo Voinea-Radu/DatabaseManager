@@ -12,6 +12,10 @@ public class SQLConfig {
     public String password = "";
     public int port = 3306;
     public boolean useSSL = false;
+    /**
+     * Shows all the SQL queries in the console.
+     */
+    public boolean spammyDebug = false;
 
     public SQLConfig() {
 

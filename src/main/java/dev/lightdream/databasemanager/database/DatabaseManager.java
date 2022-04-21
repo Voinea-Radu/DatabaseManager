@@ -4,7 +4,6 @@ import dev.lightdream.databasemanager.DatabaseMain;
 import dev.lightdream.databasemanager.dto.DatabaseEntry;
 import dev.lightdream.databasemanager.dto.SQLConfig;
 import dev.lightdream.lambda.LambdaExecutor;
-import dev.lightdream.logger.Debugger;
 import dev.lightdream.logger.Logger;
 
 import java.io.File;
@@ -23,6 +22,7 @@ public abstract class DatabaseManager implements IDatabaseManager {
      * @param string The string to format
      * @return String appended with " at the beginning and end
      */
+    @SuppressWarnings("unused")
     public static String formatString(String string) {
         return "\"" + string + "\"";
     }
