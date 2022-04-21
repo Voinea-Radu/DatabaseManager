@@ -16,6 +16,10 @@ public class SQLConfig {
      * Shows all the SQL queries in the console.
      */
     public boolean spammyDebug = false;
+    /**
+     * Shows the default hikariDB debug
+     */
+    public boolean hikariDebug = false;
 
     public SQLConfig() {
 
