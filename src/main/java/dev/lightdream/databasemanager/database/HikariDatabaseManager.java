@@ -18,7 +18,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.*;
-import java.util.logging.Level;
 
 @SuppressWarnings({"unused", "DeprecatedIsStillUsed"})
 @Deprecated
@@ -35,14 +34,6 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
     public void connect() {
         LambdaExecutor.LambdaCatch.NoReturnLambdaCatch.executeCatch(() -> {
             Logger.good("Connecting to the database with url " + getDatabaseURL());
-
-            if (!main.getSqlConfig().hikariDebug) {
-                java.util.logging.Logger.getLogger("com.zaxxer.hikari.pool.PoolBase").setLevel(Level.OFF);
-                java.util.logging.Logger.getLogger("com.zaxxer.hikari.pool.HikariPool").setLevel(Level.OFF);
-                java.util.logging.Logger.getLogger("com.zaxxer.hikari.HikariDataSource").setLevel(Level.OFF);
-                java.util.logging.Logger.getLogger("com.zaxxer.hikari.HikariConfig").setLevel(Level.OFF);
-                java.util.logging.Logger.getLogger("com.zaxxer.hikari.util.DriverDataSource").setLevel(Level.OFF);
-            }
 
             HikariConfig config = new HikariConfig();
             config.setJdbcUrl(getDatabaseURL());
