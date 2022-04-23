@@ -268,6 +268,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
             }
 
             //update
+            /*
             if (entry.getID() != null) {
                 StringBuilder placeholder = new StringBuilder();
 
@@ -298,10 +299,12 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
                                         .table()), Arrays.asList(entry.getID()));
                 return;
             }
+             */
 
             //insert
             StringBuilder placeholder1 = new StringBuilder();
             StringBuilder placeholder2 = new StringBuilder();
+            StringBuilder placeholder3 = new StringBuilder();
 
             Field[] fields = entry.getClass()
                     .getFields();
@@ -316,21 +319,30 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
                 }
 
                 String columnName = databaseField.columnName();
+                String query = formatQueryArgument(field.get(entry));
+
                 placeholder1.append(columnName)
                         .append(",");
-                placeholder2.append(formatQueryArgument(field.get(entry)))
+                placeholder2.append(query)
+                        .append(",");
+                placeholder3.append(columnName)
+                        .append("=")
+                        .append(query)
                         .append(",");
             }
 
             placeholder1.append(",");
             placeholder2.append(",");
+            placeholder3.append(",");
 
-            placeholder1 = new StringBuilder(placeholder1.toString()
-                    .replace(",,", ""));
-            placeholder2 = new StringBuilder(placeholder2.toString()
-                    .replace(",,", ""));
-            executeUpdate(sqlConfig.driver(main).insert.replace("%placeholder-1%", placeholder1.toString())
+            placeholder1 = new StringBuilder(placeholder1.toString().replace(",,", ""));
+            placeholder2 = new StringBuilder(placeholder2.toString().replace(",,", ""));
+            placeholder3 = new StringBuilder(placeholder3.toString().replace(",,", ""));
+
+            executeUpdate(sqlConfig.driver(main).insert
+                    .replace("%placeholder-1%", placeholder1.toString())
                     .replace("%placeholder-2%", placeholder2.toString())
+                    .replace("%placeholder-3%", placeholder3.toString())
                     .replace("%table%",
                             entry.getClass()
                                     .getAnnotation(DatabaseTable.class)

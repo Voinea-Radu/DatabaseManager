@@ -15,8 +15,7 @@ public class DriverConfig {
 
     public Driver MYSQL = new Driver("SELECT * FROM %table% WHERE %placeholder% %order% %limit%",
             "SELECT * FROM %table% WHERE 1",
-            "UPDATE %table% SET %placeholder% WHERE id=?",
-            "INSERT INTO %table% (%placeholder-1%) VALUES(%placeholder-2%)",
+            "INSERT INTO %table% (%placeholder-1%) VALUES(%placeholder-2%) ON DUPLICATE KEY UPDATE %placeholder-3%",
             "CREATE TABLE IF NOT EXISTS %table% (%placeholder%, PRIMARY KEY(%keys%))",
             "DELETE FROM %table% WHERE id=?",
             new HashMap<Class<?>, String>() {{
@@ -43,7 +42,6 @@ public class DriverConfig {
     public Driver H2 = new Driver(MYSQL);
     public Driver SQLITE = new Driver("SELECT * FROM %table% WHERE %placeholder% %order% %limit%",
             "SELECT * FROM %table% WHERE 1",
-            "UPDATE %table% SET %placeholder% WHERE id=?",
             "INSERT INTO %table% (%placeholder-1%) VALUES(%placeholder-2%)",
             "CREATE TABLE IF NOT EXISTS %table% (%placeholder%)",
             "DELETE FROM %table% WHERE id=?",
@@ -81,7 +79,6 @@ public class DriverConfig {
     public static class Driver {
         public String select;
         public String selectAll;
-        public String update;
         public String insert;
         public String createTable;
         public String delete;
@@ -94,10 +91,9 @@ public class DriverConfig {
         public Driver() {
         }
 
-        public Driver(String select, String selectAll, String update, String insert, String createTable, String delete, HashMap<Class<?>, String> dataTypes, String autoIncrement, String orderDesc, String orderAsc, String limit) {
+        public Driver(String select, String selectAll, String insert, String createTable, String delete, HashMap<Class<?>, String> dataTypes, String autoIncrement, String orderDesc, String orderAsc, String limit) {
             this.select = select;
             this.selectAll = selectAll;
-            this.update = update;
             this.insert = insert;
             this.createTable = createTable;
             this.delete = delete;
@@ -111,7 +107,6 @@ public class DriverConfig {
         public Driver(Driver driver) {
             this.select = driver.select;
             this.selectAll = driver.selectAll;
-            this.update = driver.update;
             this.insert = driver.insert;
             this.createTable = driver.createTable;
             this.delete = driver.delete;
