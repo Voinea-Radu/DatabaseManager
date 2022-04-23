@@ -30,7 +30,7 @@ public class DatabaseManagerImpl extends ProgrammaticHikariDatabaseManager {
         super(main);
     }
 
-    @SuppressWarnings("InfiniteRecursion")
+    @SuppressWarnings({"InfiniteRecursion", "RedundantSuppression"})
     @Override
     public void setup() {
         setup(User.class);
@@ -114,6 +114,7 @@ public class User extends DatabaseEntry {
 ## Versioning
 - 1.x - Statically based HikariDatabaseManager
 - 2.x - Dynamically based ProgrammaticHikariDatabaseManager 
+- 3.x - Interface based DatabaseEntry 
 
 ## Building with Drivers
 

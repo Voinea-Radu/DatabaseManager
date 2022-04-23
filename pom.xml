@@ -6,7 +6,7 @@
 
     <groupId>dev.lightdream</groupId>
     <artifactId>DatabaseManager</artifactId>
-    <version>2.10.2</version>
+    <version>3.0.1</version>
 
     <distributionManagement>
         <repository>
@@ -147,6 +147,8 @@
         -->
 
         <!-- MYSQL -->
+
+        <!--suppress VulnerableLibrariesLocal -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>

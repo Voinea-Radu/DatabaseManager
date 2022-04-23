@@ -4,7 +4,7 @@ import dev.lightdream.databasemanager.DatabaseMain;
 import dev.lightdream.databasemanager.OrderBy;
 import dev.lightdream.databasemanager.annotations.database.DatabaseField;
 import dev.lightdream.databasemanager.annotations.database.DatabaseTable;
-import dev.lightdream.databasemanager.dto.DatabaseEntry;
+import dev.lightdream.databasemanager.dto.IDatabaseEntry;
 import dev.lightdream.databasemanager.dto.QueryConstrains;
 import dev.lightdream.lambda.LambdaExecutor;
 import dev.lightdream.logger.Logger;
@@ -124,7 +124,7 @@ public abstract class ProgrammaticHikariDatabaseManager extends HikariDatabaseMa
 
                         field.set(obj, result);
                     }
-                    ((DatabaseEntry) obj).setMain(main);
+                    ((IDatabaseEntry) obj).setMain(main);
                     output.add(obj);
                 }
 

@@ -5,13 +5,14 @@ import dev.lightdream.databasemanager.annotations.database.DatabaseField;
 
 import java.util.Objects;
 
-public abstract class DatabaseEntry {
+@SuppressWarnings("unused")
+public abstract class DatabaseEntry implements IDatabaseEntry {
 
     @DatabaseField(columnName = "id",
             autoGenerate = true,
             unique = true,
             primaryKey = true)
-    public int id;
+    public Integer id;
     private DatabaseMain main;
 
     public DatabaseEntry(DatabaseMain main) {
@@ -43,11 +44,16 @@ public abstract class DatabaseEntry {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DatabaseEntry that = (DatabaseEntry) o;
-        return id == that.id;
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public Integer getID() {
+        return id;
     }
 }
