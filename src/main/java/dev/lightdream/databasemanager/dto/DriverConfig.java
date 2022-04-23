@@ -42,7 +42,7 @@ public class DriverConfig {
     public Driver H2 = new Driver(MYSQL);
     public Driver SQLITE = new Driver("SELECT * FROM %table% WHERE %placeholder% %order% %limit%",
             "SELECT * FROM %table% WHERE 1",
-            "INSERT INTO %table% (%placeholder-1%) VALUES(%placeholder-2%)",
+            "INSERT INTO %table% (%placeholder-1%) VALUES(%placeholder-2%) ON CONFLICT(%key%) DO UPDATE SET %placeholder-3%",
             "CREATE TABLE IF NOT EXISTS %table% (%placeholder%)",
             "DELETE FROM %table% WHERE id=?",
             new HashMap<Class<?>, String>() {{

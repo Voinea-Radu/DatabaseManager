@@ -256,7 +256,6 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         //todo
     }
 
-    @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
     @Override
     public void save(IDatabaseEntry entry, boolean cache) {
         LambdaExecutor.LambdaCatch.NoReturnLambdaCatch.executeCatch(() -> {
@@ -308,11 +307,18 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
 
             Field[] fields = entry.getClass()
                     .getFields();
+
+            String key = "";
+
             for (Field field : fields) {
                 if (!field.isAnnotationPresent(DatabaseField.class)) {
                     continue;
                 }
                 DatabaseField databaseField = field.getAnnotation(DatabaseField.class);
+
+                if (databaseField.primaryKey()) {
+                    key = field.getName();
+                }
 
                 if (databaseField.autoGenerate()) {
                     continue;
@@ -343,6 +349,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
                     .replace("%placeholder-1%", placeholder1.toString())
                     .replace("%placeholder-2%", placeholder2.toString())
                     .replace("%placeholder-3%", placeholder3.toString())
+                    .replace("%key%", key)
                     .replace("%table%",
                             entry.getClass()
                                     .getAnnotation(DatabaseTable.class)
