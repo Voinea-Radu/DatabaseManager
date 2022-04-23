@@ -6,13 +6,13 @@ import dev.lightdream.databasemanager.annotations.database.DatabaseField;
 import java.util.Objects;
 
 @SuppressWarnings("unused")
-public abstract class DatabaseEntry implements IDatabaseEntry {
+public abstract class DatabaseEntry<T> {
 
     @DatabaseField(columnName = "id",
             autoGenerate = true,
             unique = true,
             primaryKey = true)
-    public Integer id;
+    private T id;
     private DatabaseMain main;
 
     public DatabaseEntry(DatabaseMain main) {
@@ -43,8 +43,8 @@ public abstract class DatabaseEntry implements IDatabaseEntry {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DatabaseEntry that = (DatabaseEntry) o;
-        return Objects.equals(id, that.id);
+        DatabaseEntry<?> that = (DatabaseEntry<?>) o;
+        return Objects.equals(getID(), that.getID());
     }
 
     @Override
@@ -52,8 +52,7 @@ public abstract class DatabaseEntry implements IDatabaseEntry {
         return Objects.hash(id);
     }
 
-    @Override
-    public Integer getID() {
+    public T getID() {
         return id;
     }
 }

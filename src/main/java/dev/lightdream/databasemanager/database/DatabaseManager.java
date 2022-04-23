@@ -1,7 +1,7 @@
 package dev.lightdream.databasemanager.database;
 
 import dev.lightdream.databasemanager.DatabaseMain;
-import dev.lightdream.databasemanager.dto.IDatabaseEntry;
+import dev.lightdream.databasemanager.dto.DatabaseEntry;
 import dev.lightdream.databasemanager.dto.SQLConfig;
 import dev.lightdream.lambda.LambdaExecutor;
 import dev.lightdream.logger.Logger;
@@ -229,7 +229,7 @@ public abstract class DatabaseManager implements IDatabaseManager {
     }
 
     @Override
-    public void save(IDatabaseEntry object) {
+    public void save(DatabaseEntry<?> object) {
 
     }
 

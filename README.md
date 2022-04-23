@@ -114,7 +114,7 @@ public class User extends DatabaseEntry {
 ## Versioning
 - 1.x - Statically based HikariDatabaseManager
 - 2.x - Dynamically based ProgrammaticHikariDatabaseManager 
-- 3.x - Interface based DatabaseEntry 
+- 3.x - Abstract<T> class based DatabaseEntry 
 
 ## Building with Drivers
 

@@ -1,28 +1,28 @@
 package dev.lightdream.databasemanager.database;
 
-import dev.lightdream.databasemanager.dto.IDatabaseEntry;
+import dev.lightdream.databasemanager.dto.DatabaseEntry;
 
 public interface IDatabaseManager {
 
     void connect();
 
-    void createTable(Class<? extends IDatabaseEntry> clazz);
+    void createTable(Class<? extends DatabaseEntry<?>> clazz);
 
     void setup();
 
     @SuppressWarnings("unused")
-    void setup(Class<? extends IDatabaseEntry> clazz);
+    void setup(Class<? extends DatabaseEntry<?>> clazz);
 
     @SuppressWarnings("unused")
     void save();
 
     @SuppressWarnings("unused")
-    void save(IDatabaseEntry object, boolean cache);
+    void save(DatabaseEntry<?> object, boolean cache);
 
     @SuppressWarnings("unused")
-    void save(IDatabaseEntry object);
+    void save(DatabaseEntry<?> object);
 
     @SuppressWarnings("unused")
-    void delete(IDatabaseEntry entry);
+    void delete(DatabaseEntry<?> entry);
 
 }

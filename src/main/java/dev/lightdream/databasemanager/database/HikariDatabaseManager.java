@@ -6,7 +6,7 @@ import dev.lightdream.databasemanager.DatabaseMain;
 import dev.lightdream.databasemanager.OrderBy;
 import dev.lightdream.databasemanager.annotations.database.DatabaseField;
 import dev.lightdream.databasemanager.annotations.database.DatabaseTable;
-import dev.lightdream.databasemanager.dto.IDatabaseEntry;
+import dev.lightdream.databasemanager.dto.DatabaseEntry;
 import dev.lightdream.lambda.LambdaExecutor;
 import dev.lightdream.logger.Debugger;
 import dev.lightdream.logger.Logger;
@@ -95,7 +95,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
                     field.set(obj, getObject(field.getType(), rs.getObject(databaseField.columnName())));
                 }
                 output.add(obj);
-                IDatabaseEntry entry = (IDatabaseEntry) obj;
+                DatabaseEntry<?> entry = (DatabaseEntry<?>) obj;
                 entry.setMain(main);
             }
             return output;
@@ -186,7 +186,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
                     DatabaseField databaseField = field.getAnnotation(DatabaseField.class);
                     field.set(obj, getObject(field.getType(), rs.getObject(databaseField.columnName())));
                 }
-                ((IDatabaseEntry) obj).setMain(main);
+                ((DatabaseEntry<?>) obj).setMain(main);
                 output.add(obj);
             }
             return output;
@@ -196,7 +196,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
 
     @SuppressWarnings("StringConcatenationInLoop")
     @Override
-    public void createTable(Class<? extends IDatabaseEntry> clazz) {
+    public void createTable(Class<? extends DatabaseEntry<?>> clazz) {
         LambdaExecutor.LambdaCatch.NoReturnLambdaCatch.executeCatch(() -> {
             if (!clazz.isAnnotationPresent(DatabaseTable.class)) {
                 Logger.error("Class " + clazz.getSimpleName() + " is not annotated as a database table");
@@ -241,7 +241,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
     public abstract void setup();
 
     @Override
-    public void setup(Class<? extends IDatabaseEntry> clazz) {
+    public void setup(Class<? extends DatabaseEntry<?>> clazz) {
         createTable(clazz);
         //todo implement cache
     }
@@ -254,7 +254,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
 
     @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
     @Override
-    public void save(IDatabaseEntry entry, boolean cache) {
+    public void save(DatabaseEntry<?> entry, boolean cache) {
         LambdaExecutor.LambdaCatch.NoReturnLambdaCatch.executeCatch(() -> {
             if (!entry.getClass()
                     .isAnnotationPresent(DatabaseTable.class)) {
@@ -338,7 +338,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
 
     @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
     @Override
-    public void delete(IDatabaseEntry entry) {
+    public void delete(DatabaseEntry<?> entry) {
         executeUpdate(sqlConfig.driver(main).delete.replace("%table%",
                 entry.getClass()
                         .getAnnotation(DatabaseTable.class)
@@ -393,7 +393,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
     }
 
     @Override
-    public void save(IDatabaseEntry object) {
+    public void save(DatabaseEntry<?> object) {
         save(object, false);
     }
 }
