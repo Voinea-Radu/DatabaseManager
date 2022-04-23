@@ -220,7 +220,11 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
                         main).autoIncrement : "") + ",";
 
                 if (dbField.primaryKey()) {
-                    keys += dbField.columnName() + ",";
+                    keys += dbField.columnName();
+                    if (getDataType(field.getType()).equals(sqlConfig.driver(main).dataTypes.get(String.class))) {
+                        keys += "(255)";
+                    }
+                    keys += ",";
                 }
             }
 
