@@ -15,7 +15,8 @@ public class SQLConfig {
     /**
      * Shows all the SQL queries in the console.
      */
-    public boolean spammyDebug = false;
+    public boolean logSelect = false;
+    public boolean logUpdate = false;
 
     public SQLConfig() {
 

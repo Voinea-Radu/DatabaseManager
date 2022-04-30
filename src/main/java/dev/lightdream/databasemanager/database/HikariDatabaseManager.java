@@ -410,7 +410,15 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         for (Object value : values) {
             debugSQL = debugSQL.replaceFirst("\\?", value == null ? "null" : value.toString());
         }
-        if (main.getSqlConfig().spammyDebug) {
+
+        if (main.getSqlConfig().logSelect && debugSQL.startsWith("SELECT")) {
+            Debugger.info(debugSQL);
+        }
+
+        if (main.getSqlConfig().logUpdate &&
+                (debugSQL.startsWith("INSERT") ||
+                        debugSQL.startsWith("CREATE") ||
+                        debugSQL.startsWith("DELETE"))) {
             Debugger.info(debugSQL);
         }
     }
