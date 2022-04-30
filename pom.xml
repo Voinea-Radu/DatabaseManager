@@ -6,7 +6,7 @@
 
     <groupId>dev.lightdream</groupId>
     <artifactId>DatabaseManager</artifactId>
-    <version>3.5.0</version>
+    <version>3.6.0</version>
 
     <distributionManagement>
         <repository>
@@ -112,6 +112,10 @@
             <id>mysql</id>
             <url>https://mvnrepository.com/artifact/mysql/mysql-connector-java</url>
         </repository>
+        <repository>
+            <id>jetbrains</id>
+            <url>https://mvnrepository.com/artifact/org.jetbrains/annotations</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -157,7 +161,7 @@
         </dependency>
 
 
-        <!-- Own Repo -->
+        <!-- LightDream -->
         <dependency>
             <groupId>dev.lightdream</groupId>
             <artifactId>Logger</artifactId>
@@ -168,6 +172,14 @@
             <artifactId>Lambda</artifactId>
             <version>LATEST</version>
         </dependency>
+
+        <!-- Jet Brains -->
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>23.0.0</version>
+        </dependency>
+
     </dependencies>
 
 </project>

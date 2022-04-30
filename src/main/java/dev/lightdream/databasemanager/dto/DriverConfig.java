@@ -18,6 +18,8 @@ public class DriverConfig {
             "INSERT INTO %table% (%placeholder-1%) VALUES(%placeholder-2%) ON DUPLICATE KEY UPDATE %placeholder-3%",
             "CREATE TABLE IF NOT EXISTS %table% (%placeholder%, PRIMARY KEY(%keys%))",
             "DELETE FROM %table% WHERE id=?",
+            "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = \"%database%\" AND TABLE_NAME = \"%table%\";",
+            "ALTER TABLE %table% AUTO_INCREMENT=%autoincrement%",
             new HashMap<Class<?>, String>() {{
                 put(int.class, "INT");
                 put(Integer.class, "INT");
@@ -45,6 +47,8 @@ public class DriverConfig {
             "INSERT INTO %table% (%placeholder-1%) VALUES(%placeholder-2%) ON CONFLICT(%key%) DO UPDATE SET %placeholder-3%",
             "CREATE TABLE IF NOT EXISTS %table% (%placeholder%)",
             "DELETE FROM %table% WHERE id=?",
+            "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = \"%database%\" AND TABLE_NAME = \"%table%\";",
+            "ALTER TABLE %table% AUTO_INCREMENT=%autoincrement%",
             new HashMap<Class<?>, String>() {{
                 put(int.class, "INTEGER");
                 put(Integer.class, "INTEGER");
@@ -82,6 +86,8 @@ public class DriverConfig {
         public String insert;
         public String createTable;
         public String delete;
+        public String getAutoIncrement;
+        public String updateAutoIncrement;
         public HashMap<Class<?>, String> dataTypes;
         public String autoIncrement;
         public String orderDesc;
@@ -91,12 +97,16 @@ public class DriverConfig {
         public Driver() {
         }
 
-        public Driver(String select, String selectAll, String insert, String createTable, String delete, HashMap<Class<?>, String> dataTypes, String autoIncrement, String orderDesc, String orderAsc, String limit) {
+        public Driver(String select, String selectAll, String insert, String createTable, String delete,
+                      String getAutoIncrement, String updateAutoIncrement, HashMap<Class<?>, String> dataTypes,
+                      String autoIncrement, String orderDesc, String orderAsc, String limit) {
             this.select = select;
             this.selectAll = selectAll;
             this.insert = insert;
             this.createTable = createTable;
             this.delete = delete;
+            this.getAutoIncrement = getAutoIncrement;
+            this.updateAutoIncrement = updateAutoIncrement;
             this.dataTypes = dataTypes;
             this.autoIncrement = autoIncrement;
             this.orderDesc = orderDesc;
@@ -110,6 +120,8 @@ public class DriverConfig {
             this.insert = driver.insert;
             this.createTable = driver.createTable;
             this.delete = driver.delete;
+            this.getAutoIncrement = driver.getAutoIncrement;
+            this.updateAutoIncrement = driver.updateAutoIncrement;
             this.dataTypes = driver.dataTypes;
             this.autoIncrement = driver.autoIncrement;
             this.orderDesc = driver.orderDesc;

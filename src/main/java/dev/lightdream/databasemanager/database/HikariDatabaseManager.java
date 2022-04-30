@@ -10,6 +10,7 @@ import dev.lightdream.databasemanager.dto.IDatabaseEntry;
 import dev.lightdream.lambda.LambdaExecutor;
 import dev.lightdream.logger.Debugger;
 import dev.lightdream.logger.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.net.URL;
@@ -266,39 +267,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
                 return;
             }
 
-            //update
-            /*
-            if (entry.getID() != null) {
-                StringBuilder placeholder = new StringBuilder();
-
-                Field[] fields = entry.getClass()
-                        .getFields();
-                for (Field field : fields) {
-                    if (!field.isAnnotationPresent(DatabaseField.class)) {
-                        continue;
-                    }
-                    DatabaseField dbField = field.getAnnotation(DatabaseField.class);
-                    if (dbField.autoGenerate()) {
-                        continue;
-                    }
-                    placeholder.append(dbField.columnName())
-                            .append("=")
-                            .append(formatQueryArgument(field.get(entry)))
-                            .append(",");
-                }
-
-                placeholder.append(",");
-                placeholder = new StringBuilder(placeholder.toString()
-                        .replace(",,", ""));
-
-                executeUpdate(sqlConfig.driver(main).update.replace("%placeholder%", placeholder.toString())
-                        .replace("%table%",
-                                entry.getClass()
-                                        .getAnnotation(DatabaseTable.class)
-                                        .table()), Arrays.asList(entry.getID()));
-                return;
-            }
-             */
+            DatabaseTable table = entry.getClass().getAnnotation(DatabaseTable.class);
 
             //insert
             StringBuilder placeholder1 = new StringBuilder();
@@ -321,7 +290,21 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
                 }
 
                 if (databaseField.autoGenerate()) {
-                    continue;
+                    String query = sqlConfig.driver(main).getAutoIncrement
+                            .replace("%table%", table.table())
+                            .replace("%database%", sqlConfig.database);
+
+                    //noinspection resource
+                    ResultSet rs = executeQuery(query, new ArrayList<>());
+                    int nextID = rs.getInt(1);
+
+                    field.set(entry, nextID);
+
+                    String query2 = sqlConfig.driver(main).updateAutoIncrement
+                            .replace("%table%", table.table())
+                            .replace("%autoincrement%", String.valueOf(nextID + 1));
+
+                    executeUpdate(query2, new ArrayList<>());
                 }
 
                 String columnName = databaseField.columnName();
@@ -369,7 +352,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
     }
 
     @SuppressWarnings("resource")
-    public void executeUpdate(String sql, List<Object> values) {
+    public void executeUpdate(String sql, @NotNull List<Object> values) {
         LambdaExecutor.LambdaCatch.NoReturnLambdaCatch.executeCatch(() -> {
             debug(sql, values);
 
@@ -384,7 +367,8 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
     }
 
     @SuppressWarnings("resource")
-    public ResultSet executeQuery(String sql, List<Object> values) {
+    public ResultSet executeQuery(String sql, @NotNull List<Object> values) {
+
         return LambdaExecutor.LambdaCatch.ReturnLambdaCatch.executeCatch(() -> {
             debug(sql, values);
 
