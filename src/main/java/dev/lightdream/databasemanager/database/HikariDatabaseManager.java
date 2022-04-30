@@ -296,6 +296,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
 
                     //noinspection resource
                     ResultSet rs = executeQuery(query, new ArrayList<>());
+                    rs.next();
                     int nextID = rs.getInt(1);
 
                     field.set(entry, nextID);
