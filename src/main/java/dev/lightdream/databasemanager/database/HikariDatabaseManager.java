@@ -289,7 +289,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
                     key = field.getName();
                 }
 
-                if (databaseField.autoGenerate()) {
+                if (databaseField.autoGenerate() && field.get(entry) == null) {
                     String query = sqlConfig.driver(main).getAutoIncrement
                             .replace("%table%", table.table())
                             .replace("%database%", sqlConfig.database);
