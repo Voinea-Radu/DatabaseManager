@@ -6,7 +6,7 @@
 
     <groupId>dev.lightdream</groupId>
     <artifactId>DatabaseManager</artifactId>
-    <version>3.6.2</version>
+    <version>3.7.0</version>
 
     <distributionManagement>
         <repository>
@@ -170,6 +170,11 @@
         <dependency>
             <groupId>dev.lightdream</groupId>
             <artifactId>Lambda</artifactId>
+            <version>LATEST</version>
+        </dependency>
+        <dependency>
+            <groupId>dev.lightdream</groupId>
+            <artifactId>FileManager</artifactId>
             <version>LATEST</version>
         </dependency>
 
