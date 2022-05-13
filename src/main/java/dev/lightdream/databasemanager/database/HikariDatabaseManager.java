@@ -41,11 +41,13 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
             config.setUsername(sqlConfig.username);
             config.setPassword(sqlConfig.password);
             config.setConnectionTestQuery("SELECT 1");
-            config.setMinimumIdle(5);
-            config.setMaximumPoolSize(50);
-            config.setConnectionTimeout(1000000000);
-            config.setIdleTimeout(600000000);
-            config.setMaxLifetime(1800000000);
+            if(sqlConfig.enableHighRateOfAccess) {
+                config.setMinimumIdle(5);
+                config.setMaximumPoolSize(50);
+                config.setConnectionTimeout(1000000000);
+                config.setIdleTimeout(600000000);
+                config.setMaxLifetime(1800000000);
+            }
             URLClassLoader child;
             URL url;
             switch (sqlConfig.driverName) {

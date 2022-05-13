@@ -17,6 +17,8 @@ public class SQLConfig {
      */
     public boolean logSelect = false;
     public boolean logUpdate = false;
+    public boolean enableHighRateOfAccess = false;
+
 
     public SQLConfig() {
 
