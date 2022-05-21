@@ -21,7 +21,7 @@ import java.sql.ResultSet;
 import java.util.*;
 
 @SuppressWarnings({"unused", "DeprecatedIsStillUsed"})
-@Deprecated
+@Deprecated // Deprecated just to show that it not what should be used
 public abstract class HikariDatabaseManager extends DatabaseManager {
 
     private Connection connection;
@@ -380,7 +380,9 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
                 statement = getConnection().prepareStatement(sql);
             } catch (Throwable t) {
                 Logger.error("The connection to the database has been lost trying to reconnect!");
-                Debugger.log(t.getStackTrace());
+                if (Debugger.isEnabled()) {
+                    t.printStackTrace();
+                }
                 connect();
                 return executeQuery(sql, values);
             }
