@@ -41,7 +41,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
             config.setUsername(sqlConfig.username);
             config.setPassword(sqlConfig.password);
             config.setConnectionTestQuery("SELECT 1");
-            if(sqlConfig.enableHighRateOfAccess) {
+            if (sqlConfig.enableHighRateOfAccess) {
                 config.setMinimumIdle(5);
                 config.setMaximumPoolSize(50);
                 config.setConnectionTimeout(1000000000);
@@ -380,6 +380,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
                 statement = getConnection().prepareStatement(sql);
             } catch (Throwable t) {
                 Logger.error("The connection to the database has been lost trying to reconnect!");
+                Debugger.log(t.getStackTrace());
                 connect();
                 return executeQuery(sql, values);
             }
