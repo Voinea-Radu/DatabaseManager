@@ -6,8 +6,8 @@ import dev.lightdream.databasemanager.annotations.database.DatabaseField;
 import dev.lightdream.databasemanager.annotations.database.DatabaseTable;
 import dev.lightdream.databasemanager.dto.IDatabaseEntry;
 import dev.lightdream.databasemanager.dto.QueryConstrains;
-import dev.lightdream.lambda.LambdaExecutor;
 import dev.lightdream.logger.Logger;
+import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
@@ -94,42 +94,41 @@ public abstract class ProgrammaticHikariDatabaseManager extends HikariDatabaseMa
             return query;
         }
 
+        @SneakyThrows
         private List<T> processResults(ResultSet rs) {
-            return LambdaExecutor.LambdaCatch.ReturnLambdaCatch.executeCatch(() -> {
 
-                List<T> output = new ArrayList<>();
+            List<T> output = new ArrayList<>();
 
-                while (rs.next()) {
-                    T obj = clazz.getDeclaredConstructor()
-                            .newInstance();
-                    Field[] fields = obj.getClass()
-                            .getFields();
-                    for (Field field : fields) {
-                        if (!field.isAnnotationPresent(DatabaseField.class)) {
-                            continue;
-                        }
-                        DatabaseField databaseField = field.getAnnotation(DatabaseField.class);
-                        Object result = getObject(field.getType(), rs.getObject(databaseField.columnName()));
-                        if (result == null) {
-                            field.set(obj, result);
-                            continue;
-                        }
-                        if ((field.getType().equals(Boolean.class) || field.getType().equals(boolean.class)) &&
-                                result.getClass().equals(Integer.class)) {
-                            Integer object = (Integer) result;
-                            boolean bObject = object == 1;
-                            field.set(obj, bObject);
-                            continue;
-                        }
-
-                        field.set(obj, result);
+            while (rs.next()) {
+                T obj = clazz.getDeclaredConstructor()
+                        .newInstance();
+                Field[] fields = obj.getClass()
+                        .getFields();
+                for (Field field : fields) {
+                    if (!field.isAnnotationPresent(DatabaseField.class)) {
+                        continue;
                     }
-                    ((IDatabaseEntry) obj).setMain(main);
-                    output.add(obj);
-                }
+                    DatabaseField databaseField = field.getAnnotation(DatabaseField.class);
+                    Object result = getObject(field.getType(), rs.getObject(databaseField.columnName()));
+                    if (result == null) {
+                        field.set(obj, result);
+                        continue;
+                    }
+                    if ((field.getType().equals(Boolean.class) || field.getType().equals(boolean.class)) &&
+                            result.getClass().equals(Integer.class)) {
+                        Integer object = (Integer) result;
+                        boolean bObject = object == 1;
+                        field.set(obj, bObject);
+                        continue;
+                    }
 
-                return output;
-            });
+                    field.set(obj, result);
+                }
+                ((IDatabaseEntry) obj).setMain(main);
+                output.add(obj);
+            }
+
+            return output;
         }
 
 

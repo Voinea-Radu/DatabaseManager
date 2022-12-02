@@ -7,9 +7,9 @@ import dev.lightdream.databasemanager.OrderBy;
 import dev.lightdream.databasemanager.annotations.database.DatabaseField;
 import dev.lightdream.databasemanager.annotations.database.DatabaseTable;
 import dev.lightdream.databasemanager.dto.IDatabaseEntry;
-import dev.lightdream.lambda.LambdaExecutor;
 import dev.lightdream.logger.Debugger;
 import dev.lightdream.logger.Logger;
+import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
@@ -33,7 +33,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
 
     @SuppressWarnings({"SwitchStatementWithTooFewBranches", "resource"})
     public void connect() {
-        LambdaExecutor.LambdaCatch.NoReturnLambdaCatch.executeCatch(() -> {
+        try {
             Logger.good("Connecting to the database with url " + getDatabaseURL());
 
             HikariConfig config = new HikariConfig();
@@ -60,49 +60,48 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
             connection = ds.getConnection();
             setup();
             Logger.good("Connected to the database");
-        }, e -> {
+        } catch (Exception e) {
             Logger.error("The driver for the desired database type could not be loaded. Please check the release page and get the proper driver version");
             if (Debugger.isEnabled()) {
                 e.printStackTrace();
             }
-        });
+        }
     }
 
     public Connection getConnection() {
         return connection;
     }
 
+    @SneakyThrows
     @SuppressWarnings({"SqlNoDataSourceInspection", "resource"})
     public <T> List<T> getAll(Class<T> clazz) {
-        return LambdaExecutor.LambdaCatch.ReturnLambdaCatch.executeCatch(() -> {
-            if (!clazz.isAnnotationPresent(DatabaseTable.class)) {
-                Logger.error("Class " + clazz.getSimpleName() + " is not annotated as a database table");
-                return new ArrayList<>();
-            }
+        if (!clazz.isAnnotationPresent(DatabaseTable.class)) {
+            Logger.error("Class " + clazz.getSimpleName() + " is not annotated as a database table");
+            return new ArrayList<>();
+        }
 
-            List<T> output = new ArrayList<>();
+        List<T> output = new ArrayList<>();
 
-            ResultSet rs = executeQuery(sqlConfig.driver(main).selectAll.replace("%table%",
-                    clazz.getAnnotation(DatabaseTable.class)
-                            .table()), new ArrayList<>());
-            while (rs.next()) {
-                T obj = clazz.getDeclaredConstructor()
-                        .newInstance();
-                Field[] fields = obj.getClass()
-                        .getFields();
-                for (Field field : fields) {
-                    if (!field.isAnnotationPresent(DatabaseField.class)) {
-                        continue;
-                    }
-                    DatabaseField databaseField = field.getAnnotation(DatabaseField.class);
-                    field.set(obj, getObject(field.getType(), rs.getObject(databaseField.columnName())));
+        ResultSet rs = executeQuery(sqlConfig.driver(main).selectAll.replace("%table%",
+                clazz.getAnnotation(DatabaseTable.class)
+                        .table()), new ArrayList<>());
+        while (rs.next()) {
+            T obj = clazz.getDeclaredConstructor()
+                    .newInstance();
+            Field[] fields = obj.getClass()
+                    .getFields();
+            for (Field field : fields) {
+                if (!field.isAnnotationPresent(DatabaseField.class)) {
+                    continue;
                 }
-                output.add(obj);
-                IDatabaseEntry entry = (IDatabaseEntry) obj;
-                entry.setMain(main);
+                DatabaseField databaseField = field.getAnnotation(DatabaseField.class);
+                field.set(obj, getObject(field.getType(), rs.getObject(databaseField.columnName())));
             }
-            return output;
-        });
+            output.add(obj);
+            IDatabaseEntry entry = (IDatabaseEntry) obj;
+            entry.setMain(main);
+        }
+        return output;
     }
 
     public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries) {
@@ -117,131 +116,129 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         return get(clazz, queries, null, limitCount, null);
     }
 
+    @SneakyThrows
     @SuppressWarnings("resource")
     public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries, String orderBy, int limitCount, OrderBy.OrderByType orderByType) {
-        return LambdaExecutor.LambdaCatch.ReturnLambdaCatch.executeCatch(() -> {
 
-            if (queries.size() == 0) {
-                return getAll(clazz);
+        if (queries.size() == 0) {
+            return getAll(clazz);
+        }
+
+        if (!clazz.isAnnotationPresent(DatabaseTable.class)) {
+            Logger.error("Class " + clazz.getSimpleName() + " is not annotated as a database table");
+            return new ArrayList<>();
+        }
+
+        StringBuilder placeholder = new StringBuilder();
+        for (String key : queries.keySet()) {
+            Object value = queries.get(key);
+            if (key.startsWith("<")) {
+                placeholder.append(key.replaceFirst("<", ""))
+                        .append("<")
+                        .append(formatQueryArgument(value))
+                        .append(" AND ");
+            } else if (key.startsWith(">")) {
+                placeholder.append(key.replaceFirst(">", ""))
+                        .append(">")
+                        .append(formatQueryArgument(value))
+                        .append(" AND ");
+            } else if (key.startsWith("!=")) {
+                placeholder.append(key.replaceFirst("!=", ""))
+                        .append("!=")
+                        .append(formatQueryArgument(value))
+                        .append(" AND ");
+            } else if (key.startsWith("=")) {
+                placeholder.append(key.replaceFirst("=", ""))
+                        .append("=")
+                        .append(formatQueryArgument(value))
+                        .append(" AND ");
+            } else {
+                placeholder.append(key)
+                        .append("=")
+                        .append(formatQueryArgument(value))
+                        .append(" AND ");
             }
+        }
+        placeholder.append(" ");
+        placeholder = new StringBuilder(placeholder.toString()
+                .replace(" AND  ", ""));
 
-            if (!clazz.isAnnotationPresent(DatabaseTable.class)) {
-                Logger.error("Class " + clazz.getSimpleName() + " is not annotated as a database table");
-                return new ArrayList<>();
-            }
+        String order = Objects.equals(orderBy,
+                "") || orderBy == null ? "" : orderByType == OrderBy.OrderByType.ASCENDANT ? sqlConfig.driver(main).orderAsc.replace(
+                "%order%",
+                orderBy) : sqlConfig.driver(main).orderDesc.replace("%order%", orderBy);
+        String limit = limitCount == -1 ? "" : sqlConfig.driver(main).limit.replace("%limit%", String.valueOf(limitCount));
 
-            StringBuilder placeholder = new StringBuilder();
-            for (String key : queries.keySet()) {
-                Object value = queries.get(key);
-                if (key.startsWith("<")) {
-                    placeholder.append(key.replaceFirst("<", ""))
-                            .append("<")
-                            .append(formatQueryArgument(value))
-                            .append(" AND ");
-                } else if (key.startsWith(">")) {
-                    placeholder.append(key.replaceFirst(">", ""))
-                            .append(">")
-                            .append(formatQueryArgument(value))
-                            .append(" AND ");
-                } else if (key.startsWith("!=")) {
-                    placeholder.append(key.replaceFirst("!=", ""))
-                            .append("!=")
-                            .append(formatQueryArgument(value))
-                            .append(" AND ");
-                } else if (key.startsWith("=")) {
-                    placeholder.append(key.replaceFirst("=", ""))
-                            .append("=")
-                            .append(formatQueryArgument(value))
-                            .append(" AND ");
-                } else {
-                    placeholder.append(key)
-                            .append("=")
-                            .append(formatQueryArgument(value))
-                            .append(" AND ");
-                }
-            }
-            placeholder.append(" ");
-            placeholder = new StringBuilder(placeholder.toString()
-                    .replace(" AND  ", ""));
-
-            String order = Objects.equals(orderBy,
-                    "") || orderBy == null ? "" : orderByType == OrderBy.OrderByType.ASCENDANT ? sqlConfig.driver(main).orderAsc.replace(
-                    "%order%",
-                    orderBy) : sqlConfig.driver(main).orderDesc.replace("%order%", orderBy);
-            String limit = limitCount == -1 ? "" : sqlConfig.driver(main).limit.replace("%limit%", String.valueOf(limitCount));
-
-            List<T> output = new ArrayList<>();
-            ResultSet rs = executeQuery(sqlConfig.driver(main).select.replace("%placeholder%", placeholder.toString())
-                    .replace("%order%", order)
-                    .replace("%limit%", limit)
-                    .replace("%table%",
-                            clazz.getAnnotation(DatabaseTable.class)
-                                    .table()), new ArrayList<>());
-            while (rs.next()) {
-                T obj = clazz.getDeclaredConstructor()
-                        .newInstance();
-                Field[] fields = obj.getClass()
-                        .getFields();
-                for (Field field : fields) {
-                    if (!field.isAnnotationPresent(DatabaseField.class)) {
-                        continue;
-                    }
-                    DatabaseField databaseField = field.getAnnotation(DatabaseField.class);
-                    field.set(obj, getObject(field.getType(), rs.getObject(databaseField.columnName())));
-                }
-                ((IDatabaseEntry) obj).setMain(main);
-                output.add(obj);
-            }
-            return output;
-        });
-    }
-
-
-    @SuppressWarnings("StringConcatenationInLoop")
-    @Override
-    public void createTable(Class<? extends IDatabaseEntry> clazz) {
-        LambdaExecutor.LambdaCatch.NoReturnLambdaCatch.executeCatch(() -> {
-            if (!clazz.isAnnotationPresent(DatabaseTable.class)) {
-                Logger.error("Class " + clazz.getSimpleName() + " is not annotated as a database table");
-                return;
-            }
-
-            clazz.getDeclaredConstructor().newInstance();
-
-            Object obj = clazz.getDeclaredConstructor().newInstance();
-            String placeholder = "";
-            String keys = "";
-
+        List<T> output = new ArrayList<>();
+        ResultSet rs = executeQuery(sqlConfig.driver(main).select.replace("%placeholder%", placeholder.toString())
+                .replace("%order%", order)
+                .replace("%limit%", limit)
+                .replace("%table%",
+                        clazz.getAnnotation(DatabaseTable.class)
+                                .table()), new ArrayList<>());
+        while (rs.next()) {
+            T obj = clazz.getDeclaredConstructor()
+                    .newInstance();
             Field[] fields = obj.getClass()
                     .getFields();
             for (Field field : fields) {
                 if (!field.isAnnotationPresent(DatabaseField.class)) {
                     continue;
                 }
-                DatabaseField dbField = field.getAnnotation(DatabaseField.class);
-                placeholder += dbField.columnName() + " " + getDataType(field.getType()) + " " + (dbField.unique() ? "UNIQUE " : "") + (dbField.autoGenerate() ? sqlConfig.driver(
-                        main).autoIncrement : "") + ",";
-
-                if (dbField.primaryKey()) {
-                    keys += dbField.columnName();
-                    if (getDataType(field.getType()).equals(sqlConfig.driver(main).dataTypes.get(String.class))) {
-                        keys += "(255)";
-                    }
-                    keys += ",";
-                }
+                DatabaseField databaseField = field.getAnnotation(DatabaseField.class);
+                field.set(obj, getObject(field.getType(), rs.getObject(databaseField.columnName())));
             }
+            ((IDatabaseEntry) obj).setMain(main);
+            output.add(obj);
+        }
+        return output;
+    }
 
-            keys += ",";
-            keys = keys.replace(",,", "");
-            placeholder += ",";
-            placeholder = placeholder.replace(",,", "");
 
-            executeUpdate(sqlConfig.driver(main).createTable.replace("%placeholder%", placeholder)
-                    .replace("%keys%", keys)
-                    .replace("%table%",
-                            clazz.getAnnotation(DatabaseTable.class)
-                                    .table()), new ArrayList<>());
-        });
+    @SneakyThrows
+    @SuppressWarnings("StringConcatenationInLoop")
+    @Override
+    public void createTable(Class<? extends IDatabaseEntry> clazz) {
+        if (!clazz.isAnnotationPresent(DatabaseTable.class)) {
+            Logger.error("Class " + clazz.getSimpleName() + " is not annotated as a database table");
+            return;
+        }
+
+        clazz.getDeclaredConstructor().newInstance();
+
+        Object obj = clazz.getDeclaredConstructor().newInstance();
+        String placeholder = "";
+        String keys = "";
+
+        Field[] fields = obj.getClass()
+                .getFields();
+        for (Field field : fields) {
+            if (!field.isAnnotationPresent(DatabaseField.class)) {
+                continue;
+            }
+            DatabaseField dbField = field.getAnnotation(DatabaseField.class);
+            placeholder += dbField.columnName() + " " + getDataType(field.getType()) + " " + (dbField.unique() ? "UNIQUE " : "") + (dbField.autoGenerate() ? sqlConfig.driver(
+                    main).autoIncrement : "") + ",";
+
+            if (dbField.primaryKey()) {
+                keys += dbField.columnName();
+                if (getDataType(field.getType()).equals(sqlConfig.driver(main).dataTypes.get(String.class))) {
+                    keys += "(255)";
+                }
+                keys += ",";
+            }
+        }
+
+        keys += ",";
+        keys = keys.replace(",,", "");
+        placeholder += ",";
+        placeholder = placeholder.replace(",,", "");
+
+        executeUpdate(sqlConfig.driver(main).createTable.replace("%placeholder%", placeholder)
+                .replace("%keys%", keys)
+                .replace("%table%",
+                        clazz.getAnnotation(DatabaseTable.class)
+                                .table()), new ArrayList<>());
     }
 
     @Override
@@ -259,90 +256,89 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         //todo
     }
 
+    @SneakyThrows
     @Override
     public void save(IDatabaseEntry entry, boolean cache) {
-        LambdaExecutor.LambdaCatch.NoReturnLambdaCatch.executeCatch(() -> {
-            if (!entry.getClass()
-                    .isAnnotationPresent(DatabaseTable.class)) {
-                Logger.error("The class " + entry.getClass()
-                        .getSimpleName() + " is not annotated as " + DatabaseTable.class.getSimpleName());
-                return;
+        if (!entry.getClass()
+                .isAnnotationPresent(DatabaseTable.class)) {
+            Logger.error("The class " + entry.getClass()
+                    .getSimpleName() + " is not annotated as " + DatabaseTable.class.getSimpleName());
+            return;
+        }
+
+        DatabaseTable table = entry.getClass().getAnnotation(DatabaseTable.class);
+
+        //insert
+        StringBuilder placeholder1 = new StringBuilder();
+        StringBuilder placeholder2 = new StringBuilder();
+        StringBuilder placeholder3 = new StringBuilder();
+
+        Field[] fields = entry.getClass()
+                .getFields();
+
+        String key = "";
+
+        for (Field field : fields) {
+            if (!field.isAnnotationPresent(DatabaseField.class)) {
+                continue;
+            }
+            DatabaseField databaseField = field.getAnnotation(DatabaseField.class);
+
+            if (databaseField.primaryKey()) {
+                key = field.getName();
             }
 
-            DatabaseTable table = entry.getClass().getAnnotation(DatabaseTable.class);
+            if (databaseField.autoGenerate() && field.get(entry) == null) {
+                String query = sqlConfig.driver(main).getAutoIncrement
+                        .replace("%table%", table.table())
+                        .replace("%database%", sqlConfig.database);
 
-            //insert
-            StringBuilder placeholder1 = new StringBuilder();
-            StringBuilder placeholder2 = new StringBuilder();
-            StringBuilder placeholder3 = new StringBuilder();
+                //noinspection resource
+                ResultSet rs = executeQuery(query, new ArrayList<>());
+                rs.next();
+                int nextID = rs.getInt(1);
 
-            Field[] fields = entry.getClass()
-                    .getFields();
+                field.set(entry, nextID);
 
-            String key = "";
+                String query2 = sqlConfig.driver(main).updateAutoIncrement
+                        .replace("%table%", table.table())
+                        .replace("%autoincrement%", String.valueOf(nextID + 1));
 
-            for (Field field : fields) {
-                if (!field.isAnnotationPresent(DatabaseField.class)) {
-                    continue;
-                }
-                DatabaseField databaseField = field.getAnnotation(DatabaseField.class);
-
-                if (databaseField.primaryKey()) {
-                    key = field.getName();
-                }
-
-                if (databaseField.autoGenerate() && field.get(entry) == null) {
-                    String query = sqlConfig.driver(main).getAutoIncrement
-                            .replace("%table%", table.table())
-                            .replace("%database%", sqlConfig.database);
-
-                    //noinspection resource
-                    ResultSet rs = executeQuery(query, new ArrayList<>());
-                    rs.next();
-                    int nextID = rs.getInt(1);
-
-                    field.set(entry, nextID);
-
-                    String query2 = sqlConfig.driver(main).updateAutoIncrement
-                            .replace("%table%", table.table())
-                            .replace("%autoincrement%", String.valueOf(nextID + 1));
-
-                    executeUpdate(query2, new ArrayList<>());
-                }
-
-                String columnName = databaseField.columnName();
-                String query = formatQueryArgument(field.get(entry));
-
-                placeholder1.append(columnName)
-                        .append(",");
-                placeholder2.append(query)
-                        .append(",");
-                placeholder3.append(columnName)
-                        .append("=")
-                        .append(query)
-                        .append(",");
+                executeUpdate(query2, new ArrayList<>());
             }
 
-            placeholder1.append(",");
-            placeholder2.append(",");
-            placeholder3.append(",");
+            String columnName = databaseField.columnName();
+            String query = formatQueryArgument(field.get(entry));
 
-            placeholder1 = new StringBuilder(placeholder1.toString().replace(",,", ""));
-            placeholder2 = new StringBuilder(placeholder2.toString().replace(",,", ""));
-            placeholder3 = new StringBuilder(placeholder3.toString().replace(",,", ""));
+            placeholder1.append(columnName)
+                    .append(",");
+            placeholder2.append(query)
+                    .append(",");
+            placeholder3.append(columnName)
+                    .append("=")
+                    .append(query)
+                    .append(",");
+        }
 
-            executeUpdate(sqlConfig.driver(main).insert
-                    .replace("%placeholder-1%", placeholder1.toString())
-                    .replace("%placeholder-2%", placeholder2.toString())
-                    .replace("%placeholder-3%", placeholder3.toString())
-                    .replace("%key%", key)
-                    .replace("%table%",
-                            entry.getClass()
-                                    .getAnnotation(DatabaseTable.class)
-                                    .table()), new ArrayList<>(
+        placeholder1.append(",");
+        placeholder2.append(",");
+        placeholder3.append(",");
 
-            ));
-        });
+        placeholder1 = new StringBuilder(placeholder1.toString().replace(",,", ""));
+        placeholder2 = new StringBuilder(placeholder2.toString().replace(",,", ""));
+        placeholder3 = new StringBuilder(placeholder3.toString().replace(",,", ""));
+
+        executeUpdate(sqlConfig.driver(main).insert
+                .replace("%placeholder-1%", placeholder1.toString())
+                .replace("%placeholder-2%", placeholder2.toString())
+                .replace("%placeholder-3%", placeholder3.toString())
+                .replace("%key%", key)
+                .replace("%table%",
+                        entry.getClass()
+                                .getAnnotation(DatabaseTable.class)
+                                .table()), new ArrayList<>(
+
+        ));
     }
 
     @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
@@ -354,45 +350,43 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
                         .table()), Arrays.asList(entry.getID()));
     }
 
+    @SneakyThrows
     @SuppressWarnings("resource")
     public void executeUpdate(String sql, @NotNull List<Object> values) {
-        LambdaExecutor.LambdaCatch.NoReturnLambdaCatch.executeCatch(() -> {
-            debug(sql, values);
+        debug(sql, values);
 
-            PreparedStatement statement = getConnection().prepareStatement(sql);
+        PreparedStatement statement = getConnection().prepareStatement(sql);
 
-            for (int i = 0; i < values.size(); i++) {
-                statement.setObject(i + 1, values.get(i));
-            }
+        for (int i = 0; i < values.size(); i++) {
+            statement.setObject(i + 1, values.get(i));
+        }
 
-            statement.executeUpdate();
-        });
+        statement.executeUpdate();
     }
 
+    @SneakyThrows
     @SuppressWarnings("resource")
     public ResultSet executeQuery(String sql, @NotNull List<Object> values) {
 
-        return LambdaExecutor.LambdaCatch.ReturnLambdaCatch.executeCatch(() -> {
-            debug(sql, values);
+        debug(sql, values);
 
-            PreparedStatement statement;
-            try {
-                statement = getConnection().prepareStatement(sql);
-            } catch (Throwable t) {
-                Logger.error("The connection to the database has been lost trying to reconnect!");
-                if (Debugger.isEnabled()) {
-                    t.printStackTrace();
-                }
-                connect();
-                return executeQuery(sql, values);
+        PreparedStatement statement;
+        try {
+            statement = getConnection().prepareStatement(sql);
+        } catch (Throwable t) {
+            Logger.error("The connection to the database has been lost trying to reconnect!");
+            if (Debugger.isEnabled()) {
+                t.printStackTrace();
             }
+            connect();
+            return executeQuery(sql, values);
+        }
 
-            for (int i = 0; i < values.size(); i++) {
-                statement.setObject(i + 1, values.get(i));
-            }
+        for (int i = 0; i < values.size(); i++) {
+            statement.setObject(i + 1, values.get(i));
+        }
 
-            return statement.executeQuery();
-        });
+        return statement.executeQuery();
     }
 
     private void debug(String sql, List<Object> values) {

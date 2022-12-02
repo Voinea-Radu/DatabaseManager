@@ -125,7 +125,7 @@ public abstract class DatabaseManager implements IDatabaseManager {
             return null;
         }
 
-        return LambdaExecutor.LambdaCatch.ReturnLambdaCatch.executeCatch(() -> {
+        try{
             if (object.toString()
                     .equals("[]")) {
                 return new ArrayList<>();
@@ -139,11 +139,11 @@ public abstract class DatabaseManager implements IDatabaseManager {
                 lst.add(getObject(clazz, data));
             }
             return lst;
-        }, e -> {
+        }catch (Exception e){
             Logger.error("Malformed data for " + object);
             e.printStackTrace();
             return null;
-        });
+        }
     }
 
     private static String serializeList(Object object) {
