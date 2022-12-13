@@ -69,6 +69,12 @@ public class QueryConstrains {
         return this;
     }
 
+    @SuppressWarnings("unused")
+    public QueryConstrains contains(String field, String value) {
+        query = field + " LIKE %" + value + "%";
+        return this;
+    }
+
     public String getFinalQuery() {
         return query;
     }
