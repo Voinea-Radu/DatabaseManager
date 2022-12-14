@@ -71,7 +71,7 @@ public class QueryConstrains {
 
     @SuppressWarnings("unused")
     public QueryConstrains contains(String field, String value) {
-        query = field + " LIKE %" + value + "%";
+        query = field + " LIKE '%" + value + "%'";
         return this;
     }
 
