@@ -2,7 +2,6 @@ package dev.lightdream.databasemanager.dto.entry;
 
 import com.google.gson.annotations.Expose;
 import dev.lightdream.databasemanager.DatabaseMain;
-import dev.lightdream.databasemanager.annotations.database.DatabaseField;
 import dev.lightdream.databasemanager.dto.IDatabaseEntry;
 
 import java.util.Objects;

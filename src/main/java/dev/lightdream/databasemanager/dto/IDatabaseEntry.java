@@ -1,9 +1,6 @@
 package dev.lightdream.databasemanager.dto;
 
 import dev.lightdream.databasemanager.DatabaseMain;
-import dev.lightdream.databasemanager.annotations.database.DatabaseField;
-
-import java.util.Objects;
 
 public interface IDatabaseEntry {
 

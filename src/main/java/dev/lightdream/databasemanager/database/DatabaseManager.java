@@ -3,7 +3,7 @@ package dev.lightdream.databasemanager.database;
 import dev.lightdream.databasemanager.DatabaseMain;
 import dev.lightdream.databasemanager.dto.IDatabaseEntry;
 import dev.lightdream.databasemanager.dto.SQLConfig;
-import dev.lightdream.lambda.LambdaExecutor;
+import dev.lightdream.lambda.lambda.ReturnArgLambdaExecutor;
 import dev.lightdream.logger.Logger;
 
 import java.io.File;
@@ -12,20 +12,11 @@ import java.util.*;
 public abstract class DatabaseManager implements IDatabaseManager {
 
     private final static String lineSeparator = ";line_separator;";
-    private final static HashMap<Class<?>, LambdaExecutor.ReturnLambdaExecutor<?, Object>> serializeMap = new HashMap<>();
-    private final static HashMap<Class<?>, LambdaExecutor.ReturnLambdaExecutor<?, Object>> deserializeMap = new HashMap<>();
+    private final static HashMap<Class<?>, ReturnArgLambdaExecutor<?, Object>> serializeMap = new HashMap<>();
+    private final static HashMap<Class<?>, ReturnArgLambdaExecutor<?, Object>> deserializeMap = new HashMap<>();
     public final DatabaseMain main;
     public SQLConfig sqlConfig;
     public File dataFolder;
-
-    /**
-     * @param string The string to format
-     * @return String appended with " at the beginning and end
-     */
-    @SuppressWarnings("unused")
-    public static String formatString(String string) {
-        return "\"" + string + "\"";
-    }
 
     public DatabaseManager(DatabaseMain main) {
         this.main = main;
@@ -120,12 +111,21 @@ public abstract class DatabaseManager implements IDatabaseManager {
         registerDataType(List.class, "TEXT");
     }
 
+    /**
+     * @param string The string to format
+     * @return String appended with " at the beginning and end
+     */
+    @SuppressWarnings("unused")
+    public static String formatString(String string) {
+        return "\"" + string + "\"";
+    }
+
     private static ArrayList<?> deserializeList(Object object) {
         if (object == null) {
             return null;
         }
 
-        try{
+        try {
             if (object.toString()
                     .equals("[]")) {
                 return new ArrayList<>();
@@ -139,7 +139,7 @@ public abstract class DatabaseManager implements IDatabaseManager {
                 lst.add(getObject(clazz, data));
             }
             return lst;
-        }catch (Exception e){
+        } catch (Exception e) {
             Logger.error("Malformed data for " + object);
             e.printStackTrace();
             return null;
@@ -234,8 +234,8 @@ public abstract class DatabaseManager implements IDatabaseManager {
     }
 
     @SuppressWarnings({"unused", "unchecked"})
-    public <R> void registerSDPair(Class<R> clazz, LambdaExecutor.ReturnLambdaExecutor<?, R> serialize, LambdaExecutor.ReturnLambdaExecutor<R, Object> deserialize) {
-        serializeMap.put(clazz, (LambdaExecutor.ReturnLambdaExecutor<?, Object>) serialize);
+    public <R> void registerSDPair(Class<R> clazz, ReturnArgLambdaExecutor<?, R> serialize, ReturnArgLambdaExecutor<R, Object> deserialize) {
+        serializeMap.put(clazz, (ReturnArgLambdaExecutor<?, Object>) serialize);
         deserializeMap.put(clazz, deserialize);
     }
 

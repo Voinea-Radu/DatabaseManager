@@ -6,7 +6,7 @@
 
     <groupId>dev.lightdream</groupId>
     <artifactId>DatabaseManager</artifactId>
-    <version>3.9.1</version>
+    <version>3.9.2</version>
 
     <distributionManagement>
         <repository>
