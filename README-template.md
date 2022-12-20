@@ -1,9 +1,9 @@
-# Logger
+# DatabaseManager
 
 ![Build](../../actions/workflows/build.yml/badge.svg)
-![Version](https://img.shields.io/badge/Version-2.5.0-red.svg)
+![Version](https://img.shields.io/badge/Version-${{ env.VERSION }}-red.svg)
 
-A logger lib that allows the separation of debugging logs and production logs.
+A database manager lib that is based on hikariCP and adds programmatic data fetching and an ORM.
 
 ## Use
 
@@ -25,8 +25,8 @@ A logger lib that allows the separation of debugging logs and production logs.
 <dependencies>
     <dependency>
         <groupId>dev.lightdream</groupId>
-        <artifactId>Logger</artifactId>
-        <version>2.5.0</version>
+        <artifactId>${{ env.ARTIFACT }}</artifactId>
+        <version>${{ env.VERSION }}</version>
     </dependency>
     <!-- Other dependencies -->
 </dependencies>
@@ -42,7 +42,7 @@ repositories {
 }
 
 dependencies {
-    implementation "dev.lightdream:Logger:2.5.0"
+    implementation "dev.lightdream:${{ env.ARTIFACT }}:${{ env.VERSION }}"
 
     // Other dependencies
 }
@@ -50,4 +50,4 @@ dependencies {
 
 ## Example
 
-Can be found in the [source code](/src/main/java/dev/lightdream/logger/example)
+Can be found in the [source code](/src/main/java/dev/lightdream/${{ env.PACKAGE }}/example)
