@@ -15,18 +15,13 @@ jobs:
       # ===== SETUPS ======
 
       - name: Setup codebase
-        uses: actions/checkout@latest
+        uses: actions/checkout@v3
 
       - name: Setup Java
-        uses: actions/setup-java@latest
+        uses: actions/setup-java@v3
         with:
           distribution: zulu
           java-version: 19
-
-      - name: "Setup Python3"
-        uses: actions/setup-python@latest
-        with:
-          python-version: '3.10'
 
       - name: Setup Gradle
         uses: gradle/gradle-build-action@latest
@@ -62,7 +57,7 @@ jobs:
           ./tmp-publish.sh ${{ secrets.GITLAB_AUTH_HEADER_VALUE }} ${{ github.REPOSITORY }} ${{ secrets.GITHUB_TOKEN }} ${{ secrets.SELF_PASSWORD }}
 
       - name: Automatic Releases
-        uses: marvinpinto/action-automatic-releases@latest
+        uses: marvinpinto/action-automatic-releases@1.2.1
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "${{ env.VERSION }}"
@@ -76,7 +71,7 @@ jobs:
 
 
       - name: "README.md Render"
-        uses: varunsridharan/action-dynamic-readme@main
+        uses: varunsridharan/action-dynamic-readme@1.2
         with:
           committer_name: "Radu Voinea"
           committer_email: "contact@voienaradu.com"
