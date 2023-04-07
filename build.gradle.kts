@@ -33,8 +33,8 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.24")
 
     // Jetbrains
-    compileOnly("org.jetbrains:annotations:23.1.0")
-    annotationProcessor("org.jetbrains:annotations:23.1.0")
+    compileOnly("org.jetbrains:annotations:24.0.1")
+    annotationProcessor("org.jetbrains:annotations:24.0.1")
 
     // Reflections
     implementation("org.reflections:reflections:0.10.2")
