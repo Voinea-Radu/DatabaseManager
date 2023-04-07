@@ -87,3 +87,4 @@ tasks.register("publishSelf") {
     dependsOn("publishMavenPublicationToSelfRepository")
     description = "Publishes to Self hosted repository"
 }
+
