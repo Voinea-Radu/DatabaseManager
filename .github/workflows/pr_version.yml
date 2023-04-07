@@ -1,0 +1,35 @@
+name: PR Version Update
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - renovate/**
+    types:
+      - closed
+
+jobs:
+  pr_version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup codebase
+        uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: zulu
+          java-version: 19
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      # ===== EXTERNAL SCRIPTS =====
+
+      - name: External scripts
+        run: |
+          wget -O tmp-increment_version.sh.sh https://raw.githubusercontent.com/L1ghtDream/report/cdn/increment_version.sh.sh
+          chmod +x tmp-increment_version.sh
+          ./tmp-increment_version.sh

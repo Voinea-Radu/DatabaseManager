@@ -13,7 +13,7 @@ repositories {
 
 dependencies {
     // LightDream
-    implementation("dev.lightdream:logger:3.2.0")
+    implementation("dev.lightdream:logger:3.1.0")
     implementation("dev.lightdream:lambda:4.0.0")
 
     // Gson
@@ -38,6 +38,7 @@ dependencies {
 
     // Reflections
     implementation("org.reflections:reflections:0.10.2")
+    implementation(kotlin("stdlib-jdk8"))
 }
 
 java {
