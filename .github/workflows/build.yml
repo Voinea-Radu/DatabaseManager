@@ -24,6 +24,13 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
+      - name: Increment version
+        if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
+        run: |
+          wget -O tmp-increment_version.sh https://raw.githubusercontent.com/L1ghtDream/report/cdn/increment_version.sh
+          chmod +x tmp-increment_version.sh
+          ./tmp-increment_version.sh
+
 
       # ===== BUILD ======
 
