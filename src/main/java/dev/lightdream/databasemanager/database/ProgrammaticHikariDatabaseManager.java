@@ -109,7 +109,7 @@ public abstract class ProgrammaticHikariDatabaseManager extends HikariDatabaseMa
                         continue;
                     }
                     DatabaseField databaseField = field.getAnnotation(DatabaseField.class);
-                    Object result = getObject(field.getType(), rs.getObject(databaseField.columnName()));
+                    Object result = getObject(field.getType(), rs.getObject(databaseField.column()));
                     if (result == null) {
                         field.set(obj, result);
                         continue;

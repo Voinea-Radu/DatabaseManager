@@ -95,7 +95,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
                     continue;
                 }
                 DatabaseField databaseField = field.getAnnotation(DatabaseField.class);
-                field.set(obj, getObject(field.getType(), rs.getObject(databaseField.columnName())));
+                field.set(obj, getObject(field.getType(), rs.getObject(databaseField.column())));
             }
             output.add(obj);
             IDatabaseEntry entry = (IDatabaseEntry) obj;
@@ -186,7 +186,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
                     continue;
                 }
                 DatabaseField databaseField = field.getAnnotation(DatabaseField.class);
-                field.set(obj, getObject(field.getType(), rs.getObject(databaseField.columnName())));
+                field.set(obj, getObject(field.getType(), rs.getObject(databaseField.column())));
             }
             ((IDatabaseEntry) obj).setMain(main);
             output.add(obj);
@@ -217,11 +217,11 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
                 continue;
             }
             DatabaseField dbField = field.getAnnotation(DatabaseField.class);
-            placeholder += dbField.columnName() + " " + getDataType(field.getType()) + " " + (dbField.unique() ? "UNIQUE " : "") + (dbField.autoGenerate() ? sqlConfig.driver(
+            placeholder += dbField.column() + " " + getDataType(field.getType()) + " " + (dbField.unique() ? "UNIQUE " : "") + (dbField.autoGenerate() ? sqlConfig.driver(
                     main).autoIncrement : "") + ",";
 
             if (dbField.primaryKey()) {
-                keys += dbField.columnName();
+                keys += dbField.column();
                 if (getDataType(field.getType()).equals(sqlConfig.driver(main).dataTypes.get(String.class))) {
                     keys += "(255)";
                 }
@@ -314,14 +314,14 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
                 executeUpdate(query2, new ArrayList<>());
             }
 
-            String columnName = databaseField.columnName();
+            String column = databaseField.column();
             String query = formatQueryArgument(field.get(entry));
 
-            placeholder1.append(columnName)
+            placeholder1.append(column)
                     .append(",");
             placeholder2.append(query)
                     .append(",");
-            placeholder3.append(columnName)
+            placeholder3.append(column)
                     .append("=")
                     .append(query)
                     .append(",");

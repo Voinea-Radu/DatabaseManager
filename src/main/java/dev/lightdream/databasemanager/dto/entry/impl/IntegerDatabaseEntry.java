@@ -10,7 +10,7 @@ import dev.lightdream.databasemanager.dto.entry.DatabaseEntry;
 @SuppressWarnings("unused")
 public abstract class IntegerDatabaseEntry extends DatabaseEntry {
 
-    @DatabaseField(columnName = "id",
+    @DatabaseField(column = "id",
             autoGenerate = true,
             unique = true,
             primaryKey = true)

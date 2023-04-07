@@ -11,7 +11,7 @@ import dev.lightdream.databasemanager.dto.entry.DatabaseEntry;
 public abstract class StringDatabaseEntry extends DatabaseEntry {
 
     @DatabaseField(
-            columnName = "id",
+            column = "id",
             unique = true,
             primaryKey = true
     )
