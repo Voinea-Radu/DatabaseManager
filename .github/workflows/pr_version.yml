@@ -1,9 +1,6 @@
 name: PR Version Update
 
 on:
-  push:
-    branches:
-      - master
   pull_request:
     branches:
       - renovate/**
@@ -30,6 +27,6 @@ jobs:
 
       - name: External scripts
         run: |
-          wget -O tmp-increment_version.sh.sh https://raw.githubusercontent.com/L1ghtDream/report/cdn/increment_version.sh.sh
+          wget -O tmp-increment_version.sh https://raw.githubusercontent.com/L1ghtDream/report/cdn/increment_version.sh
           chmod +x tmp-increment_version.sh
           ./tmp-increment_version.sh
