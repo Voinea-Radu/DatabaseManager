@@ -20,7 +20,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.8.9")
 
     // Database
-    implementation("com.zaxxer:HikariCP:4.0.3")
+    implementation("com.zaxxer:HikariCP:5.0.1")
 
     // Driver - SQLite
     implementation("org.xerial:sqlite-jdbc:3.41.2.1")
