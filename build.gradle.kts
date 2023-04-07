@@ -17,7 +17,7 @@ dependencies {
     implementation("dev.lightdream:lambda:4.0.0")
 
     // Gson
-    implementation("com.google.code.gson:gson:2.8.9")
+    implementation("com.google.code.gson:gson:2.10.1")
 
     // Database
     implementation("com.zaxxer:HikariCP:4.0.3")
