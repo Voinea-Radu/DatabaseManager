@@ -1,5 +1,4 @@
 # This script requires the following secrets to be set in the repository settings:
-# - PERSONAL_TOKEN
 # - SELF_PASSWORD
 #
 
@@ -53,7 +52,7 @@ jobs:
         run: |
           wget -O tmp-publish.sh https://raw.githubusercontent.com/L1ghtDream/report/cdn/publish.sh 
           chmod +x tmp-publish.sh 
-          ./tmp-publish.sh ${{ secrets.GITLAB_AUTH_HEADER_VALUE }} ${{ github.REPOSITORY }} ${{ secrets.GITHUB_TOKEN }} ${{ secrets.SELF_PASSWORD }}
+          ./tmp-publish.sh ${{ github.REPOSITORY }} ${{ secrets.GITHUB_TOKEN }} ${{ secrets.SELF_PASSWORD }}
 
       - name: Automatic Releases
         uses: marvinpinto/action-automatic-releases@v1.2.1
