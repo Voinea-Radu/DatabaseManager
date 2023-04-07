@@ -29,8 +29,8 @@ dependencies {
     implementation("mysql:mysql-connector-java:8.0.32")
 
     // Lombok
-    compileOnly("org.projectlombok:lombok:1.18.24")
-    annotationProcessor("org.projectlombok:lombok:1.18.24")
+    compileOnly("org.projectlombok:lombok:1.18.26")
+    annotationProcessor("org.projectlombok:lombok:1.18.26")
 
     // Jetbrains
     compileOnly("org.jetbrains:annotations:23.1.0")
