@@ -3,7 +3,7 @@ package dev.lightdream.databasemanager.database;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import dev.lightdream.databasemanager.DatabaseMain;
-import dev.lightdream.databasemanager.OrderBy;
+import dev.lightdream.databasemanager.dto.OrderBy;
 import dev.lightdream.databasemanager.annotations.database.DatabaseField;
 import dev.lightdream.databasemanager.annotations.database.DatabaseTable;
 import dev.lightdream.databasemanager.dto.IDatabaseEntry;
@@ -241,8 +241,15 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
                                 .table()), new ArrayList<>());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public abstract void setup();
+    public void setup() {
+        for (Class<?> aClass : main.getReflections().getTypesAnnotatedWith(DatabaseTable.class)) {
+            if (IDatabaseEntry.class.isAssignableFrom(aClass)) {
+                setup((Class<? extends IDatabaseEntry>) aClass);
+            }
+        }
+    }
 
     @Override
     public void setup(Class<? extends IDatabaseEntry> clazz) {

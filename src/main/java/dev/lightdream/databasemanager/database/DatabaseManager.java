@@ -1,10 +1,13 @@
 package dev.lightdream.databasemanager.database;
 
+import com.google.gson.Gson;
 import dev.lightdream.databasemanager.DatabaseMain;
 import dev.lightdream.databasemanager.dto.IDatabaseEntry;
 import dev.lightdream.databasemanager.dto.SQLConfig;
 import dev.lightdream.lambda.lambda.ReturnArgLambdaExecutor;
 import dev.lightdream.logger.Logger;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.File;
 import java.util.*;
@@ -14,6 +17,8 @@ public abstract class DatabaseManager implements IDatabaseManager {
     private final static String lineSeparator = ";line_separator;";
     private final static HashMap<Class<?>, ReturnArgLambdaExecutor<?, Object>> serializeMap = new HashMap<>();
     private final static HashMap<Class<?>, ReturnArgLambdaExecutor<?, Object>> deserializeMap = new HashMap<>();
+    private static @Setter
+    @Getter Gson gson = new Gson();
     public final DatabaseMain main;
     public SQLConfig sqlConfig;
     public File dataFolder;
@@ -30,11 +35,8 @@ public abstract class DatabaseManager implements IDatabaseManager {
                 Object::toString);
 
         registerSDPair(UUID.class, object -> "\"" + object.toString() + "\"", object -> UUID.fromString(object.toString()));
-
         registerSDPair(ArrayList.class, DatabaseManager::serializeList, DatabaseManager::deserializeList);
-
         registerSDPair(List.class, DatabaseManager::serializeList, DatabaseManager::deserializeList);
-
         registerSDPair(Long.class, object -> object, object -> {
             if (object == null) {
                 return null;
@@ -47,7 +49,6 @@ public abstract class DatabaseManager implements IDatabaseManager {
             }
             return Long.parseLong(object.toString());
         });
-
         registerSDPair(Integer.class, object -> object, object -> {
             if (object == null) {
                 return null;
@@ -66,7 +67,6 @@ public abstract class DatabaseManager implements IDatabaseManager {
             }
             return Integer.parseInt(object.toString());
         });
-
         registerSDPair(Double.class, object -> object, object -> {
             if (object == null) {
                 return null;
@@ -79,7 +79,6 @@ public abstract class DatabaseManager implements IDatabaseManager {
             }
             return Double.parseDouble(object.toString());
         });
-
         registerSDPair(Float.class, object -> object, object -> {
             if (object == null) {
                 return null;
@@ -92,7 +91,6 @@ public abstract class DatabaseManager implements IDatabaseManager {
             }
             return Float.parseFloat(object.toString());
         });
-
         registerSDPair(Boolean.class, object -> object, object -> {
             if (object == null) {
                 return null;
@@ -105,7 +103,6 @@ public abstract class DatabaseManager implements IDatabaseManager {
             }
             return Boolean.parseBoolean(object.toString());
         });
-
 
         registerDataType(ArrayList.class, "TEXT");
         registerDataType(List.class, "TEXT");
@@ -169,35 +166,24 @@ public abstract class DatabaseManager implements IDatabaseManager {
             return "NULL";
         }
         Class<?> clazz = object.getClass();
-        Object output = null;
+
         if (serializeMap.get(clazz) != null) {
-            output = serializeMap.get(clazz)
-                    .execute(object);
+            return serializeMap.get(clazz).execute(object).toString();
+        } else {
+            return gson.toJson(gson.toJson(object));
         }
-
-        if (output != null) {
-            return output.toString();
-        }
-
-        return object.toString();
     }
 
     public static Object getObject(Class<?> clazz, Object object) {
-        Object output = null;
-
         if (object == null) {
             return null;
         }
 
         if (deserializeMap.get(clazz) != null) {
-            output = deserializeMap.get(clazz).execute(object);
+            return deserializeMap.get(clazz).execute(object);
+        } else {
+            return gson.fromJson(gson.toJson(object), clazz);
         }
-
-        if (output != null) {
-            return output;
-        }
-
-        return object;
     }
 
     public String getDatabaseURL() {
@@ -224,8 +210,9 @@ public abstract class DatabaseManager implements IDatabaseManager {
             return dbDataType;
         }
 
-        Logger.error("DataType " + clazz.getSimpleName() + " is not a supported data type");
-        return "";
+        Logger.error("DataType " + clazz.getSimpleName() + " is not a registered data type. Defaulting to TEXT");
+        registerDataType(clazz, "TEXT");
+        return "TEXT";
     }
 
     @Override
@@ -242,4 +229,5 @@ public abstract class DatabaseManager implements IDatabaseManager {
     public void registerDataType(Class<?> clazz, String dataType) {
         main.getDriverConfig().registerDataType(clazz, dataType);
     }
+
 }

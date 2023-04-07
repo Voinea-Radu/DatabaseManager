@@ -4,6 +4,9 @@ import dev.lightdream.databasemanager.DatabaseMain;
 import dev.lightdream.databasemanager.annotations.database.DatabaseField;
 import dev.lightdream.databasemanager.dto.entry.DatabaseEntry;
 
+/**
+ * Integer ID Database Entry
+ */
 @SuppressWarnings("unused")
 public abstract class IntegerDatabaseEntry extends DatabaseEntry {
 

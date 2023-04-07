@@ -6,10 +6,10 @@ import java.util.UUID;
 @SuppressWarnings({"unused", "DanglingJavadoc"})
 /**
  * Can use the next dependencies if having problems
- * org.xerial:sqlite-jdbc:3.36.0.3
- * com.zsoltfabok:sqlite-dialect:1.0
- * com.enigmabridge:hibernate4-sqlite-dialect:0.1.2
- * mysql:mysql-connector-java:8.0.28
+ * org.xerial:sqlite-jdbc
+ * com.zsoltfabok:sqlite-dialect
+ * com.enigmabridge:hibernate4-sqlite-dialect
+ * mysql:mysql-connector-java
  **/
 public class DriverConfig {
 

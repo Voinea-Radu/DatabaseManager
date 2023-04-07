@@ -1,4 +1,4 @@
-package dev.lightdream.databasemanager;
+package dev.lightdream.databasemanager.dto;
 
 public class OrderBy {
 

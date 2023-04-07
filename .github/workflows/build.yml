@@ -1,3 +1,9 @@
+# This script requires the following secrets to be set in the repository settings:
+# - GITLAB_AUTH_HEADER_VALUE
+# - PERSONAL_TOKEN
+# - SELF_PASSWORD
+#
+
 name: Build
 
 on: [ push ]
@@ -6,22 +12,55 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK 8
-        uses: actions/setup-java@v3
+      # ===== SETUPS ======
+
+      - name: Setup codebase
+        uses: actions/checkout@latest
+
+      - name: Setup Java
+        uses: actions/setup-java@latest
         with:
-          java-version: '8'
-          distribution: 'adopt'
+          distribution: zulu
+          java-version: 19
 
-      - name: Set version env variable
-        run: echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
-      - name: Set artifact env variable
-        run: echo "ARTIFACT=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> $GITHUB_ENV
-      - name: Set package env variable
-        run: echo "PACKAGE=$(ls src/main/java/*/*)" >> $GITHUB_ENV
+      - name: "Setup Python3"
+        uses: actions/setup-python@latest
+        with:
+          python-version: '3.10'
 
-      - name: Build with Maven
-        run: mvn package
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@latest
+
+
+      # ===== BUILD ======
+
+
+      - name: Execute Gradle build
+        run: gradle build
+
+
+      # ===== EXTERNAL SCRIPTS =====
+
+      - name: External scripts
+        run: |
+          wget -O tmp-environment_variables.sh https://raw.githubusercontent.com/L1ghtDream/report/cdn/environment_variables.sh
+          chmod +x tmp-environment_variables.sh
+          ./tmp-environment_variables.sh ${{ github.REPOSITORY }}
+          
+          wget -O tmp-create_readme_template.sh https://raw.githubusercontent.com/L1ghtDream/report/cdn/create_readme_template.sh
+          chmod +x tmp-create_readme_template.sh
+          ./tmp-create_readme_template.sh
+
+
+      # ===== PUBLISH ======
+
+
+      - name: Uploading artifacts
+        run: |
+          wget -O tmp-publish.sh https://raw.githubusercontent.com/L1ghtDream/report/cdn/publish.sh 
+          chmod +x tmp-publish.sh 
+          ./tmp-publish.sh ${{ secrets.GITLAB_AUTH_HEADER_VALUE }} ${{ github.REPOSITORY }} ${{ secrets.GITHUB_TOKEN }} ${{ secrets.SELF_PASSWORD }}
+
       - name: Automatic Releases
         uses: marvinpinto/action-automatic-releases@latest
         with:
@@ -30,7 +69,11 @@ jobs:
           prerelease: false
           title: "${{ env.VERSION }}"
           files: |
-            target/*.jar
+            build/libs/*.jar
+
+
+      # ===== RENDERS ======
+
 
       - name: "README.md Render"
         uses: varunsridharan/action-dynamic-readme@main
@@ -39,9 +82,12 @@ jobs:
           committer_email: "contact@voienaradu.com"
           commit_message: "Updated README.md versions"
           files: |
-            README-template.md=README.md
+            tmp/README-template.md=README.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{ env.VERSION }}
-          PACKAGE: ${{ env.PACKAGE }}
           ARTIFACT: ${{ env.ARTIFACT }}
+          GROUP: ${{ env.GROUP }}
+          GITHUB_USERNAME: ${{ github.REPOSITORY_OWNER }}
+          REPOSITORY: ${{ github.REPOSITORY }}
+          REPOSITORY_NAME: ${{ env.REPOSITORY_NAME }}
