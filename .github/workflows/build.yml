@@ -1,5 +1,4 @@
 # This script requires the following secrets to be set in the repository settings:
-# - GITLAB_AUTH_HEADER_VALUE
 # - PERSONAL_TOKEN
 # - SELF_PASSWORD
 #
