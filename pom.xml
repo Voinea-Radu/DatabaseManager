@@ -124,7 +124,7 @@
             <artifactId>HikariCP</artifactId>
             <!-- Breaks compatibility with Java 1.8 -->
             <!--suppress MavenPackageUpdate -->
-            <version>4.0.3</version>
+            <version>5.0.1</version>
         </dependency>
 
         <!-- Drivers -->
