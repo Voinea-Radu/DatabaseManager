@@ -70,7 +70,7 @@ jobs:
 
 
       - name: "README.md Render"
-        uses: varunsridharan/action-dynamic-readme@v1.2
+        uses: varunsridharan/action-dynamic-readme@1.2
         with:
           committer_name: "Radu Voinea"
           committer_email: "contact@voienaradu.com"
