@@ -9,9 +9,11 @@ on:
     branches:
       - master
       - main
-  pull_request:
+  workflow_run:
+    workflows: [ "Patch Version" ]
     types:
-      - closed
+      - completed
+
 
 jobs:
   build:
@@ -64,6 +66,7 @@ jobs:
       # ===== EXTERNAL SCRIPTS =====
 
       - name: External scripts
+        if: github.event_name != 'pull_request'
         run: |
           wget -O tmp-environment_variables.sh https://raw.githubusercontent.com/L1ghtDream/report/cdn/environment_variables.sh
           chmod +x tmp-environment_variables.sh
@@ -78,6 +81,7 @@ jobs:
 
 
       - name: Uploading artifacts
+        if: github.event_name != 'pull_request'
         run: |
           wget -O tmp-publish.sh https://raw.githubusercontent.com/L1ghtDream/report/cdn/publish.sh 
           chmod +x tmp-publish.sh 
@@ -85,6 +89,7 @@ jobs:
 
       - name: Automatic Releases
         uses: marvinpinto/action-automatic-releases@v1.2.1
+        if: github.event_name != 'pull_request'
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "${{ env.VERSION }}"
@@ -99,6 +104,7 @@ jobs:
 
       - name: "README.md Render"
         uses: varunsridharan/action-dynamic-readme@1.2
+        if: github.event_name != 'pull_request'
         with:
           committer_name: "Radu Voinea"
           committer_email: "contact@voienaradu.com"
