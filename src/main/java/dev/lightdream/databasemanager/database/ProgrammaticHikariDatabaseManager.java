@@ -1,10 +1,10 @@
 package dev.lightdream.databasemanager.database;
 
 import dev.lightdream.databasemanager.DatabaseMain;
-import dev.lightdream.databasemanager.dto.OrderBy;
 import dev.lightdream.databasemanager.annotations.database.DatabaseField;
 import dev.lightdream.databasemanager.annotations.database.DatabaseTable;
 import dev.lightdream.databasemanager.dto.IDatabaseEntry;
+import dev.lightdream.databasemanager.dto.OrderBy;
 import dev.lightdream.databasemanager.dto.QueryConstrains;
 import dev.lightdream.logger.Logger;
 import lombok.SneakyThrows;
