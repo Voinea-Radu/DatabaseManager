@@ -35,6 +35,10 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
     public void connect() {
         try {
             Logger.good("Connecting to the database with url " + getDatabaseURL());
+            Logger.good("Connecting to the database with url " + getDatabaseURL());
+            Logger.good("Connecting to the database with url " + getDatabaseURL());
+            Logger.good("Connecting to the database with url " + getDatabaseURL());
+            Logger.good("Connecting to the database with url " + getDatabaseURL());
 
             HikariConfig config = new HikariConfig();
             config.setJdbcUrl(getDatabaseURL());
