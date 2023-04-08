@@ -14,26 +14,6 @@ on:
       - closed
 
 jobs:
-  version:
-    runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
-    steps:
-
-      - name: Increment version
-        run: |
-          wget -O tmp-increment_version.sh https://raw.githubusercontent.com/L1ghtDream/report/cdn/increment_version.sh
-          chmod +x tmp-increment_version.sh
-          ./tmp-increment_version.sh
-
-      - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: Incremented patch version
-          commit_options: '--no-verify --signoff'
-
-          commit_user_name: Radu Voinea
-          commit_user_email: contact@voinearadu.com
-
   build:
     runs-on: ubuntu-latest
     steps:

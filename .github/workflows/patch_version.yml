@@ -6,6 +6,11 @@ jobs:
   version:
     runs-on: ubuntu-latest
     steps:
+
+      - name: Setup codebase
+        uses: actions/checkout@v3
+
+
       - name: Increment version
         run: |
           wget -O tmp-increment_version.sh https://raw.githubusercontent.com/L1ghtDream/report/cdn/increment_version.sh
