@@ -1,6 +1,9 @@
 package dev.lightdream.databasemanager.dto;
 
 import dev.lightdream.messagebuilder.MessageBuilder;
+import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -17,11 +20,9 @@ public class DriverConfig {
 
     public Driver MYSQL = new Driver(
             "SELECT %fields% FROM %table% WHERE %condition% %order% %limit%",
-            "INSERT INTO %table% (%placeholder-1%) VALUES(%placeholder-2%) ON DUPLICATE KEY UPDATE %placeholder-3%",
-            "CREATE TABLE IF NOT EXISTS %table% (%placeholder%, PRIMARY KEY(%keys%))",
-            "DELETE FROM %table% WHERE id=?",
-            "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = \"%database%\" AND TABLE_NAME = \"%table%\";",
-            "ALTER TABLE %table% AUTO_INCREMENT=%autoincrement%",
+            "INSERT INTO %table% (%columns%) VALUES(%values%) ON DUPLICATE KEY UPDATE %update%",
+            "CREATE TABLE IF NOT EXISTS %table% (%columns%, PRIMARY KEY(%keys%))",
+            "DELETE FROM %table% WHERE %condition%",
             new HashMap<Class<?>, String>() {{
                 put(int.class, "INT");
                 put(Integer.class, "INT");
@@ -46,11 +47,9 @@ public class DriverConfig {
     public Driver H2 = new Driver(MYSQL);
     public Driver SQLITE = new Driver(
             "SELECT %fields% FROM %table% WHERE %condition% %order% %limit%",
-            "INSERT INTO %table% (%placeholder-1%) VALUES(%placeholder-2%) ON CONFLICT(%key%) DO UPDATE SET %placeholder-3%",
-            "CREATE TABLE IF NOT EXISTS %table% (%placeholder%)",
-            "DELETE FROM %table% WHERE id=?",
-            "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = \"%database%\" AND TABLE_NAME = \"%table%\";",
-            "ALTER TABLE %table% AUTO_INCREMENT=%autoincrement%",
+            "INSERT INTO %table% (%columns%) VALUES(%values%) ON CONFLICT(%key%) DO UPDATE SET %update%",
+            "CREATE TABLE IF NOT EXISTS %table% (%columns%)",
+            "DELETE FROM %table% WHERE %condition%",
             new HashMap<Class<?>, String>() {{
                 put(int.class, "INTEGER");
                 put(Integer.class, "INTEGER");
@@ -81,92 +80,5 @@ public class DriverConfig {
         H2.dataTypes.put(clazz, dataType);
         SQLITE.dataTypes.put(clazz, dataType);
     }
-
-    public static class Driver {
-        // Queries
-        public String select;
-        public String insert;
-        public String createTable;
-        public String delete;
-
-        // Data Structure
-        public HashMap<Class<?>, String> dataTypes;
-
-        // Keywords
-        public String autoIncrement;
-        public String orderDesc;
-        public String orderAsc;
-        public String limit;
-
-        public Driver() {
-        }
-
-
-        public Driver(String select, String insert, String createTable, String delete,
-                      String getAutoIncrement, String updateAutoIncrement, HashMap<Class<?>, String> dataTypes,
-                      String autoIncrement, String orderDesc, String orderAsc, String limit) {
-            this.select = select;
-            this.insert = insert;
-            this.createTable = createTable;
-            this.delete = delete;
-
-            this.dataTypes = dataTypes;
-
-            this.autoIncrement = autoIncrement;
-            this.orderDesc = orderDesc;
-            this.orderAsc = orderAsc;
-            this.limit = limit;
-        }
-
-        public Driver(Driver driver) {
-            this.select = driver.select;
-            this.insert = driver.insert;
-            this.createTable = driver.createTable;
-            this.delete = driver.delete;
-
-            this.dataTypes = driver.dataTypes;
-
-            this.autoIncrement = driver.autoIncrement;
-            this.orderDesc = driver.orderDesc;
-            this.orderAsc = driver.orderAsc;
-            this.limit = driver.limit;
-        }
-
-        public String select(String table, String condition, OrderBy order, String limit) {
-            // SELECT * FROM %table% WHERE %condition% %order% %limit%
-            return new MessageBuilder(select)
-                    .parse("%fields%", "*")
-                    .parse("%table%", table)
-                    .parse("%condition%", condition)
-                    .parse("%order%", order.parse(this))
-                    .parse("%limit%", limit)
-                    .parse();
-        }
-
-        public String select(String table) {
-            // SELECT * FROM %table% WHERE 1
-
-            return new MessageBuilder(select)
-                    .parse("%fields%", "*")
-                    .parse("%table%", table)
-                    .parse("%condition%", "1")
-                    .parse("%order%", "")
-                    .parse("%limit%", "")
-                    .parse();
-        }
-
-        public String select(String fields, String table, String condition, OrderBy order, String limit) {
-            // SELECT %fields% FROM %table% WHERE %condition% %order% %limit%
-
-            return new MessageBuilder(select)
-                    .parse("%fields%", fields)
-                    .parse("%table%", table)
-                    .parse("%condition%", condition)
-                    .parse("%order%", order.parse(this))
-                    .parse("%limit%", limit)
-                    .parse();
-        }
-    }
-
 
 }

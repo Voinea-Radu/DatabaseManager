@@ -112,20 +112,20 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
     }
 
     public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries) {
-        return get(clazz, queries, null, -1, null);
+        return get(clazz, queries, null, -1);
     }
 
-    public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries, String orderBy, OrderBy.OrderByType orderByType) {
-        return get(clazz, queries, orderBy, -1, orderByType);
+    public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries, OrderBy order) {
+        return get(clazz, queries, order, -1);
     }
 
-    public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries, int limitCount) {
-        return get(clazz, queries, null, limitCount, null);
+    public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries, int limit) {
+        return get(clazz, queries, null, limit);
     }
 
     @SneakyThrows
     @SuppressWarnings("resource")
-    public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries, String orderBy, int limitCount, OrderBy.OrderByType orderByType) {
+    public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries, OrderBy order, int limit) {
 
         if (queries.size() == 0) {
             return getAll(clazz);
@@ -170,20 +170,17 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         placeholder = new StringBuilder(placeholder.toString()
                 .replace(" AND  ", ""));
 
-        String order = orderBy == "" || orderBy == null ?
-                "" :
-                orderByType == OrderBy.OrderByType.ASCENDANT ?
-                        sqlConfig.driver(main).orderAsc.replace("%order%", orderBy) :
-                        sqlConfig.driver(main).orderDesc.replace("%order%", orderBy);
-        String limit = limitCount == -1 ? "" : sqlConfig.driver(main).limit.replace("%limit%", String.valueOf(limitCount));
 
         List<T> output = new ArrayList<>();
-        ResultSet rs = executeQuery(sqlConfig.driver(main).select.replace("%placeholder%", placeholder.toString())
-                .replace("%order%", order)
-                .replace("%limit%", limit)
-                .replace("%table%",
-                        clazz.getAnnotation(DatabaseTable.class)
-                                .table()), new ArrayList<>());
+        ResultSet rs = executeQuery(
+                sqlConfig.driver(main).select(
+                        clazz.getAnnotation(DatabaseTable.class).table(),
+                        placeholder.toString(),
+                        order,
+                        limit),
+                new ArrayList<>()
+        );
+
         while (rs.next()) {
             T obj = clazz.getDeclaredConstructor()
                     .newInstance();
@@ -225,8 +222,12 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
                 continue;
             }
             DatabaseField dbField = field.getAnnotation(DatabaseField.class);
-            placeholder += dbField.column() + " " + getDataType(field.getType()) + " " + (dbField.unique() ? "UNIQUE " : "") + (dbField.autoGenerate() ? sqlConfig.driver(
-                    main).autoIncrement : "") + ",";
+            placeholder +=
+                    dbField.column() + " " +
+                            getDataType(field.getType()) + " " +
+                            (dbField.unique() ? "UNIQUE " : "") +
+                            (dbField.autoGenerate() ? sqlConfig.driver(main).getAutoIncrement() : "") +
+                            ",";
 
             if (dbField.primaryKey()) {
                 keys += dbField.column();
@@ -242,11 +243,14 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         placeholder += ",";
         placeholder = placeholder.replace(",,", "");
 
-        executeUpdate(sqlConfig.driver(main).createTable.replace("%placeholder%", placeholder)
-                .replace("%keys%", keys)
-                .replace("%table%",
-                        clazz.getAnnotation(DatabaseTable.class)
-                                .table()), new ArrayList<>());
+        executeUpdate(
+                sqlConfig.driver(main).createTable(
+                        clazz.getAnnotation(DatabaseTable.class).table(),
+                        placeholder,
+                        keys
+                ),
+                new ArrayList<>())
+        ;
     }
 
     @SuppressWarnings("unchecked")
@@ -309,7 +313,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
                         table.table(),
                         "1",
                         OrderBy.DESCENDENT(databaseField.column()),
-                        "1"
+                        1
                 );
                 //noinspection resource
                 ResultSet rs = executeQuery(query, new ArrayList<>());
@@ -341,26 +345,29 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         placeholder2 = new StringBuilder(placeholder2.toString().replace(",,", ""));
         placeholder3 = new StringBuilder(placeholder3.toString().replace(",,", ""));
 
-        executeUpdate(sqlConfig.driver(main).insert
-                .replace("%placeholder-1%", placeholder1.toString())
-                .replace("%placeholder-2%", placeholder2.toString())
-                .replace("%placeholder-3%", placeholder3.toString())
-                .replace("%key%", key)
-                .replace("%table%",
-                        entry.getClass()
-                                .getAnnotation(DatabaseTable.class)
-                                .table()), new ArrayList<>(
-
-        ));
+        executeUpdate(
+                sqlConfig.driver(main).insert(
+                        table.table(),
+                        placeholder1.toString(),
+                        placeholder2.toString(),
+                        placeholder3.toString()
+                ),
+                new ArrayList<>()
+        );
     }
 
     @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
     @Override
     public void delete(IDatabaseEntry entry) {
-        executeUpdate(sqlConfig.driver(main).delete.replace("%table%",
-                entry.getClass()
-                        .getAnnotation(DatabaseTable.class)
-                        .table()), Arrays.asList(entry.getID()));
+        DatabaseTable databaseTable = entry.getClass().getAnnotation(DatabaseTable.class);
+
+        executeUpdate(
+                sqlConfig.driver(main).delete(
+                        databaseTable.table(),
+                        "id=?"
+                ),
+                Arrays.asList(entry.getID())
+        );
     }
 
     @SneakyThrows

@@ -63,35 +63,20 @@ public abstract class ProgrammaticHikariDatabaseManager extends HikariDatabaseMa
         }
 
         private String getFinalQuery() {
-            String query = sqlConfig.driver(main).select;
             String placeholder = "1";
             String order = "";
-            String limit = "";
-            String table = clazz.getAnnotation(DatabaseTable.class)
-                    .table();
+            String table = clazz.getAnnotation(DatabaseTable.class).table();
 
             if (queryConstrains != null) {
                 placeholder = queryConstrains.getFinalQuery();
             }
 
-            if (orderBy != null) {
-                if (orderBy.type.equals(OrderBy.OrderByType.ASCENDANT)) {
-                    order = sqlConfig.driver(main).orderAsc.replace("%order%", orderBy.field);
-                } else if (orderBy.type.equals(OrderBy.OrderByType.DESCENDENT)) {
-                    order = sqlConfig.driver(main).orderDesc.replace("%order%", orderBy.field);
-                }
-            }
-
-            if (this.limit != -1) {
-                limit = sqlConfig.driver(main).limit.replace("%limit%", String.valueOf(this.limit));
-            }
-
-            query = query.replace("%placeholder%", placeholder)
-                    .replace("%order%", order)
-                    .replace("%limit%", limit)
-                    .replace("%table%", table);
-
-            return query;
+            return sqlConfig.driver(main).select(
+                    table,
+                    placeholder,
+                    orderBy,
+                    limit
+            );
         }
 
         @SneakyThrows

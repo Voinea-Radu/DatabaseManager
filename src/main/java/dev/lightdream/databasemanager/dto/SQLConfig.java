@@ -24,7 +24,7 @@ public class SQLConfig {
 
     }
 
-    public DriverConfig.Driver driver(DatabaseMain main) {
+    public Driver driver(DatabaseMain main) {
         switch (driverName) {
             case "MYSQL":
                 return main.getDriverConfig().MYSQL;
