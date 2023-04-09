@@ -18,7 +18,10 @@ import java.net.URLClassLoader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 @SuppressWarnings({"unused", "DeprecatedIsStillUsed"})
 @Deprecated // Deprecated just to show that it not what should be used
@@ -80,11 +83,15 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
             return new ArrayList<>();
         }
 
+        DatabaseTable databaseTable = clazz.getAnnotation(DatabaseTable.class);
+
         List<T> output = new ArrayList<>();
 
-        ResultSet rs = executeQuery(sqlConfig.driver(main).selectAll.replace("%table%",
-                clazz.getAnnotation(DatabaseTable.class)
-                        .table()), new ArrayList<>());
+        ResultSet rs = executeQuery(
+                sqlConfig.driver(main).select(databaseTable.table()),
+                new ArrayList<>()
+        );
+
         while (rs.next()) {
             T obj = clazz.getDeclaredConstructor()
                     .newInstance();
@@ -163,10 +170,11 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         placeholder = new StringBuilder(placeholder.toString()
                 .replace(" AND  ", ""));
 
-        String order = Objects.equals(orderBy,
-                "") || orderBy == null ? "" : orderByType == OrderBy.OrderByType.ASCENDANT ? sqlConfig.driver(main).orderAsc.replace(
-                "%order%",
-                orderBy) : sqlConfig.driver(main).orderDesc.replace("%order%", orderBy);
+        String order = orderBy == "" || orderBy == null ?
+                "" :
+                orderByType == OrderBy.OrderByType.ASCENDANT ?
+                        sqlConfig.driver(main).orderAsc.replace("%order%", orderBy) :
+                        sqlConfig.driver(main).orderDesc.replace("%order%", orderBy);
         String limit = limitCount == -1 ? "" : sqlConfig.driver(main).limit.replace("%limit%", String.valueOf(limitCount));
 
         List<T> output = new ArrayList<>();
@@ -296,23 +304,21 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
             }
 
             if (databaseField.autoGenerate() && field.get(entry) == null) {
-                String query = sqlConfig.driver(main).getAutoIncrement
-                        .replace("%table%", table.table())
-                        .replace("%database%", sqlConfig.database);
-
+                String query = sqlConfig.driver(main).select(
+                        databaseField.column(),
+                        table.table(),
+                        "1",
+                        OrderBy.DESCENDENT(databaseField.column()),
+                        "1"
+                );
                 //noinspection resource
                 ResultSet rs = executeQuery(query, new ArrayList<>());
                 rs.next();
                 int nextID = rs.getInt(1);
 
                 field.set(entry, nextID);
-
-                String query2 = sqlConfig.driver(main).updateAutoIncrement
-                        .replace("%table%", table.table())
-                        .replace("%autoincrement%", String.valueOf(nextID + 1));
-
-                executeUpdate(query2, new ArrayList<>());
             }
+
 
             String column = databaseField.column();
             String query = formatQueryArgument(field.get(entry));

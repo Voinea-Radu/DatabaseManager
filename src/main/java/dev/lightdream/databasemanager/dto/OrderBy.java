@@ -1,5 +1,7 @@
 package dev.lightdream.databasemanager.dto;
 
+import dev.lightdream.databasemanager.DatabaseMain;
+
 public class OrderBy {
 
     public OrderByType type;
@@ -22,6 +24,16 @@ public class OrderBy {
 
     public enum OrderByType {
         ASCENDANT, DESCENDENT
+    }
+
+    public String parse(DatabaseMain main){
+        return parse(main.getSqlConfig().driver(main));
+    }
+
+    public String parse(DriverConfig.Driver driver){
+        return type == OrderBy.OrderByType.ASCENDANT ?
+                driver.orderAsc.replace("%order%", field) :
+                driver.orderDesc.replace("%order%", field);
     }
 
 

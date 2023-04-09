@@ -15,6 +15,7 @@ dependencies {
     // LightDream
     implementation("dev.lightdream:logger:3.2.0")
     implementation("dev.lightdream:lambda:4.0.0")
+    implementation("dev.lightdream:message-builder:3.1.2")
 
     // Gson
     implementation("com.google.code.gson:gson:2.10.1")

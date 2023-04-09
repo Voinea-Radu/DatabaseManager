@@ -1,5 +1,7 @@
 package dev.lightdream.databasemanager.dto;
 
+import dev.lightdream.messagebuilder.MessageBuilder;
+
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -13,8 +15,8 @@ import java.util.UUID;
  **/
 public class DriverConfig {
 
-    public Driver MYSQL = new Driver("SELECT * FROM %table% WHERE %placeholder% %order% %limit%",
-            "SELECT * FROM %table% WHERE 1",
+    public Driver MYSQL = new Driver(
+            "SELECT %fields% FROM %table% WHERE %condition% %order% %limit%",
             "INSERT INTO %table% (%placeholder-1%) VALUES(%placeholder-2%) ON DUPLICATE KEY UPDATE %placeholder-3%",
             "CREATE TABLE IF NOT EXISTS %table% (%placeholder%, PRIMARY KEY(%keys%))",
             "DELETE FROM %table% WHERE id=?",
@@ -42,8 +44,8 @@ public class DriverConfig {
     public Driver SQLSERVER = new Driver(MYSQL);
     public Driver POSTGRESQL = new Driver(MYSQL);
     public Driver H2 = new Driver(MYSQL);
-    public Driver SQLITE = new Driver("SELECT * FROM %table% WHERE %placeholder% %order% %limit%",
-            "SELECT * FROM %table% WHERE 1",
+    public Driver SQLITE = new Driver(
+            "SELECT %fields% FROM %table% WHERE %condition% %order% %limit%",
             "INSERT INTO %table% (%placeholder-1%) VALUES(%placeholder-2%) ON CONFLICT(%key%) DO UPDATE SET %placeholder-3%",
             "CREATE TABLE IF NOT EXISTS %table% (%placeholder%)",
             "DELETE FROM %table% WHERE id=?",
@@ -81,14 +83,16 @@ public class DriverConfig {
     }
 
     public static class Driver {
+        // Queries
         public String select;
-        public String selectAll;
         public String insert;
         public String createTable;
         public String delete;
-        public String getAutoIncrement;
-        public String updateAutoIncrement;
+
+        // Data Structure
         public HashMap<Class<?>, String> dataTypes;
+
+        // Keywords
         public String autoIncrement;
         public String orderDesc;
         public String orderAsc;
@@ -97,17 +101,17 @@ public class DriverConfig {
         public Driver() {
         }
 
-        public Driver(String select, String selectAll, String insert, String createTable, String delete,
+
+        public Driver(String select, String insert, String createTable, String delete,
                       String getAutoIncrement, String updateAutoIncrement, HashMap<Class<?>, String> dataTypes,
                       String autoIncrement, String orderDesc, String orderAsc, String limit) {
             this.select = select;
-            this.selectAll = selectAll;
             this.insert = insert;
             this.createTable = createTable;
             this.delete = delete;
-            this.getAutoIncrement = getAutoIncrement;
-            this.updateAutoIncrement = updateAutoIncrement;
+
             this.dataTypes = dataTypes;
+
             this.autoIncrement = autoIncrement;
             this.orderDesc = orderDesc;
             this.orderAsc = orderAsc;
@@ -116,17 +120,51 @@ public class DriverConfig {
 
         public Driver(Driver driver) {
             this.select = driver.select;
-            this.selectAll = driver.selectAll;
             this.insert = driver.insert;
             this.createTable = driver.createTable;
             this.delete = driver.delete;
-            this.getAutoIncrement = driver.getAutoIncrement;
-            this.updateAutoIncrement = driver.updateAutoIncrement;
+
             this.dataTypes = driver.dataTypes;
+
             this.autoIncrement = driver.autoIncrement;
             this.orderDesc = driver.orderDesc;
             this.orderAsc = driver.orderAsc;
             this.limit = driver.limit;
+        }
+
+        public String select(String table, String condition, OrderBy order, String limit) {
+            // SELECT * FROM %table% WHERE %condition% %order% %limit%
+            return new MessageBuilder(select)
+                    .parse("%fields%", "*")
+                    .parse("%table%", table)
+                    .parse("%condition%", condition)
+                    .parse("%order%", order.parse(this))
+                    .parse("%limit%", limit)
+                    .parse();
+        }
+
+        public String select(String table) {
+            // SELECT * FROM %table% WHERE 1
+
+            return new MessageBuilder(select)
+                    .parse("%fields%", "*")
+                    .parse("%table%", table)
+                    .parse("%condition%", "1")
+                    .parse("%order%", "")
+                    .parse("%limit%", "")
+                    .parse();
+        }
+
+        public String select(String fields, String table, String condition, OrderBy order, String limit) {
+            // SELECT %fields% FROM %table% WHERE %condition% %order% %limit%
+
+            return new MessageBuilder(select)
+                    .parse("%fields%", fields)
+                    .parse("%table%", table)
+                    .parse("%condition%", condition)
+                    .parse("%order%", order.parse(this))
+                    .parse("%limit%", limit)
+                    .parse();
         }
     }
 
