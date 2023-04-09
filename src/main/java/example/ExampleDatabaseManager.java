@@ -2,6 +2,7 @@ package example;
 
 import dev.lightdream.databasemanager.DatabaseMain;
 import dev.lightdream.databasemanager.database.ProgrammaticDatabaseManager;
+import dev.lightdream.databasemanager.dto.QueryConstrains;
 
 public class ExampleDatabaseManager extends ProgrammaticDatabaseManager {
     public ExampleDatabaseManager(DatabaseMain main) {
@@ -9,12 +10,20 @@ public class ExampleDatabaseManager extends ProgrammaticDatabaseManager {
 
         // You can register custom serializers using this. By default, for any unknown type it will use GSON to serialize
         // and deserialize
-        registerDataType(DatabaseItem.class, "TEXT");
+        registerDataType(ExampleDatabaseItem.class, "TEXT");
 
-        registerSDPair(DatabaseItem.class, item -> item.data1 + "," + item.data2, s -> {
+        registerSDPair(ExampleDatabaseItem.class, item -> item.data1 + "," + item.data2, s -> {
             String[] split = ((String) s).split(",");
-            return new DatabaseItem(split[0], split[1]);
+            return new ExampleDatabaseItem(split[0], split[1]);
         });
     }
+
+    //public ExampleDatabaseItem getItem(){
+    //    get(DatabaseMain.class).query(
+    //            new QueryConstrains()
+    //                    .equals("data1", "test")
+    //                    .equals("data2", "test2")
+    //    );
+    //}
 
 }

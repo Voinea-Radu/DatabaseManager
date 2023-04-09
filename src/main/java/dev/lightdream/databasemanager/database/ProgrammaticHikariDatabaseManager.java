@@ -62,7 +62,7 @@ public abstract class ProgrammaticHikariDatabaseManager extends HikariDatabaseMa
             return processResults(executeQuery(getFinalQuery(), new ArrayList<>()));
         }
 
-        private String getFinalQuery() {
+        public String getFinalQuery() {
             String placeholder = "1";
             String order = "";
             String table = clazz.getAnnotation(DatabaseTable.class).name();

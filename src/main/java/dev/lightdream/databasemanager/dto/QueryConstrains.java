@@ -41,38 +41,43 @@ public class QueryConstrains {
 
     @SuppressWarnings("unused")
     public QueryConstrains equals(String field, Object value) {
-        query = field + "=" + DatabaseManager.formatQueryArgument(value);
-        return this;
+        return set(field + "=" + DatabaseManager.formatQueryArgument(value));
+    }
+
+    public QueryConstrains set(String query){
+        if(this.query==""){
+            this.query = query;
+            return this;
+        }
+        return new QueryConstrains().and(
+                this,
+                new QueryConstrains().set(query)
+        );
     }
 
     @SuppressWarnings("unused")
     public QueryConstrains bigger(String field, double value) {
-        query = field + ">" + value;
-        return this;
+        return set(field + ">" + value);
     }
 
     @SuppressWarnings("unused")
     public QueryConstrains biggerOrEquals(String field, double value) {
-        query = field + ">=" + value;
-        return this;
+        return set(field + ">=" + value);
     }
 
     @SuppressWarnings("unused")
     public QueryConstrains smaller(String field, double value) {
-        query = field + "<" + value;
-        return this;
+        return set(field + "<" + value);
     }
 
     @SuppressWarnings("unused")
     public QueryConstrains smallerOrEquals(String field, double value) {
-        query = field + "<=" + value;
-        return this;
+        return set(field + "<=" + value);
     }
 
     @SuppressWarnings("unused")
     public QueryConstrains contains(String field, String value) {
-        query = field + " LIKE '%" + value + "%'";
-        return this;
+        return set(field + " LIKE '%" + value + "%'");
     }
 
     public String getFinalQuery() {
