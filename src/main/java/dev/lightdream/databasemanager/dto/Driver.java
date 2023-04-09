@@ -92,7 +92,7 @@ public class Driver {
     }
 
     public String limit(int limit) {
-        return new MessageBuilder(limit)
+        return new MessageBuilder(this.limit)
                 .parse("limit", limit)
                 .parse();
     }
