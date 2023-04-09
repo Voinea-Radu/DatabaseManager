@@ -65,7 +65,7 @@ public abstract class ProgrammaticHikariDatabaseManager extends HikariDatabaseMa
         private String getFinalQuery() {
             String placeholder = "1";
             String order = "";
-            String table = clazz.getAnnotation(DatabaseTable.class).table();
+            String table = clazz.getAnnotation(DatabaseTable.class).name();
 
             if (queryConstrains != null) {
                 placeholder = queryConstrains.getFinalQuery();
@@ -85,21 +85,23 @@ public abstract class ProgrammaticHikariDatabaseManager extends HikariDatabaseMa
             List<T> output = new ArrayList<>();
 
             while (rs.next()) {
-                T obj = clazz.getDeclaredConstructor()
-                        .newInstance();
-                Field[] fields = obj.getClass()
-                        .getFields();
+                T obj = clazz.getDeclaredConstructor().newInstance();
+                Field[] fields = obj.getClass().getFields();
+
                 for (Field field : fields) {
                     if (!field.isAnnotationPresent(DatabaseField.class)) {
                         continue;
                     }
                     DatabaseField databaseField = field.getAnnotation(DatabaseField.class);
                     Object result = getObject(field.getType(), rs.getObject(databaseField.column()));
+
                     if (result == null) {
                         field.set(obj, result);
                         continue;
                     }
-                    if ((field.getType().equals(Boolean.class) || field.getType().equals(boolean.class)) &&
+
+                    if ((field.getType().equals(Boolean.class) ||
+                            field.getType().equals(boolean.class)) &&
                             result.getClass().equals(Integer.class)) {
                         Integer object = (Integer) result;
                         boolean bObject = object == 1;

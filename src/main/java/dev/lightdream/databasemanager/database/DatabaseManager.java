@@ -3,7 +3,7 @@ package dev.lightdream.databasemanager.database;
 import com.google.gson.Gson;
 import dev.lightdream.databasemanager.DatabaseMain;
 import dev.lightdream.databasemanager.dto.IDatabaseEntry;
-import dev.lightdream.databasemanager.dto.SQLConfig;
+import dev.lightdream.databasemanager.config.SQLConfig;
 import dev.lightdream.lambda.lambda.ReturnArgLambdaExecutor;
 import dev.lightdream.logger.Logger;
 import lombok.Getter;
@@ -203,6 +203,7 @@ public abstract class DatabaseManager implements IDatabaseManager {
         }
     }
 
+    @Override
     public String getDataType(Class<?> clazz) {
         String dbDataType = sqlConfig.driver(main).dataTypes.get(clazz);
 

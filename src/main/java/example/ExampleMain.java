@@ -2,8 +2,8 @@ package example;
 
 import dev.lightdream.databasemanager.DatabaseMain;
 import dev.lightdream.databasemanager.database.IDatabaseManager;
-import dev.lightdream.databasemanager.dto.DriverConfig;
-import dev.lightdream.databasemanager.dto.SQLConfig;
+import dev.lightdream.databasemanager.config.DriverConfig;
+import dev.lightdream.databasemanager.config.SQLConfig;
 import dev.lightdream.logger.LoggableMain;
 import dev.lightdream.logger.Logger;
 import org.reflections.Reflections;

@@ -17,28 +17,28 @@ dependencies {
     implementation("dev.lightdream:lambda:4.0.0")
     implementation("dev.lightdream:message-builder:3.1.2")
 
-    // Gson
-    implementation("com.google.code.gson:gson:2.10.1")
+    // Driver
+    implementation("org.xerial:sqlite-jdbc:3.41.2.1") // Driver - SQLite
+    implementation("mysql:mysql-connector-java:8.0.32") // Driver - MYSQL
 
-    // Database
-    implementation("com.zaxxer:HikariCP:5.0.1")
+    // Utils
+    implementation("org.reflections:reflections:0.10.2")
 
-    // Driver - SQLite
-    implementation("org.xerial:sqlite-jdbc:3.41.2.1")
-
-    // Driver - MYSQL
-    implementation("mysql:mysql-connector-java:8.0.32")
-
-    // Lombok
-    compileOnly("org.projectlombok:lombok:1.18.26")
-    annotationProcessor("org.projectlombok:lombok:1.18.26")
-
-    // Jetbrains
     compileOnly("org.jetbrains:annotations:24.0.1")
     annotationProcessor("org.jetbrains:annotations:24.0.1")
 
-    // Reflections
-    implementation("org.reflections:reflections:0.10.2")
+    implementation("com.google.code.gson:gson:2.10.1")
+
+    implementation("com.zaxxer:HikariCP:5.0.1")
+
+    compileOnly("org.projectlombok:lombok:1.18.26")
+    annotationProcessor("org.projectlombok:lombok:1.18.26")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.26")
+    testImplementation("org.projectlombok:lombok:1.18.26")
+
+    // Tests
+    testImplementation(platform("org.junit:junit-bom:5.9.2"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
 }
 
 java {
@@ -89,3 +89,9 @@ tasks.register("publishSelf") {
     description = "Publishes to Self hosted repository"
 }
 
+tasks.test {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
+}

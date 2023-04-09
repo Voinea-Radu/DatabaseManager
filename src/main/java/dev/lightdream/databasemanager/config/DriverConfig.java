@@ -1,9 +1,7 @@
-package dev.lightdream.databasemanager.dto;
+package dev.lightdream.databasemanager.config;
 
+import dev.lightdream.databasemanager.dto.Driver;
 import dev.lightdream.messagebuilder.MessageBuilder;
-import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -19,10 +17,14 @@ import java.util.UUID;
 public class DriverConfig {
 
     public Driver MYSQL = new Driver(
-            "SELECT %fields% FROM %table% WHERE %condition% %order% %limit%",
-            "INSERT INTO %table% (%columns%) VALUES(%values%) ON DUPLICATE KEY UPDATE %update%",
-            "CREATE TABLE IF NOT EXISTS %table% (%columns%, PRIMARY KEY(%keys%))",
-            "DELETE FROM %table% WHERE %condition%",
+            new MessageBuilder("SELECT %fields% FROM %table% WHERE %condition% %order% %limit%"),
+            new MessageBuilder("INSERT INTO %table% (%columns%) VALUES(%values%) ON DUPLICATE KEY UPDATE %update%"),
+            new MessageBuilder("CREATE TABLE IF NOT EXISTS %table% (%columns%, PRIMARY KEY(%keys%))"),
+            new MessageBuilder("DELETE FROM %table% WHERE %condition%"),
+            new MessageBuilder("AUTO_INCREMENT"),
+            new MessageBuilder("ORDER BY %order)% DESC"),
+            new MessageBuilder("ORDER BY %order% ASC"),
+            new MessageBuilder("LIMIT %limit%"),
             new HashMap<Class<?>, String>() {{
                 put(int.class, "INT");
                 put(Integer.class, "INT");
@@ -36,20 +38,21 @@ public class DriverConfig {
                 put(UUID.class, "TEXT");
                 put(Long.class, "BIGINT");
                 put(long.class, "BIGINT");
-            }},
-            "AUTO_INCREMENT",
-            "ORDER BY %order% DESC",
-            "ORDER BY %order% ASC",
-            "LIMIT %limit%");
+            }}
+    );
     public Driver MARIADB = new Driver(MYSQL);
     public Driver SQLSERVER = new Driver(MYSQL);
     public Driver POSTGRESQL = new Driver(MYSQL);
     public Driver H2 = new Driver(MYSQL);
     public Driver SQLITE = new Driver(
-            "SELECT %fields% FROM %table% WHERE %condition% %order% %limit%",
-            "INSERT INTO %table% (%columns%) VALUES(%values%) ON CONFLICT(%key%) DO UPDATE SET %update%",
-            "CREATE TABLE IF NOT EXISTS %table% (%columns%)",
-            "DELETE FROM %table% WHERE %condition%",
+            new MessageBuilder("SELECT %fields% FROM %table% WHERE %condition% %order% %limit%"),
+            new MessageBuilder("INSERT INTO %table% (%columns%) VALUES(%values%) ON CONFLICT(%key%) DO UPDATE SET %update%"),
+            new MessageBuilder("CREATE TABLE IF NOT EXISTS %table% (%columns%)"),
+            new MessageBuilder("DELETE FROM %table% WHERE %condition%"),
+            new MessageBuilder("PRIMARY KEY AUTOINCREMENT"),
+            new MessageBuilder("ORDER BY %order% DESC"),
+            new MessageBuilder("ORDER BY %order% ASC"),
+            new MessageBuilder("LIMIT %limit%"),
             new HashMap<Class<?>, String>() {{
                 put(int.class, "INTEGER");
                 put(Integer.class, "INTEGER");
@@ -63,11 +66,8 @@ public class DriverConfig {
                 put(UUID.class, "TEXT");
                 put(Long.class, "BIGINT");
                 put(long.class, "BIGINT");
-            }},
-            "PRIMARY KEY AUTOINCREMENT",
-            "ORDER BY %order% DESC",
-            "ORDER BY %order% ASC",
-            "LIMIT %limit%");
+            }}
+    );
 
     public DriverConfig() {
     }

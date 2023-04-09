@@ -1,6 +1,7 @@
-package dev.lightdream.databasemanager.dto;
+package dev.lightdream.databasemanager.config;
 
 import dev.lightdream.databasemanager.DatabaseMain;
+import dev.lightdream.databasemanager.dto.Driver;
 
 @SuppressWarnings("CanBeFinal")
 public class SQLConfig {

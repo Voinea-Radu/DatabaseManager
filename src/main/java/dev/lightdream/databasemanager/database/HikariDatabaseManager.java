@@ -5,16 +5,16 @@ import com.zaxxer.hikari.HikariDataSource;
 import dev.lightdream.databasemanager.DatabaseMain;
 import dev.lightdream.databasemanager.annotations.database.DatabaseField;
 import dev.lightdream.databasemanager.annotations.database.DatabaseTable;
+import dev.lightdream.databasemanager.dto.Driver;
 import dev.lightdream.databasemanager.dto.IDatabaseEntry;
 import dev.lightdream.databasemanager.dto.OrderBy;
+import dev.lightdream.databasemanager.utils.DatabaseProcessor;
 import dev.lightdream.logger.Debugger;
 import dev.lightdream.logger.Logger;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -27,6 +27,7 @@ import java.util.List;
 @Deprecated // Deprecated just to show that it not what should be used
 public abstract class HikariDatabaseManager extends DatabaseManager {
 
+    private DatabaseProcessor processor;
     private Connection connection;
 
     public HikariDatabaseManager(DatabaseMain main) {
@@ -39,29 +40,33 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         try {
             Logger.good("Connecting to the database with url " + getDatabaseURL());
 
-            HikariConfig config = new HikariConfig();
-            config.setJdbcUrl(getDatabaseURL());
-            config.setUsername(sqlConfig.username);
-            config.setPassword(sqlConfig.password);
-            config.setConnectionTestQuery("SELECT 1");
+            HikariConfig hikariConfig = new HikariConfig();
+            hikariConfig.setJdbcUrl(getDatabaseURL());
+            hikariConfig.setUsername(sqlConfig.username);
+            hikariConfig.setPassword(sqlConfig.password);
+            hikariConfig.setConnectionTestQuery("SELECT 1");
+
             if (sqlConfig.enableHighRateOfAccess) {
-                config.setMinimumIdle(5);
-                config.setMaximumPoolSize(50);
-                config.setConnectionTimeout(1000000000);
-                config.setIdleTimeout(600000000);
-                config.setMaxLifetime(1800000000);
+                hikariConfig.setMinimumIdle(5);
+                hikariConfig.setMaximumPoolSize(50);
+                hikariConfig.setConnectionTimeout(1000000000);
+                hikariConfig.setIdleTimeout(600000000);
+                hikariConfig.setMaxLifetime(1800000000);
             }
-            URLClassLoader child;
-            URL url;
+
             switch (sqlConfig.driverName) {
                 case "SQLITE":
-                    config.setDriverClassName("org.sqlite.JDBC");
-                    config.addDataSourceProperty("dataSourceClassName", "org.sqlite.SQLiteDataSource");
+                    hikariConfig.setDriverClassName("org.sqlite.JDBC");
+                    hikariConfig.addDataSourceProperty("dataSourceClassName", "org.sqlite.SQLiteDataSource");
                     break;
             }
-            HikariDataSource ds = new HikariDataSource(config);
-            connection = ds.getConnection();
+
+            HikariDataSource hikariDataSource = new HikariDataSource(hikariConfig);
+
+            connection = hikariDataSource.getConnection();
+            processor = new DatabaseProcessor(sqlConfig.driver(main), this);
             setup();
+
             Logger.good("Connected to the database");
         } catch (Exception e) {
             Logger.error("The driver for the desired database type could not be loaded. Please check the release page and get the proper driver version");
@@ -88,7 +93,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         List<T> output = new ArrayList<>();
 
         ResultSet rs = executeQuery(
-                sqlConfig.driver(main).select(databaseTable.table()),
+                sqlConfig.driver(main).select(databaseTable.name()),
                 new ArrayList<>()
         );
 
@@ -174,7 +179,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         List<T> output = new ArrayList<>();
         ResultSet rs = executeQuery(
                 sqlConfig.driver(main).select(
-                        clazz.getAnnotation(DatabaseTable.class).table(),
+                        clazz.getAnnotation(DatabaseTable.class).name(),
                         placeholder.toString(),
                         order,
                         limit),
@@ -199,9 +204,12 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         return output;
     }
 
+    private Driver driver() {
+        return sqlConfig.driver(main);
+    }
+
 
     @SneakyThrows
-    @SuppressWarnings("StringConcatenationInLoop")
     @Override
     public void createTable(Class<? extends IDatabaseEntry> clazz) {
         if (!clazz.isAnnotationPresent(DatabaseTable.class)) {
@@ -209,48 +217,12 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
             return;
         }
 
-        clazz.getDeclaredConstructor().newInstance();
-
-        Object obj = clazz.getDeclaredConstructor().newInstance();
-        String placeholder = "";
-        String keys = "";
-
-        Field[] fields = obj.getClass()
-                .getFields();
-        for (Field field : fields) {
-            if (!field.isAnnotationPresent(DatabaseField.class)) {
-                continue;
-            }
-            DatabaseField dbField = field.getAnnotation(DatabaseField.class);
-            placeholder +=
-                    dbField.column() + " " +
-                            getDataType(field.getType()) + " " +
-                            (dbField.unique() ? "UNIQUE " : "") +
-                            (dbField.autoGenerate() ? sqlConfig.driver(main).getAutoIncrement() : "") +
-                            ",";
-
-            if (dbField.primaryKey()) {
-                keys += dbField.column();
-                if (getDataType(field.getType()).equals(sqlConfig.driver(main).dataTypes.get(String.class))) {
-                    keys += "(255)";
-                }
-                keys += ",";
-            }
-        }
-
-        keys += ",";
-        keys = keys.replace(",,", "");
-        placeholder += ",";
-        placeholder = placeholder.replace(",,", "");
+        DatabaseTable databaseTable = clazz.getAnnotation(DatabaseTable.class);
 
         executeUpdate(
-                sqlConfig.driver(main).createTable(
-                        clazz.getAnnotation(DatabaseTable.class).table(),
-                        placeholder,
-                        keys
-                ),
-                new ArrayList<>())
-        ;
+                driver().createTable(processor, databaseTable, clazz),
+                new ArrayList<>()
+        );
     }
 
     @SuppressWarnings("unchecked")
@@ -272,7 +244,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
     @Override
     public void save() {
         //todo implement cache
-        //todo
+        //todo save everything from cache
     }
 
     @SneakyThrows
@@ -310,7 +282,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
             if (databaseField.autoGenerate() && field.get(entry) == null) {
                 String query = sqlConfig.driver(main).select(
                         databaseField.column(),
-                        table.table(),
+                        table.name(),
                         "1",
                         OrderBy.DESCENDENT(databaseField.column()),
                         1
@@ -347,7 +319,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
 
         executeUpdate(
                 sqlConfig.driver(main).insert(
-                        table.table(),
+                        table.name(),
                         placeholder1.toString(),
                         placeholder2.toString(),
                         placeholder3.toString()
@@ -363,7 +335,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
 
         executeUpdate(
                 sqlConfig.driver(main).delete(
-                        databaseTable.table(),
+                        databaseTable.name(),
                         "id=?"
                 ),
                 Arrays.asList(entry.getID())

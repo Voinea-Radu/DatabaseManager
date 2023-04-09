@@ -10,19 +10,16 @@ public interface IDatabaseManager {
 
     void setup();
 
-    @SuppressWarnings("unused")
     void setup(Class<? extends IDatabaseEntry> clazz);
 
-    @SuppressWarnings("unused")
     void save();
 
-    @SuppressWarnings("unused")
     void save(IDatabaseEntry object, boolean cache);
 
-    @SuppressWarnings("unused")
     void save(IDatabaseEntry object);
 
-    @SuppressWarnings("unused")
     void delete(IDatabaseEntry entry);
+
+    String getDataType(Class<?> clazz);
 
 }
