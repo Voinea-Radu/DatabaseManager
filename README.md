@@ -2,7 +2,7 @@
 # DatabaseManager
 
 ![Build](../../actions/workflows/build.yml/badge.svg)
-![Version](https://img.shields.io/badge/Version-4.0.11-red.svg)
+![Version](https://img.shields.io/badge/Version-4.0.12-red.svg)
 
 # Table Of Contents
 1. [Description](#description)
@@ -35,12 +35,12 @@ The artifact can be found at the repository https://repo.lightdream.dev or https
     <dependency>
         <groupId>dev.lightdream</groupId>
         <artifactId>database-manager</artifactId>
-        <version>4.0.11</version>
+        <version>4.0.12</version>
     </dependency>
     <dependency>
         <groupId>com.github.L1ghtDream</groupId>
         <artifactId>database-manager</artifactId>
-        <version>4.0.11</version>
+        <version>4.0.12</version>
     </dependency>
 </dependencies>
 ```
