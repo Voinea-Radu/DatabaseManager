@@ -98,9 +98,9 @@ public class Driver {
     }
 
     public String order(OrderBy order) {
-        return order.type == OrderBy.OrderByType.ASCENDANT ?
-                orderAscendant.replace("order", order.field) :
-                orderDescendant.replace("order", order.field);
+        String type = order.type == OrderBy.OrderByType.ASCENDANT ? orderAscendant : orderDescendant;
+
+        return new MessageBuilder(type).parse("order", order.field).parse();
     }
 
     public String createTable(String table, String columns, String keys) {
