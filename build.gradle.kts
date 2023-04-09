@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "dev.lightdream"
-version = "4.0.11"
+version = "4.0.12"
 
 repositories {
     mavenCentral()
