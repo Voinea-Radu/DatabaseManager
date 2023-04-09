@@ -4,6 +4,8 @@ import dev.lightdream.databasemanager.DatabaseMain;
 import dev.lightdream.databasemanager.database.IDatabaseManager;
 import dev.lightdream.databasemanager.dto.DriverConfig;
 import dev.lightdream.databasemanager.dto.SQLConfig;
+import dev.lightdream.logger.LoggableMain;
+import dev.lightdream.logger.Logger;
 import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
 
@@ -12,7 +14,9 @@ import java.io.File;
 // If you are using lombok you can skip the getters just add @Getter to the following fields: sqlConfig, driverConfig,
 // reflections, databaseManager
 @SuppressWarnings("unused")
-public class ExampleMain implements DatabaseMain {
+public class ExampleMain implements DatabaseMain, LoggableMain {
+
+    public static ExampleMain instance;
 
     private final SQLConfig sqlConfig;
     private final DriverConfig driverConfig;
@@ -22,6 +26,9 @@ public class ExampleMain implements DatabaseMain {
     private final ExampleDatabaseManager databaseManager;
 
     public ExampleMain() {
+        instance = this;
+        Logger.init(this);
+
         // Usually this would be used with FileManager to be loaded from disk as a configuration
         // To see the FileManager go to https://github.com/L1ghtDream/FileManager
         // sqlConfig = FileManager.load(SQLConfig.class);
@@ -65,5 +72,10 @@ public class ExampleMain implements DatabaseMain {
     @Override
     public Reflections getReflections() {
         return reflections;
+    }
+
+    @Override
+    public boolean debugToConsole() {
+        return true;
     }
 }

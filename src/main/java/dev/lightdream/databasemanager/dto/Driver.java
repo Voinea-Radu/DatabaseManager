@@ -83,48 +83,48 @@ public class Driver {
         }
 
         return new MessageBuilder(select)
-                .parse("%fields%", fields)
-                .parse("%table%", table)
-                .parse("%condition%", condition)
-                .parse("%order%", orderString)
-                .parse("%limit%", limitString)
+                .parse("fields", fields)
+                .parse("table", table)
+                .parse("condition", condition)
+                .parse("order", orderString)
+                .parse("limit", limitString)
                 .parse();
     }
 
     public String limit(int limit) {
         return new MessageBuilder(limit)
-                .parse("%limit%", limit)
+                .parse("limit", limit)
                 .parse();
     }
 
     public String order(OrderBy order) {
         return order.type == OrderBy.OrderByType.ASCENDANT ?
-                orderAscendant.replace("%order%", order.field) :
-                orderDescendant.replace("%order%", order.field);
+                orderAscendant.replace("order", order.field) :
+                orderDescendant.replace("order", order.field);
     }
 
     public String createTable(String table, String columns, String keys) {
         return new MessageBuilder(createTable)
-                .parse("%table%", table)
-                .parse("%columns%", columns)
-                .parse("%keys%", keys)
+                .parse("table", table)
+                .parse("columns", columns)
+                .parse("keys", keys)
                 .parse();
     }
 
     public String insert(String table, String columns, String values, String update) {
         //
         return new MessageBuilder(insert)
-                .parse("%table%", table)
-                .parse("%columns%", columns)
-                .parse("%values%", values)
-                .parse("%update%", update)
+                .parse("table", table)
+                .parse("columns", columns)
+                .parse("values", values)
+                .parse("update", update)
                 .parse();
     }
 
     public String delete(String table, String condition) {
         return new MessageBuilder(delete)
-                .parse("%table%", table)
-                .parse("%condition%", condition)
+                .parse("table", table)
+                .parse("condition", condition)
                 .parse();
     }
 }

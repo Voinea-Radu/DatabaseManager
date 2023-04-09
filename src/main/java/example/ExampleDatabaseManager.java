@@ -13,7 +13,7 @@ public class ExampleDatabaseManager extends ProgrammaticDatabaseManager {
 
         registerSDPair(DatabaseItem.class, item -> item.data1 + "," + item.data2, s -> {
             String[] split = ((String) s).split(",");
-            return new DatabaseItem(main, split[0], split[1]);
+            return new DatabaseItem(split[0], split[1]);
         });
     }
 
