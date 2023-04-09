@@ -5,6 +5,7 @@ import dev.lightdream.databasemanager.annotations.database.DatabaseTable;
 import dev.lightdream.databasemanager.dto.entry.impl.IntegerDatabaseEntry;
 import example.ExampleMain;
 
+@SuppressWarnings("unused")
 @DatabaseTable(name = "database_item")
 public class TestDatabaseEntry extends IntegerDatabaseEntry {
 

@@ -140,6 +140,12 @@ public class Driver {
                 .parse();
     }
 
+    /**
+     * @param processor The database processor
+     * @param table     The table to create
+     * @param clazz     The class to create
+     * @return The query
+     */
     public String createTable(DatabaseProcessor processor, DatabaseTable table, Class<? extends IDatabaseEntry> clazz) {
         String name = table.name();
         String columns = StringUtils.listToString(processor.getAllFields(clazz));

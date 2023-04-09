@@ -1,7 +1,5 @@
 package dev.lightdream.databasemanager.dto;
 
-import dev.lightdream.databasemanager.DatabaseMain;
-
 public class OrderBy {
 
     public OrderByType type;

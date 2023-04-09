@@ -4,6 +4,7 @@ import dev.lightdream.databasemanager.config.DriverConfig;
 import dev.lightdream.databasemanager.config.SQLConfig;
 import dev.lightdream.logger.LoggableMain;
 import dev.lightdream.logger.Logger;
+import dev.lightdream.messagebuilder.MessageBuilderManager;
 import lombok.Getter;
 import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
@@ -25,6 +26,7 @@ public class TestDatabaseMain implements DatabaseMain, LoggableMain {
     public TestDatabaseMain() {
         instance = this;
         Logger.init(this);
+        MessageBuilderManager.init();
 
         sqlConfig = new SQLConfig();
         sqlConfig.database = "test";

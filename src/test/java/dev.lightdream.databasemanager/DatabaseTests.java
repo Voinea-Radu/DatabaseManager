@@ -21,14 +21,13 @@ public class DatabaseTests {
     public static void cleanup() {
         // Delete the test database
         File file = new File(main.getDataFolder().getAbsolutePath() + "/test.db");
+        //noinspection ResultOfMethodCallIgnored
         file.delete();
     }
 
     @Test
     public void testCreateTable() {
-        assertDoesNotThrow(() -> {
-            main.getDatabaseManager().createTable(TestDatabaseEntry.class);
-        });
+        assertDoesNotThrow(() -> main.getDatabaseManager().createTable(TestDatabaseEntry.class));
     }
 
 }

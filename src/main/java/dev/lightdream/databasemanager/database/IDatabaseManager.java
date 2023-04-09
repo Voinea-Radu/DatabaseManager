@@ -12,10 +12,12 @@ public interface IDatabaseManager {
 
     void setup(Class<? extends IDatabaseEntry> clazz);
 
+    @SuppressWarnings("unused")
     void save();
 
     void save(IDatabaseEntry object, boolean cache);
 
+    @SuppressWarnings("unused")
     void save(IDatabaseEntry object);
 
     void delete(IDatabaseEntry entry);

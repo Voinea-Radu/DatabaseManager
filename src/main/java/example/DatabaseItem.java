@@ -4,6 +4,7 @@ import dev.lightdream.databasemanager.annotations.database.DatabaseField;
 import dev.lightdream.databasemanager.annotations.database.DatabaseTable;
 import dev.lightdream.databasemanager.dto.entry.impl.IntegerDatabaseEntry;
 
+@SuppressWarnings("ALL")
 @DatabaseTable(name = "database_item")
 public class DatabaseItem extends IntegerDatabaseEntry {
 

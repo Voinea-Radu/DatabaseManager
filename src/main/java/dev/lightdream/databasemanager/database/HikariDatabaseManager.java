@@ -116,20 +116,24 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         return output;
     }
 
+    @Deprecated
     public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries) {
         return get(clazz, queries, null, -1);
     }
 
+    @Deprecated
     public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries, OrderBy order) {
         return get(clazz, queries, order, -1);
     }
 
+    @Deprecated
     public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries, int limit) {
         return get(clazz, queries, null, limit);
     }
 
     @SneakyThrows
     @SuppressWarnings("resource")
+    @Deprecated
     public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries, OrderBy order, int limit) {
 
         if (queries.size() == 0) {
@@ -208,7 +212,6 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         return sqlConfig.driver(main);
     }
 
-
     @SneakyThrows
     @Override
     public void createTable(Class<? extends IDatabaseEntry> clazz) {
@@ -274,10 +277,6 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
                 continue;
             }
             DatabaseField databaseField = field.getAnnotation(DatabaseField.class);
-
-            if (databaseField.primaryKey()) {
-                key = field.getName();
-            }
 
             if (databaseField.autoGenerate() && field.get(entry) == null) {
                 String query = sqlConfig.driver(main).select(
