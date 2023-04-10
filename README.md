@@ -2,7 +2,7 @@
 # DatabaseManager
 
 ![Build](../../actions/workflows/build.yml/badge.svg)
-![Version](https://img.shields.io/badge/Version-4.1.1-red.svg)
+![Version](https://img.shields.io/badge/Version-5.0.0-red.svg)
 
 # Table Of Contents
 1. [Description](#description)
@@ -10,7 +10,7 @@
 3. [How to use](#how-to-use)
 
 ## Description
-A database manager lib that is based on hikariCP and adds programmatic data fetching and an ORM.
+A database manager lib that is based on Hibernate and makes the setup of it more straight forward. 
 
 ## How to add to your project
 
@@ -35,12 +35,12 @@ The artifact can be found at the repository https://repo.lightdream.dev or https
     <dependency>
         <groupId>dev.lightdream</groupId>
         <artifactId>database-manager</artifactId>
-        <version>4.1.1</version>
+        <version>5.0.0</version>
     </dependency>
     <dependency>
         <groupId>com.github.L1ghtDream</groupId>
         <artifactId>database-manager</artifactId>
-        <version>4.1.1</version>
+        <version>5.0.0</version>
     </dependency>
 </dependencies>
 ```
