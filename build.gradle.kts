@@ -4,11 +4,21 @@ plugins {
 }
 
 group = "dev.lightdream"
-version = "4.1.1"
+version = "5.0.-1"
 
 repositories {
     mavenCentral()
     maven("https://repo.lightdream.dev/")
+    maven("https://mvnrepository.com/artifact/org.hibernate/hibernate-community-dialects")
+    maven("https://mvnrepository.com/artifact/org.hibernate.common/hibernate-commons-annotations")
+    maven(url = "https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/")
+    maven("https://maven.impactdev.net/repository/development/")
+    maven("https://cursemaven.com/")
+    maven("https://thedarkcolour.github.io/KotlinForForge/")
+    flatDir {
+        dirs("libs")
+    }
+    maven ( "https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
 }
 
 dependencies {
@@ -29,8 +39,6 @@ dependencies {
 
     implementation("com.google.code.gson:gson:2.10.1")
 
-    implementation("com.zaxxer:HikariCP:5.0.1")
-
     compileOnly("org.projectlombok:lombok:1.18.26")
     annotationProcessor("org.projectlombok:lombok:1.18.26")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.26")
@@ -39,11 +47,16 @@ dependencies {
     // Tests
     testImplementation(platform("org.junit:junit-bom:5.9.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+
+    // Hibernate
+    implementation("org.hibernate.orm:hibernate-core:6.2.0.Final")
+    implementation("org.hibernate:hibernate-community-dialects:6.2.0.Final")
+    implementation("org.hibernate.common:hibernate-commons-annotations:6.0.6.Final")
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 publishing {

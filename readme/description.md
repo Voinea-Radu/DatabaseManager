@@ -1,1 +1,1 @@
-A database manager lib that is based on hikariCP and adds programmatic data fetching and an ORM.
+A database manager lib that is based on Hibernate and makes the setup of it more straight forward. 

@@ -1,16 +1,24 @@
 package example;
 
-import dev.lightdream.databasemanager.annotations.database.DatabaseField;
-import dev.lightdream.databasemanager.annotations.database.DatabaseTable;
-import dev.lightdream.databasemanager.dto.entry.impl.IntegerDatabaseEntry;
+import dev.lightdream.databasemanager.dto.DatabaseEntry;
+import jakarta.persistence.*;
 
 @SuppressWarnings("ALL")
-@DatabaseTable(name = "database_item")
-public class ExampleDatabaseItem extends IntegerDatabaseEntry {
+@Entity
+@Table(name = "example_table",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"id"})
+        }
+)
+public class ExampleDatabaseItem extends DatabaseEntry {
 
-    @DatabaseField(column = "data1")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, unique = true, length = 11)
+    public int id;
+    @Column(name = "data_1")
     public String data1;
-    @DatabaseField(column = "data2")
+    @Column(name = "data_2")
     public String data2;
 
     public ExampleDatabaseItem(String data1, String data2) {
@@ -23,5 +31,8 @@ public class ExampleDatabaseItem extends IntegerDatabaseEntry {
         super(ExampleMain.instance);
     }
 
-
+    @Override
+    public int getID() {
+        return id;
+    }
 }

@@ -1,13 +1,10 @@
 package example;
 
 import dev.lightdream.databasemanager.DatabaseMain;
-import dev.lightdream.databasemanager.database.IDatabaseManager;
-import dev.lightdream.databasemanager.config.DriverConfig;
 import dev.lightdream.databasemanager.config.SQLConfig;
+import dev.lightdream.databasemanager.database.HibernateDatabaseManager;
 import dev.lightdream.logger.LoggableMain;
 import dev.lightdream.logger.Logger;
-import org.reflections.Reflections;
-import org.reflections.util.ConfigurationBuilder;
 
 import java.io.File;
 
@@ -19,9 +16,6 @@ public class ExampleMain implements DatabaseMain, LoggableMain {
     public static ExampleMain instance;
 
     private final SQLConfig sqlConfig;
-    private final DriverConfig driverConfig;
-
-    private final Reflections reflections;
 
     private final ExampleDatabaseManager databaseManager;
 
@@ -34,17 +28,7 @@ public class ExampleMain implements DatabaseMain, LoggableMain {
         // sqlConfig = FileManager.load(SQLConfig.class);
         sqlConfig = new SQLConfig();
 
-        driverConfig = new DriverConfig();
-        // This allows you to change and drivers if having any issues with the syntax in any of them.
-        // Please open a PR if you find anything wrong with the drivers.
-        // driverConfig.MYSQL.createTable = "";
-
-
         ClassLoader[] classLoaders = new ClassLoader[]{getClass().getClassLoader()};
-        reflections = new Reflections(new ConfigurationBuilder()
-                .setClassLoaders(classLoaders)
-                .forPackages("example")
-        );
 
         databaseManager = new ExampleDatabaseManager(this);
     }
@@ -60,18 +44,8 @@ public class ExampleMain implements DatabaseMain, LoggableMain {
     }
 
     @Override
-    public DriverConfig getDriverConfig() {
-        return driverConfig;
-    }
-
-    @Override
-    public IDatabaseManager getDatabaseManager() {
+    public HibernateDatabaseManager getDatabaseManager() {
         return databaseManager;
-    }
-
-    @Override
-    public Reflections getReflections() {
-        return reflections;
     }
 
     @Override

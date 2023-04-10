@@ -1,6 +1,5 @@
 package dev.lightdream.databasemanager;
 
-import dev.lightdream.databasemanager.config.DriverConfig;
 import dev.lightdream.databasemanager.config.SQLConfig;
 import dev.lightdream.logger.LoggableMain;
 import dev.lightdream.logger.Logger;
@@ -17,7 +16,6 @@ public class TestDatabaseMain implements DatabaseMain, LoggableMain {
     public static TestDatabaseMain instance;
 
     private @Getter SQLConfig sqlConfig;
-    private @Getter DriverConfig driverConfig;
 
     private @Getter Reflections reflections;
 
@@ -29,11 +27,7 @@ public class TestDatabaseMain implements DatabaseMain, LoggableMain {
         MessageBuilderManager.init();
 
         sqlConfig = new SQLConfig();
-        sqlConfig.database = "test";
-        sqlConfig.logUpdate = true;
-        sqlConfig.logSelect = true;
-
-        driverConfig = new DriverConfig();
+        sqlConfig.driverType = SQLConfig.DriverType.SQLITE;
 
         ClassLoader[] classLoaders = new ClassLoader[]{getClass().getClassLoader()};
         reflections = new Reflections(new ConfigurationBuilder()

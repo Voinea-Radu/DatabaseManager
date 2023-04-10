@@ -1,15 +1,17 @@
 package dev.lightdream.databasemanager;
 
-import dev.lightdream.databasemanager.database.ProgrammaticDatabaseManager;
+import dev.lightdream.databasemanager.database.HibernateDatabaseManager;
 
-public class TestDatabaseManager extends ProgrammaticDatabaseManager {
+import java.util.List;
+
+public class TestDatabaseManager extends HibernateDatabaseManager {
     public TestDatabaseManager(DatabaseMain main) {
         super(main);
     }
 
-    // Disable automatic table creation
     @Override
-    public void setup() {
-
+    protected List<Class<?>> getClasses() {
+        return List.of(TestDatabaseEntry.class);
     }
+
 }
