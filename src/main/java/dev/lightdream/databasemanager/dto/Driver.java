@@ -2,6 +2,7 @@ package dev.lightdream.databasemanager.dto;
 
 import dev.lightdream.databasemanager.annotations.database.DatabaseTable;
 import dev.lightdream.databasemanager.utils.DatabaseProcessor;
+import dev.lightdream.databasemanager.utils.ListUtils;
 import dev.lightdream.databasemanager.utils.StringUtils;
 import dev.lightdream.messagebuilder.MessageBuilder;
 import lombok.Getter;
@@ -10,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.List;
 
 @NoArgsConstructor
 public class Driver {
@@ -148,20 +150,55 @@ public class Driver {
      */
     public String createTable(DatabaseProcessor processor, DatabaseTable table, Class<? extends IDatabaseEntry> clazz) {
         String name = table.name();
-        String columns = StringUtils.listToString(processor.getAllFields(clazz));
+        String columns = StringUtils.listToString(processor.getFieldsWithProperty(clazz));
         String keys = "";
 
 
         return createTable(name, columns, keys);
     }
 
-    public String insert(String table, String columns, String values, String update) {
+    /**
+     * @param table   The table to insert
+     * @param columns The columns to insert
+     * @param values  The values to insert
+     * @param update  The update to insert
+     * @param key     The key to insert
+     * @return The query
+     */
+    public String insert(String table, String columns, String values, String update, String key) {
         return this.insert
                 .parse("table", table)
                 .parse("columns", columns)
                 .parse("values", values)
                 .parse("update", update)
+                .parse("key", key)
                 .parse();
+    }
+
+    public PreparedQuery insert(DatabaseProcessor processor, IDatabaseEntry entry, DatabaseTable table) {
+        String tableName = table.name();
+
+        List<String> columns = processor.getFields(entry.getClass());
+        List<Object> values = processor.getValues(entry);
+        List<String> updates = ListUtils.mergeLists(
+                columns,
+                ListUtils.createQuestionList(columns.size()),
+                "="
+        );
+
+        String columnsString = StringUtils.listToString(columns);
+        String valuesString = StringUtils.listToString(ListUtils.createQuestionList(columns.size()));
+        String update = StringUtils.listToString(updates);
+        String key = processor.getKey(entry.getClass());
+
+        // INSERT INTO table (columns) VALUES (?, ?, ?) ON CONFLICT(key) DO UPDATE SET update
+
+        List<Object> argumentValue = ListUtils.concatenateLists(values, values);
+
+        return new PreparedQuery(
+                insert(tableName, columnsString, valuesString, update, key),
+                argumentValue
+        );
     }
 
     public String delete(String table, String condition) {

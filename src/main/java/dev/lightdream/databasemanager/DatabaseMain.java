@@ -1,8 +1,8 @@
 package dev.lightdream.databasemanager;
 
-import dev.lightdream.databasemanager.database.IDatabaseManager;
 import dev.lightdream.databasemanager.config.DriverConfig;
 import dev.lightdream.databasemanager.config.SQLConfig;
+import dev.lightdream.databasemanager.database.IDatabaseManager;
 import org.reflections.Reflections;
 
 import java.io.File;

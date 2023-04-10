@@ -3,29 +3,24 @@ package dev.lightdream.databasemanager.database;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import dev.lightdream.databasemanager.DatabaseMain;
-import dev.lightdream.databasemanager.annotations.database.DatabaseField;
 import dev.lightdream.databasemanager.annotations.database.DatabaseTable;
 import dev.lightdream.databasemanager.dto.Driver;
 import dev.lightdream.databasemanager.dto.IDatabaseEntry;
-import dev.lightdream.databasemanager.dto.OrderBy;
+import dev.lightdream.databasemanager.dto.PreparedQuery;
 import dev.lightdream.databasemanager.utils.DatabaseProcessor;
 import dev.lightdream.logger.Debugger;
 import dev.lightdream.logger.Logger;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
-@SuppressWarnings({"unused", "DeprecatedIsStillUsed"})
-@Deprecated // Deprecated just to show that it not what should be used
-public abstract class HikariDatabaseManager extends DatabaseManager {
+@SuppressWarnings({"unused"})
+public abstract class HikariDatabaseManager extends DeprecatedHikariDatabaseManager {
 
     private DatabaseProcessor processor;
     private Connection connection;
@@ -80,134 +75,6 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         return connection;
     }
 
-    @SneakyThrows
-    @SuppressWarnings({"SqlNoDataSourceInspection", "resource"})
-    public <T> List<T> getAll(Class<T> clazz) {
-        if (!clazz.isAnnotationPresent(DatabaseTable.class)) {
-            Logger.error("Class " + clazz.getSimpleName() + " is not annotated as a database table");
-            return new ArrayList<>();
-        }
-
-        DatabaseTable databaseTable = clazz.getAnnotation(DatabaseTable.class);
-
-        List<T> output = new ArrayList<>();
-
-        ResultSet rs = executeQuery(
-                sqlConfig.driver(main).select(databaseTable.name()),
-                new ArrayList<>()
-        );
-
-        while (rs.next()) {
-            T obj = clazz.getDeclaredConstructor()
-                    .newInstance();
-            Field[] fields = obj.getClass()
-                    .getFields();
-            for (Field field : fields) {
-                if (!field.isAnnotationPresent(DatabaseField.class)) {
-                    continue;
-                }
-                DatabaseField databaseField = field.getAnnotation(DatabaseField.class);
-                field.set(obj, getObject(field.getType(), rs.getObject(databaseField.column())));
-            }
-            output.add(obj);
-            IDatabaseEntry entry = (IDatabaseEntry) obj;
-            entry.setMain(main);
-        }
-        return output;
-    }
-
-    @Deprecated
-    public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries) {
-        return get(clazz, queries, null, -1);
-    }
-
-    @Deprecated
-    public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries, OrderBy order) {
-        return get(clazz, queries, order, -1);
-    }
-
-    @Deprecated
-    public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries, int limit) {
-        return get(clazz, queries, null, limit);
-    }
-
-    @SneakyThrows
-    @SuppressWarnings("resource")
-    @Deprecated
-    public <T> List<T> get(Class<T> clazz, HashMap<String, Object> queries, OrderBy order, int limit) {
-
-        if (queries.size() == 0) {
-            return getAll(clazz);
-        }
-
-        if (!clazz.isAnnotationPresent(DatabaseTable.class)) {
-            Logger.error("Class " + clazz.getSimpleName() + " is not annotated as a database table");
-            return new ArrayList<>();
-        }
-
-        StringBuilder placeholder = new StringBuilder();
-        for (String key : queries.keySet()) {
-            Object value = queries.get(key);
-            if (key.startsWith("<")) {
-                placeholder.append(key.replaceFirst("<", ""))
-                        .append("<")
-                        .append(formatQueryArgument(value))
-                        .append(" AND ");
-            } else if (key.startsWith(">")) {
-                placeholder.append(key.replaceFirst(">", ""))
-                        .append(">")
-                        .append(formatQueryArgument(value))
-                        .append(" AND ");
-            } else if (key.startsWith("!=")) {
-                placeholder.append(key.replaceFirst("!=", ""))
-                        .append("!=")
-                        .append(formatQueryArgument(value))
-                        .append(" AND ");
-            } else if (key.startsWith("=")) {
-                placeholder.append(key.replaceFirst("=", ""))
-                        .append("=")
-                        .append(formatQueryArgument(value))
-                        .append(" AND ");
-            } else {
-                placeholder.append(key)
-                        .append("=")
-                        .append(formatQueryArgument(value))
-                        .append(" AND ");
-            }
-        }
-        placeholder.append(" ");
-        placeholder = new StringBuilder(placeholder.toString()
-                .replace(" AND  ", ""));
-
-
-        List<T> output = new ArrayList<>();
-        ResultSet rs = executeQuery(
-                sqlConfig.driver(main).select(
-                        clazz.getAnnotation(DatabaseTable.class).name(),
-                        placeholder.toString(),
-                        order,
-                        limit),
-                new ArrayList<>()
-        );
-
-        while (rs.next()) {
-            T obj = clazz.getDeclaredConstructor()
-                    .newInstance();
-            Field[] fields = obj.getClass()
-                    .getFields();
-            for (Field field : fields) {
-                if (!field.isAnnotationPresent(DatabaseField.class)) {
-                    continue;
-                }
-                DatabaseField databaseField = field.getAnnotation(DatabaseField.class);
-                field.set(obj, getObject(field.getType(), rs.getObject(databaseField.column())));
-            }
-            ((IDatabaseEntry) obj).setMain(main);
-            output.add(obj);
-        }
-        return output;
-    }
-
     private Driver driver() {
         return sqlConfig.driver(main);
     }
@@ -222,10 +89,7 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
 
         DatabaseTable databaseTable = clazz.getAnnotation(DatabaseTable.class);
 
-        executeUpdate(
-                driver().createTable(processor, databaseTable, clazz),
-                new ArrayList<>()
-        );
+        executeUpdate(driver().createTable(processor, databaseTable, clazz));
     }
 
     @SuppressWarnings("unchecked")
@@ -262,72 +126,9 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
 
         DatabaseTable table = entry.getClass().getAnnotation(DatabaseTable.class);
 
-        //insert
-        StringBuilder placeholder1 = new StringBuilder();
-        StringBuilder placeholder2 = new StringBuilder();
-        StringBuilder placeholder3 = new StringBuilder();
-
-        Field[] fields = entry.getClass()
-                .getFields();
-
-        String key = "";
-
-        for (Field field : fields) {
-            if (!field.isAnnotationPresent(DatabaseField.class)) {
-                continue;
-            }
-            DatabaseField databaseField = field.getAnnotation(DatabaseField.class);
-
-            if (databaseField.autoGenerate() && field.get(entry) == null) {
-                String query = sqlConfig.driver(main).select(
-                        databaseField.column(),
-                        table.name(),
-                        "1",
-                        OrderBy.DESCENDENT(databaseField.column()),
-                        1
-                );
-                //noinspection resource
-                ResultSet rs = executeQuery(query, new ArrayList<>());
-                rs.next();
-                int nextID = rs.getInt(1);
-
-                field.set(entry, nextID);
-            }
-
-
-            String column = databaseField.column();
-            String query = formatQueryArgument(field.get(entry));
-
-            placeholder1.append(column)
-                    .append(",");
-            placeholder2.append(query)
-                    .append(",");
-            placeholder3.append(column)
-                    .append("=")
-                    .append(query)
-                    .append(",");
-        }
-
-        placeholder1.append(",");
-        placeholder2.append(",");
-        placeholder3.append(",");
-
-        placeholder1 = new StringBuilder(placeholder1.toString().replace(",,", ""));
-        placeholder2 = new StringBuilder(placeholder2.toString().replace(",,", ""));
-        placeholder3 = new StringBuilder(placeholder3.toString().replace(",,", ""));
-
-        executeUpdate(
-                sqlConfig.driver(main).insert(
-                        table.name(),
-                        placeholder1.toString(),
-                        placeholder2.toString(),
-                        placeholder3.toString()
-                ),
-                new ArrayList<>()
-        );
+        executeUpdate(sqlConfig.driver(main).insert(processor, entry, table));
     }
 
-    @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
     @Override
     public void delete(IDatabaseEntry entry) {
         DatabaseTable databaseTable = entry.getClass().getAnnotation(DatabaseTable.class);
@@ -335,10 +136,21 @@ public abstract class HikariDatabaseManager extends DatabaseManager {
         executeUpdate(
                 sqlConfig.driver(main).delete(
                         databaseTable.name(),
-                        "id=?"
-                ),
-                Arrays.asList(entry.getID())
+                        "id=" + entry.getID()
+                )
         );
+    }
+
+    public void executeUpdate(String sql) {
+        executeUpdate(sql, new ArrayList<>());
+    }
+
+    public void executeUpdate(PreparedQuery query) {
+        executeUpdate(query.query, query.values);
+    }
+
+    public void executeQuery(String sql) {
+        executeUpdate(sql, new ArrayList<>());
     }
 
     @SneakyThrows

@@ -14,6 +14,7 @@ import java.util.UUID;
  * com.enigmabridge:hibernate4-sqlite-dialect
  * mysql:mysql-connector-java
  **/
+@Deprecated
 public class DriverConfig {
 
     public Driver MYSQL = new Driver(
@@ -35,7 +36,7 @@ public class DriverConfig {
                 put(Float.class, "FLOAT");
                 put(double.class, "DOUBLE");
                 put(Double.class, "DOUBLE");
-                put(UUID.class, "TEXT");
+                //put(UUID.class, "TEXT");
                 put(Long.class, "BIGINT");
                 put(long.class, "BIGINT");
             }}

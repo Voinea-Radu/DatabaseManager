@@ -1,6 +1,6 @@
 package dev.lightdream.databasemanager.dto;
 
-import dev.lightdream.databasemanager.database.DatabaseManager;
+import dev.lightdream.databasemanager.database.DatabaseHelper;
 
 public class QueryConstrains {
 
@@ -41,11 +41,11 @@ public class QueryConstrains {
 
     @SuppressWarnings("unused")
     public QueryConstrains equals(String field, Object value) {
-        return set(field + "=" + DatabaseManager.formatQueryArgument(value));
+        return set(field + "=" + DatabaseHelper.formatQueryArgument(value));
     }
 
-    public QueryConstrains set(String query){
-        if(this.query==""){
+    public QueryConstrains set(String query) {
+        if (this.query.equals("")) {
             this.query = query;
             return this;
         }

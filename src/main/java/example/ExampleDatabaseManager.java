@@ -2,7 +2,6 @@ package example;
 
 import dev.lightdream.databasemanager.DatabaseMain;
 import dev.lightdream.databasemanager.database.ProgrammaticDatabaseManager;
-import dev.lightdream.databasemanager.dto.QueryConstrains;
 
 public class ExampleDatabaseManager extends ProgrammaticDatabaseManager {
     public ExampleDatabaseManager(DatabaseMain main) {
@@ -17,13 +16,5 @@ public class ExampleDatabaseManager extends ProgrammaticDatabaseManager {
             return new ExampleDatabaseItem(split[0], split[1]);
         });
     }
-
-    //public ExampleDatabaseItem getItem(){
-    //    get(DatabaseMain.class).query(
-    //            new QueryConstrains()
-    //                    .equals("data1", "test")
-    //                    .equals("data2", "test2")
-    //    );
-    //}
 
 }

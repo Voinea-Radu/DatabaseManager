@@ -9,6 +9,7 @@ version = "4.1.1"
 repositories {
     mavenCentral()
     maven("https://repo.lightdream.dev/")
+    maven("https://mvnrepository.com/artifact/org.hibernate.common/hibernate-commons-annotations")
 }
 
 dependencies {
@@ -39,6 +40,10 @@ dependencies {
     // Tests
     testImplementation(platform("org.junit:junit-bom:5.9.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+
+    // Hibernate
+    implementation("org.hibernate.common:hibernate-commons-annotations:6.0.6.Final")
+    implementation("org.hibernate.orm:hibernate-core:6.2.0.Final")
 }
 
 java {
