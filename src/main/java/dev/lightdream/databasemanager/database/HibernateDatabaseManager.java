@@ -42,7 +42,6 @@ public abstract class HibernateDatabaseManager {
             Configuration configuration = new Configuration();
 
             Properties props = new Properties();
-            props.put("hibernate.hbm2ddl.auto", "create");
 
             switch (sqlConfig().driverType) {
                 case MYSQL:
@@ -72,6 +71,7 @@ public abstract class HibernateDatabaseManager {
                     break;
             }
 
+            props.putAll(sqlConfig().hibernateOptions);
 
             configuration.setProperties(props);
 

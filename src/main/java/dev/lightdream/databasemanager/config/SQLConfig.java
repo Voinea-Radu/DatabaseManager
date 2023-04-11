@@ -2,6 +2,8 @@ package dev.lightdream.databasemanager.config;
 
 import lombok.NoArgsConstructor;
 
+import java.util.HashMap;
+
 @SuppressWarnings("CanBeFinal")
 @NoArgsConstructor
 public class SQLConfig {
@@ -15,6 +17,9 @@ public class SQLConfig {
     public String password = "passwd";
 
     public String args = "?useSSL=false&autoReconnect=true";
+    public HashMap<String, String> hibernateOptions = new HashMap<>(){{
+        put("hibernate.hbm2ddl.auto", "update");
+    }};
 
     public int sessionTimeout = 10;
 

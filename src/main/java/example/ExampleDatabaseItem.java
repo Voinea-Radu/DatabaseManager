@@ -2,6 +2,7 @@ package example;
 
 import dev.lightdream.databasemanager.dto.DatabaseEntry;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Type;
 
 @SuppressWarnings("ALL")
 @Entity
