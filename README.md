@@ -2,7 +2,7 @@
 # DatabaseManager
 
 ![Build](../../actions/workflows/build.yml/badge.svg)
-![Version](https://img.shields.io/badge/Version-5.0.1-red.svg)
+![Version](https://img.shields.io/badge/Version-5.0.2-red.svg)
 
 # Table Of Contents
 1. [Description](#description)
@@ -35,12 +35,12 @@ The artifact can be found at the repository https://repo.lightdream.dev or https
     <dependency>
         <groupId>dev.lightdream</groupId>
         <artifactId>database-manager</artifactId>
-        <version>5.0.1</version>
+        <version>5.0.2</version>
     </dependency>
     <dependency>
         <groupId>com.github.L1ghtDream</groupId>
         <artifactId>database-manager</artifactId>
-        <version>5.0.1</version>
+        <version>5.0.2</version>
     </dependency>
 </dependencies>
 ```
@@ -53,8 +53,8 @@ repositories {
 }
 
 dependencies {
-    implementation "dev.lightdream:logger:3.1.0"
-    implementation "com.github.L1ghtDream:logger:3.1.0"
+    implementation "dev.lightdream:database-manager:5.0.2"
+    implementation "com.github.L1ghtDream:database-manager:5.0.2"
 }
 ```
 
@@ -66,8 +66,8 @@ repositories {
 }
 
 dependencies {
-    implementation("dev.lightdream:logger:3.1.0")
-    implementation("com.github.L1ghtDream:logger:3.1.0")
+    implementation("dev.lightdream:database-manager:5.0.2")
+    implementation("com.github.L1ghtDream:database-manager:5.0.2")
 }
 ```
 
