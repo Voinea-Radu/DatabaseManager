@@ -53,8 +53,8 @@ repositories {
 }
 
 dependencies {
-    implementation "dev.lightdream:logger:3.1.0"
-    implementation "com.github.L1ghtDream:logger:3.1.0"
+    implementation "dev.lightdream:database-manager:5.0.1"
+    implementation "com.github.L1ghtDream:database-manager:5.0.1"
 }
 ```
 
@@ -66,8 +66,8 @@ repositories {
 }
 
 dependencies {
-    implementation("dev.lightdream:logger:3.1.0")
-    implementation("com.github.L1ghtDream:logger:3.1.0")
+    implementation("dev.lightdream:database-manager:5.0.1")
+    implementation("com.github.L1ghtDream:database-manager:5.0.1")
 }
 ```
 
