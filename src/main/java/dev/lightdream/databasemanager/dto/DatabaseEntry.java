@@ -10,7 +10,7 @@ public abstract class DatabaseEntry {
         this.main = main;
     }
 
-    public abstract int getID();
+    public abstract Object getID();
 
     public void save(){
         main.getDatabaseManager().save(this);

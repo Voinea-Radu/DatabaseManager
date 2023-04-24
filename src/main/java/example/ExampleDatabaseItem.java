@@ -33,7 +33,7 @@ public class ExampleDatabaseItem extends DatabaseEntry {
     }
 
     @Override
-    public int getID() {
+    public Object getID() {
         return id;
     }
 }

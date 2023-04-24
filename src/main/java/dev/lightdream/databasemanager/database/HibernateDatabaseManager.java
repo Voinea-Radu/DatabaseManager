@@ -92,7 +92,7 @@ public abstract class HibernateDatabaseManager {
 
     public void save(DatabaseEntry entry) {
         executeInSession(session -> {
-            if (entry.getID() != 0) {
+            if (entry.getID() != null) {
                 session.merge(entry);
             } else {
                 session.persist(entry);

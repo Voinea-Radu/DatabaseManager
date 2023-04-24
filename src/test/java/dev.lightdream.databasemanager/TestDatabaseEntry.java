@@ -48,7 +48,7 @@ public class TestDatabaseEntry extends DatabaseEntry {
     }
 
     @Override
-    public int getID() {
+    public Object getID() {
         return id;
     }
 }
