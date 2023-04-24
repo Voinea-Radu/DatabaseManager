@@ -51,7 +51,7 @@ public class DatabaseTests {
         );
         entry.save();
 
-        assertNotEquals(0, entry.id);
+        assertNotEquals(null, entry.id);
     }
 
     @Test

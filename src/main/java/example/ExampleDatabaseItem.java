@@ -16,7 +16,7 @@ public class ExampleDatabaseItem extends DatabaseEntry {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, unique = true, length = 11)
-    public int id;
+    public Integer id;
     @Column(name = "data_1")
     public String data1;
     @Column(name = "data_2")
