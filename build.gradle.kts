@@ -45,7 +45,7 @@ dependencies {
     testImplementation("org.projectlombok:lombok:1.18.26")
 
     // Tests
-    testImplementation(platform("org.junit:junit-bom:5.9.2"))
+    testImplementation(platform("org.junit:junit-bom:5.9.3"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 
     // Hibernate
