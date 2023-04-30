@@ -50,7 +50,7 @@ dependencies {
 
     // Hibernate
     implementation("org.hibernate.orm:hibernate-core:6.2.2.Final")
-    implementation("org.hibernate:hibernate-community-dialects:6.2.0.Final")
+    implementation("org.hibernate:hibernate-community-dialects:6.2.2.Final")
     implementation("org.hibernate.common:hibernate-commons-annotations:6.0.6.Final")
 }
 
