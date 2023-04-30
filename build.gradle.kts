@@ -29,7 +29,7 @@ dependencies {
 
     // Driver
     implementation("org.xerial:sqlite-jdbc:3.41.2.1") // Driver - SQLite
-    implementation("mysql:mysql-connector-java:8.0.32") // Driver - MYSQL
+    implementation("mysql:mysql-connector-java:8.0.33") // Driver - MYSQL
 
     // Utils
     implementation("org.reflections:reflections:0.10.2")
