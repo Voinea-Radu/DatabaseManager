@@ -25,7 +25,7 @@ dependencies {
     // LightDream
     implementation("dev.lightdream:logger:3.3.10")
     implementation("dev.lightdream:lambda:4.1.14")
-    implementation("dev.lightdream:message-builder:3.1.7")
+    implementation("dev.lightdream:message-builder:3.1.8")
 
     // Driver
     implementation("org.xerial:sqlite-jdbc:3.41.2.1") // Driver - SQLite
