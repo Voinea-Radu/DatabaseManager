@@ -1,7 +1,7 @@
 # DatabaseManager
 
 ![Build](../../actions/workflows/build.yml/badge.svg)
-![Version](https://img.shields.io/badge/Version-5.0.22-red.svg)
+![Version](https://img.shields.io/badge/Version-5.0.23-red.svg)
 
 # Table Of Contents
 
@@ -41,12 +41,12 @@ com.github.L1ghtDream instead of dev.lightdream)
     <dependency>
         <groupId>dev.lightdream</groupId>
         <artifactId>database-manager</artifactId>
-        <version>5.0.22</version>
+        <version>5.0.23</version>
     </dependency>
     <dependency>
         <groupId>com.github.L1ghtDream</groupId>
         <artifactId>database-manager</artifactId>
-        <version>5.0.22</version>
+        <version>5.0.23</version>
     </dependency>
 </dependencies>
 ```
@@ -60,8 +60,8 @@ repositories {
 }
 
 dependencies {
-    implementation "dev.lightdream:database-manager:5.0.22"
-    implementation "com.github.L1ghtDream:database-manager:5.0.22"
+    implementation "dev.lightdream:database-manager:5.0.23"
+    implementation "com.github.L1ghtDream:database-manager:5.0.23"
 }
 ```
 
@@ -74,8 +74,8 @@ repositories {
 }
 
 dependencies {
-    implementation("dev.lightdream:database-manager:5.0.22")
-    implementation("com.github.L1ghtDream:database-manager:5.0.22")
+    implementation("dev.lightdream:database-manager:5.0.23")
+    implementation("com.github.L1ghtDream:database-manager:5.0.23")
 }
 ```
 
