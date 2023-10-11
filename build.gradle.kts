@@ -24,7 +24,7 @@ repositories {
 dependencies {
     // LightDream
     implementation("dev.lightdream:logger:3.3.14")
-    implementation("dev.lightdream:lambda:4.1.23")
+    implementation("dev.lightdream:lambda:4.1.25")
     implementation("dev.lightdream:message-builder:3.1.19")
 
     // Driver
