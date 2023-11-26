@@ -34,8 +34,8 @@ dependencies {
     // Utils
     implementation("org.reflections:reflections:0.10.2")
 
-    compileOnly("org.jetbrains:annotations:24.0.1")
-    annotationProcessor("org.jetbrains:annotations:24.0.1")
+    compileOnly("org.jetbrains:annotations:24.1.0")
+    annotationProcessor("org.jetbrains:annotations:24.1.0")
 
     implementation("com.google.code.gson:gson:2.10.1")
 
