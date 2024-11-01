@@ -28,7 +28,7 @@ dependencies {
     implementation("dev.lightdream:message-builder:3.1.19")
 
     // Driver
-    implementation("org.xerial:sqlite-jdbc:3.42.0.0") // Driver - SQLite
+    implementation("org.xerial:sqlite-jdbc:3.47.0.0") // Driver - SQLite
     implementation("mysql:mysql-connector-java:8.0.33") // Driver - MYSQL
 
     // Utils
